@@ -4,50 +4,19 @@ body {
   margin: 0;
   padding: 0;
   background-color: #f9f9f9;
-}
-
-/* Navbar */
-.navbar {
+  min-height: 100vh; /* 화면 전체 높이를 유지 */
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #333;
-  color: white;
-  padding: 1rem 2rem;
+  flex-direction: column;
 }
 
-.nav-links {
+#root {
   display: flex;
-  list-style: none;
-  gap: 2rem;
-  margin: 0;
-  padding: 0;
+  flex-direction: column;
+  min-height: 100vh; /* 콘텐츠가 부족해도 푸터가 화면 아래에 위치하도록 설정 */
 }
 
-.nav-links a {
-  text-decoration: none;
-  color: white;
-  font-weight: bold;
-}
-
-.nav-icons {
-  display: flex;
-  gap: 1rem;
-}
-
-.nav-icons a {
-  color: white;
-  text-decoration: none;
-  font-weight: bold;
-}
-
-/* Footer */
-footer {
-  text-align: center;
-  padding: 1rem 0;
-  background-color: #333;
-  color: white;
-  margin-top: 2rem;
+main {
+  flex: 1; /* 메인 콘텐츠 영역 확장 */
 }
 
 /* Product List */

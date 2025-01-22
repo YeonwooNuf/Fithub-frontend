@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import "./Register.css"; // 동일한 디렉토리의 CSS 파일 임포트
+import { useNavigate } from "react-router-dom";
+import "./Register.css";
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -11,6 +12,8 @@ function Register() {
     phone: "",
     gender: "",
   });
+  const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,36 +21,38 @@ function Register() {
   };
 
   const handleSubmit = (e) => {
-    e.preventDefault();
-    if (formData.password !== formData.confirmPassword) {
-      alert("Passwords do not match!");
-      return;
-    }
+  e.preventDefault();
+  if (formData.password !== formData.confirmPassword) {
+    setError("아이디 및 비밀번호가 일치하지 않습니다.");
+    return;
+  }
 
-    fetch("/api/users/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
+  fetch("/api/users/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(formData),
+  })
+    .then((res) => {
+      if (!res.ok) {
+        // 서버 응답이 실패 상태일 경우 에러 처리
+        throw new Error("회원가입에 실패하였습니다.");
+      }
+      return res.json();
     })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          alert("Registration successful!");
-          setFormData({
-            username: "",
-            password: "",
-            confirmPassword: "",
-            nickname: "",
-            birthdate: "",
-            phone: "",
-            gender: "",
-          });
-        } else {
-          alert(data.message);
-        }
-      })
-      .catch((err) => console.error(err));
-  };
+    .then((data) => {
+      console.log("Server Response:", data); // 응답 데이터 확인
+      if (data.success) {
+        alert(data.message);
+        navigate("/login"); // 로그인 화면으로 이동
+      } else {
+        setError(data.message);
+      }
+    })
+    .catch((err) => {
+      console.error("Error:", err);
+      setError("오류가 발생하였습니다. 잠시 후 다시 시도해주세요.");
+    });
+};
 
   return (
     <div className="register-container">
@@ -127,6 +132,7 @@ function Register() {
           </select>
         </label>
         <button type="submit">Register</button>
+        {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
       </form>
     </div>
   );

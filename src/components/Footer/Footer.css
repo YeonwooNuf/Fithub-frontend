@@ -1,0 +1,12 @@
+/* Footer */
+.footer {
+    background-color: #333;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    position: relative; /* 부모 요소(#root)의 레이아웃에 따라 위치 */
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    font-size: 14px;
+  }

@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { AuthContext } from "../../context/AuthContext";
+import "./Navbar.css";
 
 function Navbar() {
   const { isLoggedIn, nickname, logout } = useContext(AuthContext);
@@ -16,7 +17,7 @@ function Navbar() {
       <div className="nav-icons">
         {isLoggedIn ? (
           <>
-            <span>안녕하세요, {nickname}님! </span>
+            <span>안녕하세요, {nickname} 님</span>
             <a href="/cart">Cart</a>
             <a href="/mypage">MyPage</a>
             <button onClick={logout}>Logout</button>
