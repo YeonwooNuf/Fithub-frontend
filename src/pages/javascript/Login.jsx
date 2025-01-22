@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthContext } from "../context/AuthContext";
-import "./Login.css";
+import { AuthContext } from "../../context/AuthContext";
+import "../css/Login.css";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -26,7 +26,7 @@ function Login() {
           setError(data.message);
         }
       })
-      .catch((err) => setError("오류가 발생했습니다. 잠시 후 다시 시도해주세요."));
+      .catch((err) => setError("오류가 발생했습니다. 잠시 후"));
   };
 
   return (
