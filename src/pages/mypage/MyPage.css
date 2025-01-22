@@ -1,0 +1,63 @@
+.mypage-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .mypage-container h1 {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  /* 적립금과 쿠폰 박스 */
+  .mypage-boxes {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 30px;
+  }
+  
+  .mypage-box {
+    flex: 1;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .mypage-box:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  /* 세로 리스트 */
+  .mypage-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .mypage-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+  }
+  
+  .mypage-list li:hover {
+    background-color: #f9f9f9;
+  }
+  
+  .mypage-list .arrow {
+    font-size: 18px;
+    color: #333;
+  }
+  

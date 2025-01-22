@@ -1,36 +1,54 @@
 import React, { createContext, useState, useEffect } from "react";
 
-// AuthContext 생성
 export const AuthContext = createContext();
 
-// AuthProvider 컴포넌트
 export function AuthProvider({ children }) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [nickname, setNickname] = useState("");
+  const [isLoggedIn, setIsLoggedIn] = useState(false); // 로그인 여부
+  const [userInfo, setUserInfo] = useState({}); // 사용자 정보 저장
 
+  // 애플리케이션 초기화 시 토큰 유효성 확인 및 사용자 정보 로드
   useEffect(() => {
-    // 애플리케이션 초기화 시 localStorage에서 상태 복원
-    const storedNickname = localStorage.getItem("nickname");
-    if (storedNickname) {
-      setIsLoggedIn(true);
-      setNickname(storedNickname);
+    const token = localStorage.getItem("token");
+    if (token) {
+      fetch("/api/users/profile", {
+        headers: { Authorization: `Bearer ${token}` }, // 토큰을 헤더에 포함
+      })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success) {
+            setIsLoggedIn(true);
+            setUserInfo(data); // 사용자 정보 저장
+          } else {
+            // 토큰이 유효하지 않을 경우
+            setIsLoggedIn(false);
+            setUserInfo({});
+            localStorage.removeItem("token");
+          }
+        })
+        .catch(() => {
+          // 오류 발생 시 초기화
+          setIsLoggedIn(false);
+          setUserInfo({});
+          localStorage.removeItem("token");
+        });
     }
   }, []);
 
-  const login = (userNickname) => {
+  // 로그인 시 상태 업데이트 및 토큰 저장
+  const login = (userData) => {
     setIsLoggedIn(true);
-    setNickname(userNickname);
-    localStorage.setItem("nickname", userNickname); // 상태 저장
+    setUserInfo(userData);
   };
 
+  // 로그아웃 시 상태 초기화 및 토큰 제거
   const logout = () => {
     setIsLoggedIn(false);
-    setNickname("");
-    localStorage.removeItem("nickname"); // 상태 제거
+    setUserInfo({});
+    localStorage.removeItem("token");
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, nickname, login, logout }}>
+    <AuthContext.Provider value={{ isLoggedIn, userInfo, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

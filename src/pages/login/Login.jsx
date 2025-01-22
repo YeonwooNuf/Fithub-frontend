@@ -1,7 +1,7 @@
 import React, { useState, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
-import "../css/Login.css";
+import "../login/Login.css";
 
 function Login() {
   const [username, setUsername] = useState("");
@@ -20,21 +20,22 @@ function Login() {
       .then((res) => res.json())
       .then((data) => {
         if (data.success) {
-          login(data.nickname); // 닉네임으로 상태 업데이트
-          navigate("/"); // 메인 페이지로 이동
+          localStorage.setItem("token", data.token);
+          login({ nickname: data.nickname, profileImageUrl: data.profileImageUrl });
+          navigate("/");
         } else {
           setError(data.message);
         }
       })
-      .catch((err) => setError("오류가 발생했습니다. 잠시 후"));
+      .catch(() => setError("오류가 발생했습니다. 다시 시도해주세요."));
   };
 
   return (
     <div className="login-container">
-      <h2>Login</h2>
+      <h2>로그인</h2>
       <form onSubmit={handleSubmit}>
         <label>
-          Username:
+          아이디 :
           <input
             type="text"
             value={username}
@@ -43,7 +44,7 @@ function Login() {
           />
         </label>
         <label>
-          Password:
+          비밀번호 :
           <input
             type="password"
             value={password}
@@ -51,7 +52,7 @@ function Login() {
             required
           />
         </label>
-        <button type="submit">Login</button>
+        <button type="submit">로그인</button>
         {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
       </form>
     </div>
