@@ -9,11 +9,15 @@ export function AuthProvider({ children }) {
   // 애플리케이션 초기화 시 토큰 유효성 확인 및 사용자 정보 로드
   useEffect(() => {
     const token = localStorage.getItem("token");
+    console.log("보낸 토큰: ", token); // 디버깅용
     if (token) {
-      fetch("/api/users/profile", {
+      fetch("/api/users/mypage", {
         headers: { Authorization: `Bearer ${token}` }, // 토큰을 헤더에 포함
       })
-        .then((res) => res.json())
+      .then((res) => {
+        console.log("응답 상태: ", res.status); // 응답 상태 코드 확인
+        return res.json();
+      })
         .then((data) => {
           if (data.success) {
             setIsLoggedIn(true);
@@ -36,6 +40,7 @@ export function AuthProvider({ children }) {
 
   // 로그인 시 상태 업데이트 및 토큰 저장
   const login = (userData) => {
+    console.log("로그인 성공: ", userData); // 디버깅용
     setIsLoggedIn(true);
     setUserInfo(userData);
   };

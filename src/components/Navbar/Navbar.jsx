@@ -3,7 +3,9 @@ import { AuthContext } from "../../context/AuthContext";
 import "./Navbar.css";
 
 function Navbar() {
-  const { isLoggedIn, nickname, logout } = useContext(AuthContext);
+  const { isLoggedIn, userInfo, logout } = useContext(AuthContext);
+
+  console.log("Navbar userInfo 상태: ", userInfo);
 
   return (
     <nav className="navbar">
@@ -17,7 +19,7 @@ function Navbar() {
       <div className="nav-icons">
         {isLoggedIn ? (
           <>
-            <span>안녕하세요, {nickname} 님</span>
+            <span>안녕하세요, {userInfo.nickname} 님</span>
             <a href="/cart">Cart</a>
             <a href="/mypage">MyPage</a>
             <button onClick={logout}>Logout</button>
