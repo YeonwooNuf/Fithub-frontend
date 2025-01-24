@@ -1,0 +1,35 @@
+.coupons-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  .coupons-container h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+  
+  .coupons-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .coupon-item {
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+  }
+  
+  .coupon-item p {
+    margin: 5px 0;
+    font-size: 1rem;
+  }
+  
+  .error {
+    color: red;
+    font-size: 1.2rem;
+  }
+  
