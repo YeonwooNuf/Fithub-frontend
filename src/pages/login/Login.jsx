@@ -10,24 +10,37 @@ function Login() {
   const { login } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    fetch("/api/users/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success) {
-          localStorage.setItem("token", data.token);
-          login({ nickname: data.nickname, profileImageUrl: data.profileImageUrl });
-          navigate("/");
-        } else {
-          setError(data.message);
-        }
-      })
-      .catch(() => setError("오류가 발생했습니다. 다시 시도해주세요."));
+
+    try {
+      const response = await fetch("/api/users/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        // JWT 토큰 저장
+        localStorage.setItem("token", data.token);
+
+        // AuthContext로 사용자 정보 업데이트
+        login({
+          nickname: data.nickname || "사용자",
+          profileImageUrl: data.profileImageUrl || "/default-profile.png",
+        });
+
+        // 로그인 성공 시 리다이렉트
+        navigate("/");
+      } else {
+        setError(data.message || "로그인에 실패하였습니다.");
+      }
+    } catch (err) {
+      setError("서버 연결에 문제가 발생하였습니다. 잠시 후 다시 시도해주세요.");
+      console.error("Error during login:", err);
+    }
   };
 
   return (

@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import "../register/Register.css"; // 수정된 경로
+import "../register/Register.css"; // CSS 파일 경로
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -17,39 +17,42 @@ function Register() {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value }); // name 속성 값으로 상태 업데이트
+    setFormData({ ...formData, [name]: value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (formData.password !== formData.confirmPassword) {
       setError("비밀번호가 일치하지 않습니다.");
       return;
     }
 
-    fetch("/api/users/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error("회원가입에 실패하였습니다.");
-        }
-        return res.json();
-      })
-      .then((data) => {
-        if (data.success) {
-          alert(data.message);
-          navigate("/login"); // 로그인 화면으로 이동
-        } else {
-          setError(data.message);
-        }
-      })
-      .catch((err) => {
-        console.error("Error:", err);
-        setError("오류가 발생하였습니다. 잠시 후 다시 시도해주세요.");
+    try {
+      const response = await fetch("/api/users/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: formData.username,
+          password: formData.password,
+          nickname: formData.nickname,
+          birthdate: formData.birthdate,
+          phone: formData.phone,
+          gender: formData.gender,
+        }),
       });
+
+      const data = await response.json();
+
+      if (response.ok && data.success) {
+        alert(data.message || "회원가입이 성공적으로 완료되었습니다.");
+        navigate("/login");
+      } else {
+        setError(data.message || "회원가입에 실패하였습니다.");
+      }
+    } catch (err) {
+      console.error("Error:", err);
+      setError("서버와 연결하는 중 문제가 발생하였습니다.");
+    }
   };
 
   return (
@@ -60,7 +63,7 @@ function Register() {
           아이디 :
           <input
             type="text"
-            name="username" // name 속성 값 수정
+            name="username"
             value={formData.username}
             onChange={handleChange}
             required
@@ -70,7 +73,7 @@ function Register() {
           비밀번호 :
           <input
             type="password"
-            name="password" // name 속성 값 수정
+            name="password"
             value={formData.password}
             onChange={handleChange}
             required
@@ -80,7 +83,7 @@ function Register() {
           비밀번호 확인 :
           <input
             type="password"
-            name="confirmPassword" // name 속성 값 수정
+            name="confirmPassword"
             value={formData.confirmPassword}
             onChange={handleChange}
             required
@@ -90,7 +93,7 @@ function Register() {
           닉네임 :
           <input
             type="text"
-            name="nickname" // name 속성 값 수정
+            name="nickname"
             value={formData.nickname}
             onChange={handleChange}
             required
@@ -100,7 +103,7 @@ function Register() {
           생년월일 :
           <input
             type="date"
-            name="birthdate" // name 속성 값 수정
+            name="birthdate"
             value={formData.birthdate}
             onChange={handleChange}
             required
@@ -110,7 +113,7 @@ function Register() {
           전화번호 :
           <input
             type="text"
-            name="phone" // name 속성 값 수정
+            name="phone"
             value={formData.phone}
             onChange={handleChange}
             required
@@ -119,7 +122,7 @@ function Register() {
         <label>
           성별 :
           <select
-            name="gender" // name 속성 값 수정
+            name="gender"
             value={formData.gender}
             onChange={handleChange}
             required
