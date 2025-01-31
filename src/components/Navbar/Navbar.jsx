@@ -1,11 +1,15 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import "./Navbar.css";
 
 function Navbar() {
   const { isLoggedIn, userInfo, logout } = useContext(AuthContext);
 
-  console.log("Navbar userInfo 상태: ", userInfo);
+  useEffect(() => {
+    console.log("🟡 [Navbar] 현재 로그인 상태:", isLoggedIn);
+    console.log("🟡 [Navbar] 현재 userInfo 상태:", userInfo);
+    console.log("🟡 [Navbar] localStorage 토큰:", localStorage.getItem("token"));
+  }, [isLoggedIn, userInfo]);
 
   return (
     <nav className="navbar">
@@ -19,7 +23,7 @@ function Navbar() {
       <div className="nav-icons">
         {isLoggedIn ? (
           <>
-            <span>안녕하세요, {userInfo.nickname} 님</span>
+            <span>안녕하세요, {userInfo.nickname || "사용자"} 님</span>
             <a href="/cart">Cart</a>
             <a href="/mypage">MyPage</a>
             <button onClick={logout}>Logout</button>
