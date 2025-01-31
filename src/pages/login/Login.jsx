@@ -11,37 +11,34 @@ function Login() {
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const response = await fetch("/api/users/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
+  e.preventDefault();
+  try {
+    const response = await fetch("/api/users/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    });
 
-      const data = await response.json();
+    const data = await response.json();
 
-      console.log("🟢 [Login] 로그인 응답 데이터:", data);
-      if (response.ok && data.success) {
-        console.log("🟢 [Login] 저장할 토큰:", data.token);
+    console.log("🟢 [Login] 로그인 응답 데이터:", data);
+    if (response.ok && data.success) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("role", data.role);
 
-        localStorage.setItem("token", data.token);
-        console.log("🟢 [Login] localStorage에 저장된 토큰:", localStorage.getItem("token"));
+      login(data.token, data.role, data.username, data.nickname);
 
-        login(data.token); // ✅ 토큰만 전달해서 AuthContext에서 유저 정보 갱신
-
-        // ✅ 상태 업데이트 후 navigate 실행 (setTimeout 사용)
-        setTimeout(() => {
-          navigate("/");
-        }, 0);
-      } else {
-        setError(data.message || "로그인에 실패하였습니다.");
-      }
-    } catch (err) {
-      setError("서버 연결에 문제가 발생하였습니다. 잠시 후 다시 시도해주세요.");
-      console.error("❌ [Login] 로그인 중 에러 발생:", err);
+      setTimeout(() => {
+        navigate("/");
+      }, 0);
+    } else {
+      setError(data.message || "로그인에 실패하였습니다.");
     }
-  };
+  } catch (err) {
+    setError("서버 연결에 문제가 발생하였습니다. 잠시 후 다시 시도해주세요.");
+  }
+};
+
 
   return (
     <div className="login-container">

@@ -19,6 +19,10 @@ function Navbar() {
         <li><a href="/">Review</a></li>
         <li><a href="#">Community</a></li>
         <li><a href="#">About</a></li>
+        {/* 관리자 전용 탭 (userInfo.role이 ADMIN일 때만 표시) */}
+        {isLoggedIn && userInfo?.role === "ADMIN" && (
+          <li><a href="/admin">Admin Page</a></li>
+        )}
       </ul>
       <div className="nav-icons">
         {isLoggedIn ? (
