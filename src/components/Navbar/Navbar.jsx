@@ -1,14 +1,20 @@
-import React, { useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import "./Navbar.css";
 
 function Navbar() {
   const { isLoggedIn, userInfo, logout } = useContext(AuthContext);
+  const [role, setRole] = useState(localStorage.getItem("role") || "USER");
 
   useEffect(() => {
-    console.log("🟡 [Navbar] 현재 userInfo 상태 : ", userInfo);
-    console.log("🟡 [Navbar] 현재 사용자 권한 : ",userInfo.role);
-  }, [isLoggedIn, userInfo]);
+    console.log("🟡 [Navbar] 현재 로그인 상태:", isLoggedIn);
+    console.log("🟡 [Navbar] 현재 userInfo 상태:", userInfo);
+    console.log("🟡 [Navbar] localStorage에서 가져온 사용자 권한:", localStorage.getItem("role"));
+
+    if (userInfo.role) {
+      setRole(userInfo.role);
+    }
+  }, [userInfo]);
 
   return (
     <nav className="navbar">
@@ -18,8 +24,8 @@ function Navbar() {
         <li><a href="/">Review</a></li>
         <li><a href="#">Community</a></li>
         <li><a href="#">About</a></li>
-        {/* 관리자 전용 탭 (userInfo.role이 ADMIN일 때만 표시) */}
-        {isLoggedIn && userInfo?.role === "ADMIN" && (
+        {/* ✅ 관리자 전용 탭 */}
+        {isLoggedIn && role === "ADMIN" && (
           <li><a href="/admin">Admin Page</a></li>
         )}
       </ul>

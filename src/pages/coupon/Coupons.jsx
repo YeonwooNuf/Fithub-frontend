@@ -8,7 +8,11 @@ function Coupons() {
   useEffect(() => {
     const token = localStorage.getItem("token");
     fetch("/api/coupons", {
-      headers: { Authorization: `Bearer ${token}` },
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+        "Content-Type": "application/json",
+      },
     })
       .then((res) => {
         if (!res.ok) {
