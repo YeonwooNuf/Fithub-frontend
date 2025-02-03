@@ -1,59 +1,70 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import "../mypage/MyPage.css";
 
 function MyPage() {
-  const { userInfo } = useContext(AuthContext); // 사용자 정보 가져오기
+  const { userInfo } = useContext(AuthContext);
   const navigate = useNavigate();
 
   const [points, setPoints] = useState(0);
   const [couponCount, setCouponCount] = useState(0);
+  const [profileImage, setProfileImage] = useState(userInfo.profileImage || "/default-profile.jpg");
 
-  // 적립금 및 쿠폰 개수 가져오기
   useEffect(() => {
-    const fetchUserPointsAndCoupons = async () => {
+    const fetchUserData = async () => {
       try {
-        if (!userInfo.username) return;
+        if (!userInfo.userId) return;
+        const token = localStorage.getItem("token");
 
-        // 적립금 가져오기
-        const pointsResponse = await fetch(`/api/points?username=${userInfo.username}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-        if (!pointsResponse.ok) {
-          throw new Error(`Failed to fetch points: ${pointsResponse.status}`);
+        // ✅ 프로필 이미지 요청 (기존 값 없을 때만 요청)
+        if (!userInfo.profileImage) {
+          const profileRes = await fetch(`/api/users/${userInfo.userId}/profile-image`, {
+            headers: { Authorization: `Bearer ${token}` },
+          });
+
+          if (profileRes.ok) {
+            const profileData = await profileRes.json();
+            setProfileImage(profileData.profileImageUrl || "/default-profile.jpg");
+          }
         }
-        const pointsData = await pointsResponse.json();
-        setPoints(pointsData.points || 0);
 
-        // 쿠폰 개수 가져오기
-        const couponsResponse = await fetch(`/api/coupons?username=${userInfo.username}`, {
-          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        // ✅ 적립금 요청
+        const pointsRes = await fetch(`/api/points/balance`, {
+          headers: { Authorization: `Bearer ${token}` },
         });
-        if (!couponsResponse.ok) {
-          throw new Error(`Failed to fetch coupons: ${couponsResponse.status}`);
-        }
-        const couponsData = await couponsResponse.json();
-        setCouponCount(couponsData.count || 0);
 
+        if (pointsRes.ok) {
+          const pointsData = await pointsRes.json();
+          setPoints(pointsData.totalPoints || 0);
+        }
+
+        // ✅ 쿠폰 개수 요청
+        const couponsRes = await fetch(`/api/coupons`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (couponsRes.ok) {
+          const couponsData = await couponsRes.json();
+          setCouponCount(couponsData.count || 0);
+        }
       } catch (err) {
-        console.error(err);
-        setPoints(0); // 에러 발생 시 기본값 설정
-        setCouponCount(0); // 에러 발생 시 기본값 설정
+        console.error("데이터를 불러오는 중 오류 발생:", err);
       }
     };
 
-    fetchUserPointsAndCoupons();
-  }, [userInfo.username]);
+    fetchUserData();
+  }, [userInfo.userId]);
 
   return (
     <div className="mypage-container">
       <h1>마이페이지</h1>
       <div className="mypage-profile">
         <img
-          src={userInfo.profileImage || "/default-profile.jpg"}
+          src={profileImage}
           alt="프로필"
           className="profile-image"
+          onError={() => setProfileImage("/default-profile.jpg")} // 오류 발생 시 기본 이미지
         />
         <h1 className="nickname">{userInfo.nickname || "사용자"}</h1>
       </div>
@@ -61,11 +72,11 @@ function MyPage() {
       <div className="mypage-boxes">
         <div className="mypage-box" onClick={() => navigate("/points")}>
           <h2>적립금</h2>
-          <p>{points.toLocaleString()}원</p>
+          <p>{points.toLocaleString()} 원</p>
         </div>
         <div className="mypage-box" onClick={() => navigate("/coupons")}>
           <h2>쿠폰</h2>
-          <p>{couponCount.toLocaleString()}장</p>
+          <p>{couponCount.toLocaleString()} 장</p>
         </div>
       </div>
 
