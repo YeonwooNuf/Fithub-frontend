@@ -5,11 +5,11 @@ import "./Navbar.css";
 function Navbar() {
   const { isLoggedIn, userInfo, logout } = useContext(AuthContext);
 
-  useEffect(() => {
-    console.log("🟡 [Navbar] 현재 로그인 상태:", isLoggedIn);
-    console.log("🟡 [Navbar] 현재 userInfo 상태:", userInfo);
-    console.log("🟡 [Navbar] localStorage 토큰:", localStorage.getItem("token"));
-  }, [isLoggedIn, userInfo]);
+  // useEffect(() => {
+  //   console.log("🟡 [Navbar] 현재 로그인 상태:", isLoggedIn);
+  //   console.log("🟡 [Navbar] 현재 userInfo 상태:", userInfo);
+  //   console.log("🟡 [Navbar] localStorage 토큰:", localStorage.getItem("token"));
+  // }, [isLoggedIn, userInfo]);
 
   return (
     <nav className="navbar">

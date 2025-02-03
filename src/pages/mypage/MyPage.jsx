@@ -51,11 +51,11 @@ function MyPage() {
       <h1>마이페이지</h1>
       <div className="mypage-profile">
         <img
-          src={userInfo.profileImage || "/default-profile.png"}
+          src={userInfo.profileImage || "/default-profile.jpg"}
           alt="프로필"
           className="profile-image"
         />
-        <p className="nickname">{userInfo.nickname || "사용자"}</p>
+        <h1 className="nickname">{userInfo.nickname || "사용자"}</h1>
       </div>
 
       <div className="mypage-boxes">
