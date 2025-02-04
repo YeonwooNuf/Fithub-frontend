@@ -17,6 +17,9 @@ import Review from "./pages/review/Reviews";
 import Orders from "./pages/order/Orders";
 import AdminDashboard from "./pages/admin/AdminDashboard";
 import AdminUser from "./pages/admin/AdminUser";
+import AdminProduct from "./pages/admin/AdminProduct";
+import AdminProductAdd from "./pages/admin/AdminProductAdd";
+import AdminBrand from "./pages/admin/brand/AdminBrand";
 
 function App() {
   return (
@@ -40,6 +43,9 @@ function App() {
             {/* 관리자 탭 */}
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/users" element={<AdminUser />} />
+            <Route path="/admin/products" element={<AdminProduct />} />
+            <Route path="/admin/products/add" element={<AdminProductAdd />} />
+            <Route path="/admin/brands" element={<AdminBrand />} />
           </Routes>
         </main>
         <Footer />

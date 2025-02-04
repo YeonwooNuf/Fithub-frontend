@@ -33,6 +33,10 @@ function AdminDashboard() {
           <span>배너 및 광고</span>
           <span className="arrow">&gt;</span>
         </li>
+        <li onClick={() => navigate("/admin/brands")}>
+          <span>판매 브랜드</span>
+          <span className="arrow">&gt;</span>
+        </li>
       </ul>
     </div>
   );
