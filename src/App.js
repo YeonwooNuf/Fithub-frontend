@@ -15,10 +15,10 @@ import Coupons from "./pages/coupon/Coupons";
 import Asking from "./pages/asking/Asking";
 import Review from "./pages/review/Reviews";
 import Orders from "./pages/order/Orders";
-import AdminDashboard from "./pages/admin/AdminDashboard";
-import AdminUser from "./pages/admin/AdminUser";
-import AdminProduct from "./pages/admin/AdminProduct";
-import AdminProductAdd from "./pages/admin/AdminProductAdd";
+import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
+import AdminUser from "./pages/admin/user/AdminUser";
+import AdminProduct from "./pages/admin/product/AdminProduct";
+import AdminProductAdd from "./pages/admin/product/AdminProductAdd";
 import AdminBrand from "./pages/admin/brand/AdminBrand";
 
 function App() {

@@ -47,14 +47,14 @@ h1 {
 
 .brand-form input {
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid #1d1d1d;
     border-radius: 5px;
     font-size: 14px;
     width: 220px;
 }
 
 .brand-form button {
-    background-color: #28a745;
+    background-color: #7b7c7b;
     color: white;
     border: none;
     padding: 10px 15px;
@@ -65,7 +65,7 @@ h1 {
 }
 
 .brand-form button:hover {
-    background-color: #218838;
+    background-color: #363535;
 }
 
 /* 🔹 브랜드 목록 테이블 */
@@ -103,7 +103,7 @@ h1 {
     height: 55px;
     object-fit: cover;
     border-radius: 50%;
-    border: 2px solid #747474da; /* 파란색 테두리 */
+    border: 2px solid #747474da; /* 회색 테두리 */
     display: block;
     margin: auto;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
