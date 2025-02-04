@@ -15,6 +15,8 @@ import Coupons from "./pages/coupon/Coupons";
 import Asking from "./pages/asking/Asking";
 import Review from "./pages/review/Reviews";
 import Orders from "./pages/order/Orders";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminUser from "./pages/admin/AdminUser";
 
 function App() {
   return (
@@ -34,6 +36,10 @@ function App() {
             <Route path="/orders" element={<Orders />} />
             <Route path="/asking" element={<Asking />} />
             <Route path="/review/:id" element={<Review />} />
+
+            {/* 관리자 탭 */}
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/users" element={<AdminUser />} />
           </Routes>
         </main>
         <Footer />

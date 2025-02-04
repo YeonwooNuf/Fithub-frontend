@@ -1,0 +1,63 @@
+/* 전체 페이지 스타일 */
+.admin-dashboard {
+    max-width: 700px;
+    margin: 150px auto;
+    padding: 50px;
+    background-color: #1e1e1e; /* 다크 모드 스타일 */
+    border-radius: 15px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    color: #fff;
+    text-align: center;
+}
+
+/* 관리자 대시보드 제목 강조 */
+.admin-dashboard h1 {
+    font-size: 2.2em; /* 기존보다 크기 키움 */
+    margin-bottom: 25px;
+    font-weight: bold;
+    color: #ffffff; /* 완전 흰색 */
+    letter-spacing: 1px;
+}
+
+/* 관리자 목록 스타일 */
+.admin-list {
+    list-style: none;
+    padding: 0;
+    margin: 20px 0;
+}
+
+.admin-list li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 15px 20px;
+    background: #252525; /* 어두운 배경 */
+    border-radius: 8px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border: 1px solid #333;
+    color: #e0e0e0;
+    font-size: 1.1em;
+    font-weight: 500;
+}
+
+/* 호버 효과 */
+.admin-list li:hover {
+    background-color: #2a2a2a;
+    transform: scale(1.03); /* 약간 확대 */
+    border-color: #00bcd4; /* 네온 블루 포인트 */
+    color: #ffffff;
+    box-shadow: 0 0 8px rgba(0, 188, 212, 0.6);
+}
+
+/* 아이콘 & 텍스트 */
+.arrow {
+    font-size: 1.2em;
+    color: #ecebeb; /* 네온 블루 */
+    transition: transform 0.2s ease;
+}
+
+.admin-list li:hover .arrow {
+    transform: translateX(5px); /* 화살표 이동 효과 */
+}

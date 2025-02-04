@@ -1,0 +1,126 @@
+/* 전체 컨테이너 - 중앙 정렬 */
+.admin-container {
+    max-width: 80%;
+    margin: 40px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 제목 스타일 */
+h1 {
+    text-align: center;
+    font-size: 2em;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+/* 검색 영역 */
+.search-box {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.search-box input {
+    width: 250px;
+    padding: 10px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+.search-box button {
+    padding: 10px 15px;
+    background-color: #555555f5;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.search-box button:hover {
+    background-color: #ada9a9f5;
+}
+
+/* 🔥 테이블 중앙 정렬 & 크기 조정 */
+.user-table {
+    width: 100%;
+    max-width: 900px; /* 테이블 크기 확대 */
+    margin: 0 auto; /* 테이블 중앙 배치 */
+    border-collapse: collapse;
+}
+
+/* 테이블 헤더 */
+.user-table th {
+    background-color: #555555f5;
+    color: white;
+    font-weight: bold;
+    padding: 15px;
+    text-align: center; /* 중앙 정렬 */
+}
+
+/* 테이블 행 */
+.user-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center; /* 🔥 텍스트 중앙 정렬 */
+}
+
+/* 테이블 줄무늬 */
+.user-table tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.user-table tr:hover {
+    background-color: #e9ecef;
+}
+
+/* 삭제 버튼 */
+.delete-btn {
+    background-color: #dc3545;
+    color: white;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
+}
+
+/* 페이지네이션 */
+.pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+    gap: 10px;
+}
+
+.pagination button {
+    padding: 10px 14px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.pagination button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+.pagination button:hover:not(:disabled) {
+    background-color: #0056b3;
+}
