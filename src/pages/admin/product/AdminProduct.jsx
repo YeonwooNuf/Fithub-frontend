@@ -23,6 +23,7 @@ function AdminProduct() {
       if (!response.ok) throw new Error("상품 목록을 불러올 수 없습니다.");
 
       const data = await response.json();
+      console.log("API 응답 데이터:", data); // ✅ 응답 확인
       setProducts(data.products || []);
     } catch (err) {
       setError(err.message);
@@ -42,7 +43,7 @@ function AdminProduct() {
     setError("");
 
     try {
-      const response = await fetch(`/api/admin/products/search?query=${searchQuery}`, {
+      const response = await fetch(`/api/admin/products/search?keyword=${searchQuery}`, { // ✅ URL 수정
         headers: { Authorization: `Bearer ${token}` },
       });
 
@@ -116,7 +117,7 @@ function AdminProduct() {
               <tr key={product.id}>
                 <td>{product.name}</td>
                 <td>{product.price.toLocaleString()}원</td>
-                <td>{product.brand.name}</td>
+                <td>{product.brandName}</td>
                 <td>
                   <button className="edit-btn" onClick={() => navigate(`/admin/products/edit/${product.id}`)}>수정</button>
                   <button className="delete-btn" onClick={() => deleteProduct(product.id)}>삭제</button>
