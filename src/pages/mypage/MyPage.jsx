@@ -66,11 +66,11 @@ function MyPage() {
       <div className="mypage-boxes">
         <div className="mypage-box" onClick={() => navigate("/points")}>
           <h2>적립금</h2>
-          {loading ? <p>로딩 중...</p> : <p>{points.toLocaleString()} 원</p>}  {/* ✅ 로딩 표시 */}
+          {loading ? <p>로딩 중...</p> : <p>{(points ?? 0).toLocaleString()} 원</p>}  {/* ✅ 로딩 표시 */}
         </div>
         <div className="mypage-box" onClick={() => navigate("/coupons")}>
           <h2>쿠폰</h2>
-          {loading ? <p>로딩 중...</p> : <p>{couponCount.toLocaleString()} 장</p>}  {/* ✅ 로딩 표시 */}
+          {loading ? <p>로딩 중...</p> : <p>{(couponCount ?? 0).toLocaleString()} 장</p>}  {/* ✅ 로딩 표시 */}
         </div>
       </div>
 
