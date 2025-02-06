@@ -7,8 +7,9 @@ function MyPage() {
   const { userInfo } = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const [points, setPoints] = useState(0);
-  const [couponCount, setCouponCount] = useState(0);
+  const [points, setPoints] = useState(null);          // ✅ null로 초기화
+  const [couponCount, setCouponCount] = useState(null);
+  const [loading, setLoading] = useState(true);        // ✅ 로딩 상태 추가
   const [profileImage, setProfileImage] = useState(userInfo.profileImage || "/default-profile.jpg");
 
   useEffect(() => {
@@ -17,32 +18,22 @@ function MyPage() {
         if (!userInfo.userId) return;
         const token = localStorage.getItem("token");
 
-        // ✅ 프로필 이미지 요청 (기존 값 없을 때만 요청)
-        if (!userInfo.profileImage) {
-          const profileRes = await fetch(`/api/users/${userInfo.userId}/profile-image`, {
-            headers: { Authorization: `Bearer ${token}` },
-          });
+        setLoading(true); // ✅ 로딩 시작
 
-          if (profileRes.ok) {
-            const profileData = await profileRes.json();
-            setProfileImage(profileData.profileImageUrl || "/default-profile.jpg");
-          }
-        }
-
-        // ✅ 적립금 요청
-        const pointsRes = await fetch(`/api/points/balance`, {
+        const pointsRequest = fetch(`/api/points/balance`, {
           headers: { Authorization: `Bearer ${token}` },
         });
+
+        const couponCountRequest = fetch(`/api/coupons/count`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        const [pointsRes, couponsRes] = await Promise.all([pointsRequest, couponCountRequest]);
 
         if (pointsRes.ok) {
           const pointsData = await pointsRes.json();
           setPoints(pointsData.totalPoints || 0);
         }
-
-        // ✅ 쿠폰 개수 요청
-        const couponsRes = await fetch(`/api/coupons`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
 
         if (couponsRes.ok) {
           const couponsData = await couponsRes.json();
@@ -50,6 +41,8 @@ function MyPage() {
         }
       } catch (err) {
         console.error("데이터를 불러오는 중 오류 발생:", err);
+      } finally {
+        setLoading(false); // ✅ 로딩 완료
       }
     };
 
@@ -59,12 +52,13 @@ function MyPage() {
   return (
     <div className="mypage-container">
       <h1>마이페이지</h1>
+
       <div className="mypage-profile">
         <img
           src={profileImage}
           alt="프로필"
           className="profile-image"
-          onError={() => setProfileImage("/default-profile.jpg")} // 오류 발생 시 기본 이미지
+          onError={() => setProfileImage("/default-profile.jpg")}
         />
         <h1 className="nickname">{userInfo.nickname || "사용자"}</h1>
       </div>
@@ -72,11 +66,11 @@ function MyPage() {
       <div className="mypage-boxes">
         <div className="mypage-box" onClick={() => navigate("/points")}>
           <h2>적립금</h2>
-          <p>{points.toLocaleString()} 원</p>
+          {loading ? <p>로딩 중...</p> : <p>{points.toLocaleString()} 원</p>}  {/* ✅ 로딩 표시 */}
         </div>
         <div className="mypage-box" onClick={() => navigate("/coupons")}>
           <h2>쿠폰</h2>
-          <p>{couponCount.toLocaleString()} 장</p>
+          {loading ? <p>로딩 중...</p> : <p>{couponCount.toLocaleString()} 장</p>}  {/* ✅ 로딩 표시 */}
         </div>
       </div>
 

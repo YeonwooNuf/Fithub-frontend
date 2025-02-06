@@ -26,7 +26,11 @@ function AdminDashboard() {
           <span className="arrow">&gt;</span>
         </li>
         <li onClick={() => navigate("/admin/coupons")}>
-          <span>쿠폰 및 포인트</span>
+          <span>쿠폰 관리</span>
+          <span className="arrow">&gt;</span>
+        </li>
+        <li onClick={() => navigate("/admin/points")}>
+          <span>포인트 관리</span>
           <span className="arrow">&gt;</span>
         </li>
         <li onClick={() => navigate("/admin/banners")}>

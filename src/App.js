@@ -18,8 +18,10 @@ import Orders from "./pages/order/Orders";
 import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
 import AdminUser from "./pages/admin/user/AdminUser";
 import AdminProduct from "./pages/admin/product/AdminProduct";
-import AdminProductAdd from "./pages/admin/product/AdminProductAdd";
+import AddProduct from "./pages/admin/product/AddProduct";
 import AdminBrand from "./pages/admin/brand/AdminBrand";
+import AdminCoupon from "./pages/admin/coupon/AdminCoupon";
+import AddCoupon from "./pages/admin/coupon/AddCoupon";
 
 function App() {
   return (
@@ -43,9 +45,11 @@ function App() {
             {/* 관리자 탭 */}
             <Route path="/admin" element={<AdminDashboard />} />
             <Route path="/admin/users" element={<AdminUser />} />
-            <Route path="/admin/products" element={<AdminProduct />} />
-            <Route path="/admin/products/add" element={<AdminProductAdd />} />
             <Route path="/admin/brands" element={<AdminBrand />} />
+            <Route path="/admin/products" element={<AdminProduct />} />
+            <Route path="/admin/products/add" element={<AddProduct />} />
+            <Route path="/admin/coupons" element={<AdminCoupon />} />
+            <Route path="/admin/coupons/add" element={<AddCoupon />} />
           </Routes>
         </main>
         <Footer />
