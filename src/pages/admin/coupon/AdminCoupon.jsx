@@ -102,7 +102,7 @@ function AdminCoupon() {
             {coupons.map((coupon) => (
               <tr key={coupon.id}>
                 <td>{coupon.name}</td>
-                <td>{coupon.discount}</td>
+                <td>{coupon.discount}%</td>
                 <td>{coupon.maxDiscountAmount.toLocaleString()}원</td>
                 <td>{coupon.expiryDate}</td>
                 <td>{coupon.description}</td>

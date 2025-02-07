@@ -18,7 +18,7 @@ function AdminProductAdd() {
 
   const token = localStorage.getItem("token");
 
-  // ✅ 브랜드 목록 가져오기
+  // 브랜드 목록 가져오기
   useEffect(() => {
     const fetchBrands = async () => {
       try {
@@ -39,7 +39,7 @@ function AdminProductAdd() {
     fetchBrands();
   }, []);
 
-  // ✅ 사이즈 추가 핸들러
+  // 사이즈 추가 핸들러
   const handleAddSize = () => {
     const newSize = prompt("추가할 사이즈를 입력하세요 (예: S, M, L, 260 등)");
     if (newSize && !sizes.includes(newSize)) {
@@ -47,7 +47,7 @@ function AdminProductAdd() {
     }
   };
 
-  // ✅ 색상 추가 핸들러
+  // 색상 추가 핸들러
   const handleAddColor = () => {
     const newColor = prompt("추가할 색상을 입력하세요 (예: 블랙, 화이트)");
     if (newColor && !colors.includes(newColor)) {
@@ -55,21 +55,21 @@ function AdminProductAdd() {
     }
   };
 
-  // ✅ 사이즈 삭제
+  // 사이즈 삭제
   const handleRemoveSize = (index) => {
     setSizes(sizes.filter((_, i) => i !== index));
   };
 
-  // ✅ 색상 삭제
+  // 색상 삭제
   const handleRemoveColor = (index) => {
     setColors(colors.filter((_, i) => i !== index));
   };
 
-  // ✅ 여러 개의 이미지 업로드 핸들러
+  // 여러 개의 이미지 업로드 핸들러
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    if (files.length + images.length > 5) {
-      alert("최대 5개의 이미지만 업로드할 수 있습니다.");
+    if (files.length + images.length > 10) {
+      alert("최대 10개의 이미지만 업로드할 수 있습니다.");
       return;
     }
 
@@ -81,12 +81,12 @@ function AdminProductAdd() {
     setImages((prev) => [...prev, ...newImages]);
   };
 
-  // ✅ 개별 이미지 삭제
+  // 개별 이미지 삭제
   const handleRemoveImage = (index) => {
     setImages((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // ✅ 상품 추가 핸들러 (JSON 형식으로 sizes, colors 전송)
+  // 상품 추가 핸들러 (JSON 형식으로 sizes, colors 전송)
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -100,11 +100,11 @@ function AdminProductAdd() {
       formData.append("brandId", brandId);
       formData.append("category", category);
 
-      // ✅ JSON.stringify를 사용해 JSON 형식으로 변환하여 전송
+      // JSON.stringify를 사용해 JSON 형식으로 변환하여 전송
       formData.append("sizes", JSON.stringify(sizes));
       formData.append("colors", JSON.stringify(colors));
 
-      // ✅ 여러 개의 이미지 추가
+      // 여러 개의 이미지 추가
       images.forEach((img) => formData.append("images", img.file));
 
       const response = await fetch("/api/admin/products", {
@@ -155,7 +155,7 @@ function AdminProductAdd() {
           required
         />
 
-        {/* ✅ 브랜드 선택 드롭다운 */}
+        {/* 브랜드 선택 드롭다운 */}
         <select value={brandId} onChange={(e) => setBrandId(e.target.value)} required>
           <option value="">브랜드 선택</option>
           {brands.map((brand) => (
@@ -165,7 +165,7 @@ function AdminProductAdd() {
           ))}
         </select>
 
-        {/* ✅ 카테고리 선택 */}
+        {/* 카테고리 선택 */}
         <select value={category} onChange={(e) => setCategory(e.target.value)} required>
           <option value="">카테고리 선택</option>
           <option value="TOP">상의</option>
@@ -174,7 +174,7 @@ function AdminProductAdd() {
           <option value="ACCESSORY">악세서리</option>
         </select>
 
-        {/* ✅ 사이즈 추가 및 리스트 */}
+        {/* 사이즈 추가 및 리스트 */}
         <div className="size-container">
           <button type="button" onClick={handleAddSize}>사이즈 추가</button>
           <ul>
@@ -186,7 +186,7 @@ function AdminProductAdd() {
           </ul>
         </div>
 
-        {/* ✅ 색상 추가 및 리스트 */}
+        {/* 색상 추가 및 리스트 */}
         <div className="color-container">
           <button type="button" onClick={handleAddColor}>색상 추가</button>
           <ul>
@@ -198,10 +198,10 @@ function AdminProductAdd() {
           </ul>
         </div>
 
-        {/* ✅ 여러 개의 이미지 업로드 */}
+        {/* 여러 개의 이미지 업로드 */}
         <input type="file" multiple onChange={handleImageChange} />
 
-        {/* ✅ 업로드된 이미지 미리보기 */}
+        {/* 업로드된 이미지 미리보기 */}
         <div className="image-preview-container">
           {images.map((img, index) => (
             <div key={index} className="image-card">

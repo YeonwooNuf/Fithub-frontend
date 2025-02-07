@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import "./AdminCoupon.css";
+import "./AddCoupon.css";
 
 function AddCoupon() {
   const navigate = useNavigate();
@@ -67,7 +67,7 @@ function AddCoupon() {
       alert("쿠폰 추가에 실패했습니다.");
     }
   };
-  
+
   return (
     <div className="admin-coupon">
       <button className="back-btn" onClick={() => navigate("/admin/coupons")}>⬅ 쿠폰 목록으로 돌아가기</button>
@@ -149,10 +149,18 @@ function AddCoupon() {
         {form.distributionType === "MANUAL" && (
           <label>
             수동 등록 쿠폰 코드:
-            <input type="text" name="couponCode" value={form.couponCode} onChange={handleChange} />
+            <input
+              type="text"
+              name="couponCode"
+              value={form.couponCode}
+              onChange={(e) =>
+                // 쿠폰 코드 입력 시 자동 대문자 변환
+                setForm({ ...form, couponCode: e.target.value.toUpperCase() })
+              }
+              required
+            />
           </label>
         )}
-
         <button type="submit" className="add-btn">쿠폰 추가하기</button>
       </form>
     </div>
