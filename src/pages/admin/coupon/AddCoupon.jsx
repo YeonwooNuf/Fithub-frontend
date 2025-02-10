@@ -154,7 +154,7 @@ function AddCoupon() {
               name="couponCode"
               value={form.couponCode}
               onChange={(e) =>
-                // 쿠폰 코드 입력 시 자동 대문자 변환
+                // 쿠폰 코드 입력 시 자동 대문자
                 setForm({ ...form, couponCode: e.target.value.toUpperCase() })
               }
               required
