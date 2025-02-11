@@ -109,6 +109,7 @@ function AdminProduct() {
               <th>상품명</th>
               <th>가격</th>
               <th>브랜드</th>
+              <th>카테고리</th>
               <th>관리</th>
             </tr>
           </thead>
@@ -118,6 +119,7 @@ function AdminProduct() {
                 <td>{product.name}</td>
                 <td>{product.price.toLocaleString()}원</td>
                 <td>{product.brandName}</td>
+                <td>{product.category}</td>
                 <td>
                   <button className="edit-btn" onClick={() => navigate(`/admin/products/edit/${product.id}`)}>수정</button>
                   <button className="delete-btn" onClick={() => deleteProduct(product.id)}>삭제</button>
