@@ -45,6 +45,13 @@ function AdminCoupon() {
     }
   };
 
+  const searchCoupon = () => {
+    const filteredCoupons = activeTab === "valid"
+      ? coupons.filter(coupon => coupon.name.includes(searchQuery))
+      : expiredCoupons.filter(coupon => coupon.name.includes(searchQuery));
+    return filteredCoupons;
+  };
+
   const handleDelete = async (couponId) => {
     if (window.confirm("정말로 삭제하시겠습니까?")) {
       try {
@@ -66,15 +73,26 @@ function AdminCoupon() {
       <button className="back-btn" onClick={() => navigate("/admin")}>⬅ 관리자 대시보드</button>
       <h1>쿠폰 관리</h1>
 
+      <div className="search-box">
+        <input
+          type="text"
+          placeholder="쿠폰명 검색"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+        />
+        <button onClick={searchCoupon}>검색</button>
+        <button className="add-btn" onClick={() => navigate("/admin/coupons/add")}>쿠폰 추가하기</button>
+      </div>
+
       <div className="tab-buttons">
         <button
-          className={activeTab === "valid" ? "active" : ""}
+          className={`tab-button ${activeTab === "valid" ? "active" : ""}`}
           onClick={() => setActiveTab("valid")}
         >
           유효한 쿠폰
         </button>
         <button
-          className={activeTab === "expired" ? "active" : ""}
+          className={`tab-button ${activeTab === "expired" ? "active" : ""}`}
           onClick={() => setActiveTab("expired")}
         >
           만료된 쿠폰
@@ -85,6 +103,8 @@ function AdminCoupon() {
         <p>로딩 중...</p>
       ) : error ? (
         <p className="error">{error}</p>
+      ) : (activeTab === "valid" ? coupons.length === 0 : expiredCoupons.length === 0) ? (
+        <p className="no-data">{activeTab === "valid" ? "유효한 쿠폰이 없습니다." : "만료된 쿠폰이 없습니다."}</p>
       ) : (
         <table>
           <thead>
@@ -98,7 +118,7 @@ function AdminCoupon() {
             </tr>
           </thead>
           <tbody>
-            {(activeTab === "valid" ? coupons : expiredCoupons).map((coupon) => (
+            {searchCoupon().map((coupon) => (
               <tr key={coupon.id}>
                 <td>{coupon.name}</td>
                 <td>{coupon.discount}%</td>
@@ -106,12 +126,8 @@ function AdminCoupon() {
                 <td>{coupon.expiryDate}</td>
                 <td>{coupon.description}</td>
                 <td>
-                  {activeTab === "valid" && (
-                    <>
-                      <button className="update-btn" onClick={() => navigate(`/admin/coupons/update/${coupon.id}`)}>수정</button>
-                      <button className="delete-btn" onClick={() => handleDelete(coupon.id)}>삭제</button>
-                    </>
-                  )}
+                  <button className="update-btn" onClick={() => navigate(`/admin/coupons/update/${coupon.id}`)}>수정</button>
+                  <button className="delete-btn" onClick={() => handleDelete(coupon.id)}>삭제</button>
                 </td>
               </tr>
             ))}
