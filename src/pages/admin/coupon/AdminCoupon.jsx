@@ -9,6 +9,7 @@ function AdminCoupon() {
   const [expiredCoupons, setExpiredCoupons] = useState([]);
   const [activeTab, setActiveTab] = useState("valid");
   const [searchQuery, setSearchQuery] = useState("");
+  const [filteredCoupons, setFilteredCoupons] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const token = localStorage.getItem("token");
@@ -26,6 +27,7 @@ function AdminCoupon() {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCoupons(response.data);
+      setFilteredCoupons(response.data);
     } catch (error) {
       console.error("쿠폰 목록을 가져오는 중 오류 발생:", error);
       setError("쿠폰 목록을 불러오는 데 실패했습니다.");
@@ -46,10 +48,11 @@ function AdminCoupon() {
   };
 
   const searchCoupon = () => {
-    const filteredCoupons = activeTab === "valid"
-      ? coupons.filter(coupon => coupon.name.includes(searchQuery))
-      : expiredCoupons.filter(coupon => coupon.name.includes(searchQuery));
-    return filteredCoupons;
+    const targetCoupons = activeTab === "valid" ? coupons : expiredCoupons;
+    const filtered = targetCoupons.filter(coupon =>
+      coupon.name.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+    setFilteredCoupons(filtered);
   };
 
   const handleDelete = async (couponId) => {
@@ -87,13 +90,13 @@ function AdminCoupon() {
       <div className="tab-buttons">
         <button
           className={`tab-button ${activeTab === "valid" ? "active" : ""}`}
-          onClick={() => setActiveTab("valid")}
+          onClick={() => { setActiveTab("valid"); setFilteredCoupons(coupons); }}
         >
           유효한 쿠폰
         </button>
         <button
           className={`tab-button ${activeTab === "expired" ? "active" : ""}`}
-          onClick={() => setActiveTab("expired")}
+          onClick={() => { setActiveTab("expired"); setFilteredCoupons(expiredCoupons); }}
         >
           만료된 쿠폰
         </button>
@@ -103,7 +106,7 @@ function AdminCoupon() {
         <p>로딩 중...</p>
       ) : error ? (
         <p className="error">{error}</p>
-      ) : (activeTab === "valid" ? coupons.length === 0 : expiredCoupons.length === 0) ? (
+      ) : filteredCoupons.length === 0 ? (
         <p className="no-data">{activeTab === "valid" ? "유효한 쿠폰이 없습니다." : "만료된 쿠폰이 없습니다."}</p>
       ) : (
         <table>
@@ -118,7 +121,7 @@ function AdminCoupon() {
             </tr>
           </thead>
           <tbody>
-            {searchCoupon().map((coupon) => (
+            {filteredCoupons.map((coupon) => (
               <tr key={coupon.id}>
                 <td>{coupon.name}</td>
                 <td>{coupon.discount}%</td>
