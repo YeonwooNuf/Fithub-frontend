@@ -6,6 +6,8 @@ import "./AdminCoupon.css";
 function AdminCoupon() {
   const navigate = useNavigate();
   const [coupons, setCoupons] = useState([]);
+  const [expiredCoupons, setExpiredCoupons] = useState([]);
+  const [activeTab, setActiveTab] = useState("valid");
   const [searchQuery, setSearchQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -13,13 +15,14 @@ function AdminCoupon() {
 
   useEffect(() => {
     fetchCoupons();
+    fetchExpiredCoupons();
   }, []);
 
   const fetchCoupons = async () => {
     setLoading(true);
     setError("");
     try {
-      const response = await axios.get("/api/admin/coupons/list", {
+      const response = await axios.get("/api/admin/coupons/valid", {
         headers: { Authorization: `Bearer ${token}` },
       });
       setCoupons(response.data);
@@ -31,23 +34,14 @@ function AdminCoupon() {
     }
   };
 
-  const searchCoupon = async () => {
-    if (!searchQuery.trim()) {
-      fetchCoupons();
-      return;
-    }
-    setLoading(true);
-    setError("");
+  const fetchExpiredCoupons = async () => {
     try {
-      const response = await axios.get(`/api/admin/coupons/search?keyword=${searchQuery}`, {
+      const response = await axios.get("/api/admin/coupons/expired", {
         headers: { Authorization: `Bearer ${token}` },
       });
-      setCoupons(response.data);
+      setExpiredCoupons(response.data);
     } catch (error) {
-      console.error("쿠폰 검색 중 오류 발생:", error);
-      setError("쿠폰 검색에 실패했습니다.");
-    } finally {
-      setLoading(false);
+      console.error("만료된 쿠폰 목록을 가져오는 중 오류 발생:", error);
     }
   };
 
@@ -59,6 +53,7 @@ function AdminCoupon() {
         });
         alert("쿠폰이 삭제되었습니다.");
         fetchCoupons();
+        fetchExpiredCoupons();
       } catch (error) {
         console.error("쿠폰 삭제 중 오류 발생:", error);
         alert("쿠폰 삭제에 실패했습니다.");
@@ -71,22 +66,26 @@ function AdminCoupon() {
       <button className="back-btn" onClick={() => navigate("/admin")}>⬅ 관리자 대시보드</button>
       <h1>쿠폰 관리</h1>
 
-      <div className="search-box">
-        <input
-          type="text"
-          placeholder="쿠폰명 검색"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-        <button onClick={searchCoupon}>검색</button>
-        <button className="add-btn" onClick={() => navigate("/admin/coupons/add")}>쿠폰 추가하기</button>
+      <div className="tab-buttons">
+        <button
+          className={activeTab === "valid" ? "active" : ""}
+          onClick={() => setActiveTab("valid")}
+        >
+          유효한 쿠폰
+        </button>
+        <button
+          className={activeTab === "expired" ? "active" : ""}
+          onClick={() => setActiveTab("expired")}
+        >
+          만료된 쿠폰
+        </button>
       </div>
 
       {loading ? (
         <p>로딩 중...</p>
       ) : error ? (
         <p className="error">{error}</p>
-      ) : coupons.length > 0 ? (
+      ) : (
         <table>
           <thead>
             <tr>
@@ -99,7 +98,7 @@ function AdminCoupon() {
             </tr>
           </thead>
           <tbody>
-            {coupons.map((coupon) => (
+            {(activeTab === "valid" ? coupons : expiredCoupons).map((coupon) => (
               <tr key={coupon.id}>
                 <td>{coupon.name}</td>
                 <td>{coupon.discount}%</td>
@@ -107,15 +106,17 @@ function AdminCoupon() {
                 <td>{coupon.expiryDate}</td>
                 <td>{coupon.description}</td>
                 <td>
-                  <button className="update-btn" onClick={() => navigate(`/admin/coupons/update/${coupon.id}`)}>수정</button>
-                  <button className="delete-btn" onClick={() => handleDelete(coupon.id)}>삭제</button>
+                  {activeTab === "valid" && (
+                    <>
+                      <button className="update-btn" onClick={() => navigate(`/admin/coupons/update/${coupon.id}`)}>수정</button>
+                      <button className="delete-btn" onClick={() => handleDelete(coupon.id)}>삭제</button>
+                    </>
+                  )}
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
-      ) : (
-        <p className="no-data">쿠폰이 없습니다.</p>
       )}
     </div>
   );
