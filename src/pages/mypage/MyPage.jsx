@@ -44,7 +44,7 @@ function MyPage() {
 
         if (profileRes.ok) {
           const profileData = await profileRes.json();
-          setProfileImage(`/uploads/profile-images/${profileData.profileImageUrl}`);
+          setProfileImage(`${profileData.profileImageUrl}`);
         }
       } catch (err) {
         console.error("데이터를 불러오는 중 오류 발생:", err);
