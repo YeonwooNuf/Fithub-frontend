@@ -5,6 +5,7 @@ import "./Navbar.css";
 function Navbar() {
   const { isLoggedIn, userInfo, logout } = useContext(AuthContext);
   const [role, setRole] = useState(localStorage.getItem("role") || "USER");
+  const [nickname, setNickname] = useState(localStorage.getItem("nickname"))
 
   useEffect(() => {
     console.log("🟡 [Navbar] 현재 로그인 상태:", isLoggedIn);
@@ -13,6 +14,9 @@ function Navbar() {
 
     if (userInfo.role) {
       setRole(userInfo.role);
+    }
+    if (userInfo.nickname) {
+      setNickname(userInfo.nickname)
     }
   }, [userInfo]);
 
@@ -25,7 +29,7 @@ function Navbar() {
         <li><a href="#">Community</a></li>
         <li><a href="#">About</a></li>
         {/* ✅ 관리자 전용 탭 */}
-        {isLoggedIn && role === "ADMIN" && (
+        {isLoggedIn && nickname === "관리자" && (
           <li><a href="/admin">Admin Page</a></li>
         )}
       </ul>

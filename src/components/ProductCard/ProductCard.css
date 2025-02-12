@@ -1,4 +1,3 @@
-/* ProductCard.css */
 .product-card {
     background: white;
     border: 1px solid #ddd;
@@ -7,40 +6,71 @@
     text-align: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .product-card:hover {
+}
+
+.product-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  }
-  
-  .product-card img {
-    width: 100%;               /* ✅ 카드의 가로폭에 맞춤 */
-    max-height: 300px;         /* ✅ 최대 높이 설정 */
-    object-fit: contain;       /* ✅ 이미지 비율 유지 및 잘림 방지 */
-    display: block;            /* ✅ 중앙 정렬 */
-    margin: 0 auto;            /* ✅ 중앙 정렬 */
-    padding: 5px;             /* ✅ 여백 추가 */
-    background-color: #fff;    /* ✅ 흰 배경 추가 */
-  }
-  
-  .product-info {
+}
+
+.product-card img {
+    width: 100%;
+    max-height: 300px;
+    object-fit: contain;
+    display: block;
+    margin: 0 auto;
+    padding: 5px;
+    background-color: #fff;
+}
+
+.product-info {
     padding: 1rem;
-  }
-  
-  .product-info h3 {
+}
+
+.product-info h3 {
     margin: 0.5rem 0;
     font-size: 1.2rem;
-  }
-  
-  .product-info p {
+}
+
+.product-info p {
     margin: 0.5rem 0;
     color: #666;
-  }
-  
-  .price {
+}
+
+.price {
     color: #e74c3c;
     font-weight: bold;
     font-size: 1.1rem;
-  }
-  
+}
+
+/* ✅ 좋아요 버튼 스타일 */
+.like-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.5rem;
+    margin-top: 0.5rem;
+    transition: transform 0.2s ease, color 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    color: gray;  /* 기본 색상 */
+}
+
+/* ✅ 좋아요 버튼 호버 효과 */
+.like-button:hover {
+    transform: scale(1.1);
+}
+
+/* ✅ 좋아요가 눌린 경우 빨간색으로 표시 */
+.like-button.liked {
+    color: #e74c3c;
+}
+
+/* ✅ 좋아요 수 스타일 */
+.like-count {
+    font-size: 1rem;
+    font-weight: bold;
+    color: #444;
+}
