@@ -1,0 +1,46 @@
+/* ProductCard.css */
+.product-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    text-align: center;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+  }
+  
+  .product-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  }
+  
+  .product-card img {
+    width: 100%;               /* ✅ 카드의 가로폭에 맞춤 */
+    max-height: 300px;         /* ✅ 최대 높이 설정 */
+    object-fit: contain;       /* ✅ 이미지 비율 유지 및 잘림 방지 */
+    display: block;            /* ✅ 중앙 정렬 */
+    margin: 0 auto;            /* ✅ 중앙 정렬 */
+    padding: 5px;             /* ✅ 여백 추가 */
+    background-color: #fff;    /* ✅ 흰 배경 추가 */
+  }
+  
+  .product-info {
+    padding: 1rem;
+  }
+  
+  .product-info h3 {
+    margin: 0.5rem 0;
+    font-size: 1.2rem;
+  }
+  
+  .product-info p {
+    margin: 0.5rem 0;
+    color: #666;
+  }
+  
+  .price {
+    color: #e74c3c;
+    font-weight: bold;
+    font-size: 1.1rem;
+  }
+  
