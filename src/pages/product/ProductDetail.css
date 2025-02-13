@@ -1,0 +1,152 @@
+.product-detail {
+    display: flex;
+    max-width: 1100px; /* ✅ 최대 너비 설정 */
+    margin: 50px auto;
+    background: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    align-items: flex-start;
+    gap: 50px; /* ✅ 상품 이미지와 정보 사이 간격 조정 */
+  }
+  
+  /* ✅ 상품 이미지 컨테이너 */
+  .product-image-container {
+    flex: 1;
+    max-width: 50%;
+    text-align: center;
+  }
+  
+  /* ✅ 상품 이미지 슬라이더 */
+  .product-slider {
+    width: 100%;
+    max-width: 100%;
+    overflow: hidden;
+  }
+  
+  .slider-image-container {
+    display: flex;
+    justify-content: center;
+  }
+  
+  .slider-image {
+    width: 90%;
+    border-radius: 10px;
+  }
+  
+  /* ✅ 점 버튼 (react-slick 기본 dots) */
+  .slick-dots.custom-dots {
+    position: relative;
+    bottom: -10px;
+    display: flex !important;
+    justify-content: center;
+    gap: 8px;
+  }
+  
+  .slick-dots.custom-dots li {
+    width: 40px;
+    height: 40px;
+    list-style: none;
+  }
+  
+  .slick-dots.custom-dots li button {
+    display: none;
+  }
+  
+  /* ✅ 썸네일 스타일 */
+  .slick-dots.custom-dots li img {
+    width: 40px;
+    height: 40px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+    opacity: 0.5; /* ✅ 기본적으로 흐리게 */
+  }
+  
+  .slick-dots.custom-dots li .active {
+    opacity: 1; /* ✅ 현재 선택된 썸네일만 선명하게 */
+    border: 2px solid #747474;
+  }
+  
+  /* ✅ 상품 정보 컨테이너 */
+  .product-info {
+    flex: 1;
+    padding-left: 40px;
+  }
+  
+  h1 {
+    font-size: 26px;
+    margin-bottom: 15px;
+  }
+  
+  .brand {
+    font-size: 14px;
+    color: gray;
+  }
+  
+  .description {
+    margin: 15px 0;
+    font-size: 16px;
+    line-height: 1.5;
+  }
+  
+  .price {
+    font-size: 24px;
+    font-weight: bold;
+    color: #ff4d4d;
+  }  
+  
+  /* ✅ 사이즈 & 색상 선택 버튼 */
+  .size-selector, .color-selector {
+    margin: 15px 0;
+  }
+  
+  h4 {
+    margin-bottom: 10px;
+    font-size: 18px;
+  }
+  
+  .size-button, .color-button {
+    background: #f0f0f0;
+    border: none;
+    padding: 8px 12px;
+    margin-right: 5px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+  }
+  
+  .size-button:hover, .color-button:hover {
+    background: #dcdcdc;
+  }
+  
+  .size-button.selected, .color-button.selected {
+    background: #007bff;
+    color: white;
+  }
+  
+  /* ✅ 장바구니 및 결제 버튼 */
+  .add-to-cart, .payment {
+    background: #28a745;
+    color: white;
+    padding: 12px 16px;
+    border: none;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 20px;
+    width: 100%;
+  }
+  
+  .add-to-cart:hover, .payment:hover {
+    background: #218838;
+  }
+  
+  /* ✅ 로딩 및 에러 메시지 */
+  .loading, .error {
+    text-align: center;
+    font-size: 18px;
+    color: red;
+    margin-top: 20px;
+  }
+  
