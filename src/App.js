@@ -22,6 +22,7 @@ import AddProduct from "./pages/admin/product/AddProduct";
 import AdminBrand from "./pages/admin/brand/AdminBrand";
 import AdminCoupon from "./pages/admin/coupon/AdminCoupon";
 import AddCoupon from "./pages/admin/coupon/AddCoupon";
+import ProductDetail from "./pages/product/ProductDetail";
 
 function App() {
   return (
@@ -41,6 +42,8 @@ function App() {
             <Route path="/orders" element={<Orders />} />
             <Route path="/asking" element={<Asking />} />
             <Route path="/review/:id" element={<Review />} />
+
+            <Route path="/product/:id" element={<ProductDetail />} />
 
             {/* 관리자 탭 */}
             <Route path="/admin" element={<AdminDashboard />} />

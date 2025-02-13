@@ -52,7 +52,7 @@
     margin-top: 0.5rem;
     transition: transform 0.2s ease, color 0.2s ease;
     display: flex;
-    align-items: center;
+    align-items: right;
     justify-content: center;
     gap: 5px;
     color: gray;  /* 기본 색상 */

@@ -1,12 +1,14 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ useNavigate 추가
 import ProductCard from "../../components/ProductCard/ProductCard";
 import axios from "axios";
 import "../../App.css";
 
 function Home() {
-  const [products, setProducts] = useState([]); // ✅ 초기값 빈 배열
-  const [loading, setLoading] = useState(true); // ✅ 로딩 상태
-  const [error, setError] = useState(null);     // ✅ 에러 처리
+  const [products, setProducts] = useState([]); 
+  const [loading, setLoading] = useState(true); 
+  const [error, setError] = useState(null);    
+  const navigate = useNavigate(); // ✅ useNavigate 사용
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -16,19 +18,18 @@ function Home() {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
 
-        console.log("✅ API 응답:", response.data); // ✅ API 응답 확인
+        console.log("✅ API 응답:", response.data);
 
-        // ✅ 배열인지 확인 후 처리
         if (Array.isArray(response.data.products)) {
           setProducts(response.data.products);
         } else {
-          setProducts([]); // 배열이 아니면 빈 배열
+          setProducts([]); 
         }
       } catch (error) {
         console.error("❌ 상품 정보를 불러오는 중 오류 발생:", error);
-        setError("상품 정보를 불러오는 데 실패했습니다."); // ✅ 에러 메시지
+        setError("상품 정보를 불러오는 데 실패했습니다.");
       } finally {
-        setLoading(false); // ✅ 로딩 종료
+        setLoading(false);
       }
     };
 
@@ -49,11 +50,10 @@ function Home() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      console.log("👍 좋아요 응답:", response.data); // ✅ 응답 확인
+      console.log("👍 좋아요 응답:", response.data);
 
       const { likedByCurrentUser, likeCount } = response.data;
 
-      // ✅ 상태 업데이트
       setProducts((prevProducts) =>
         prevProducts.map((p) =>
           p.id === product.id
@@ -67,7 +67,11 @@ function Home() {
     }
   };
 
-  // ✅ 로딩 및 에러 상태 처리
+  // ✅ 상품 클릭 시 상세 페이지로 이동하는 함수
+  const handleProductClick = (productId) => {
+    navigate(`/product/${productId}`); // 상세 페이지 URL로 이동
+  };
+
   if (loading) return <p>로딩 중...</p>;
   if (error) return <p>{error}</p>;
 
@@ -83,7 +87,7 @@ function Home() {
                 product.images && product.images.length > 0
                   ? `${product.images[0]}`
                   : "/default-image.jpg",
-              title: product.name || "상품명 없음",           // ✅ 데이터 검증
+              title: product.name || "상품명 없음", 
               description: product.brandName || "브랜드 없음",
               price: product.price
                 ? product.price.toLocaleString()
@@ -91,11 +95,12 @@ function Home() {
               likedByCurrentUser: product.likedByCurrentUser || false,
               likeCount: product.likeCount || 0,
             }}
+            onClick={() => handleProductClick(product.id)} // ✅ 클릭 이벤트 추가
             onLikeToggle={() => handleLikeToggle(product)}
           />
         ))
       ) : (
-        <p>표시할 상품이 없습니다.</p> // ✅ 상품이 없을 경우 메시지 표시
+        <p>표시할 상품이 없습니다.</p> 
       )}
     </div>
   );
