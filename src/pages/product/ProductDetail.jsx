@@ -13,7 +13,7 @@ const ProductDetail = () => {
     const [error, setError] = useState(null);
     const [selectedSize, setSelectedSize] = useState(null);
     const [selectedColor, setSelectedColor] = useState(null);
-    const [currentSlide, setCurrentSlide] = useState(0); // ✅ 현재 슬라이드 상태 추가
+    const [currentSlide, setCurrentSlide] = useState(0);
     const sliderRef = React.useRef(null);
 
     useEffect(() => {
@@ -59,7 +59,7 @@ const ProductDetail = () => {
         setSelectedColor(color);
     };
 
-    // ✅ react-slick 슬라이더 설정 (점 버튼 활성화 + 썸네일 효과 추가)
+    // ✅ react-slick 슬라이더 설정
     const sliderSettings = {
         dots: true,
         infinite: true,
@@ -70,7 +70,7 @@ const ProductDetail = () => {
         autoplaySpeed: 3000,
         pauseOnHover: true,
         swipe: true,
-        beforeChange: (oldIndex, newIndex) => setCurrentSlide(newIndex), // ✅ 현재 슬라이드 업데이트
+        beforeChange: (oldIndex, newIndex) => setCurrentSlide(newIndex),
         customPaging: function(i) {
             return (
                 <img
@@ -96,8 +96,18 @@ const ProductDetail = () => {
             </div>
 
             <div className="product-info">
+                {/* ✅ 브랜드 정보 (로고 + 브랜드 명 + subName) */}
+                <div className="brand-info">
+                    {product.brandLogoUrl && (
+                        <img src={product.brandLogoUrl} alt={product.brandName} className="brand-logo" />
+                    )}
+                    <div className="brand-text">
+                        <p className="brand-name">{product.brandName || "알 수 없음"}</p>
+                        {product.brandSubName && <p className="brand-subname">{product.brandSubName}</p>}
+                    </div>
+                </div>
+
                 <h1>{product.name}</h1>
-                <p className="brand">브랜드: {product.brandName || "알 수 없음"}</p>
                 <p className="description">{product.description}</p>
                 <p className="price">{product.price?.toLocaleString()} 원</p>
 
