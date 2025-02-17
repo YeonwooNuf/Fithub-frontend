@@ -25,6 +25,7 @@
 
 .product-info {
     padding: 1rem;
+    white-space: nowrap; /* 상품명 줄바꿈 방지 */
 }
 
 .product-info h3 {
