@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Address.css";
 
@@ -11,30 +10,20 @@ const getAuthHeaders = () => {
 
 const Address = () => {
     const [addresses, setAddresses] = useState([]); // 저장된 주소 목록
-    const [defaultAddressId, setDefaultAddressId] = useState(null); // 기본 배송지 ID
-    const [editAddress, setEditAddress] = useState(null); // 수정 중인 주소
-    const [editedAddressText, setEditedAddressText] = useState(""); // 수정할 주소 내용
-    const navigate = useNavigate(); // ✅ 로그인 페이지 이동용
-
-    // ✅ 새 주소 정보 상태 (객체 형태로 관리)
     const [newAddressData, setNewAddressData] = useState({
-        postCode: "",
+        zonecode: "",
         roadAddress: "",
         jibunAddress: "",
         detailAddress: "",
-        reference: ""
+        reference: "",
     });
+    const [editAddress, setEditAddress] = useState(null); // 수정 중인 주소
+    const [editedAddressData, setEditedAddressData] = useState({}); // 수정할 주소 데이터
+    const [defaultAddressId, setDefaultAddressId] = useState(null); // 기본 배송지 ID
 
     useEffect(() => {
         const fetchAddresses = async () => {
             try {
-                const token = localStorage.getItem("token");
-                if (!token) {
-                    alert("로그인이 필요합니다.");
-                    navigate("/login");
-                    return;
-                }
-
                 const response = await axios.get("/api/users/addresses", { headers: getAuthHeaders() });
                 setAddresses(response.data);
 
@@ -44,27 +33,36 @@ const Address = () => {
                 }
             } catch (error) {
                 console.error("❌ 주소 정보를 불러오는 중 오류 발생:", error);
-                if (error.response && error.response.status === 401) {
-                    alert("세션이 만료되었습니다. 다시 로그인해주세요.");
-                    localStorage.removeItem("token");
-                    navigate("/login");
-                }
             }
         };
 
         fetchAddresses();
-    }, [navigate]);
+    }, []);
 
-    // ✅ 카카오 주소 검색 API 활용
+    // ✅ 카카오 주소 API 호출
     const handleSearchAddress = () => {
         new window.daum.Postcode({
             oncomplete: function (data) {
+                let extraRoadAddr = ""; // 참고 항목
+
+                if (data.bname !== "" && /[동|로|가]$/g.test(data.bname)) {
+                    extraRoadAddr += data.bname;
+                }
+
+                if (data.buildingName !== "" && data.apartment === "Y") {
+                    extraRoadAddr += (extraRoadAddr !== "" ? ", " + data.buildingName : data.buildingName);
+                }
+
+                if (extraRoadAddr !== "") {
+                    extraRoadAddr = "(" + extraRoadAddr + ")";
+                }
+
                 setNewAddressData({
                     ...newAddressData,
-                    postCode: data.zonecode,
+                    zonecode: data.zonecode, // ✅ `Postcode` → `zonecode` 필드 사용
                     roadAddress: data.roadAddress,
-                    jibunAddress: data.jibunAddress,
-                    reference: data.buildingName || ""
+                    jibunAddress: data.jibunAddress || "",
+                    reference: extraRoadAddr,
                 });
             }
         }).open();
@@ -72,17 +70,15 @@ const Address = () => {
 
     // ✅ 새 주소 추가 핸들러
     const handleAddAddress = async () => {
-        const { postCode, roadAddress, jibunAddress, detailAddress } = newAddressData;
-
-        if (!postCode || !roadAddress || !jibunAddress || !detailAddress) {
-            alert("모든 주소 정보를 입력해주세요.");
+        if (!newAddressData.zonecode.trim() || !newAddressData.roadAddress.trim() || !newAddressData.detailAddress.trim()) {
+            alert("주소를 입력해주세요.");
             return;
         }
 
         try {
             const response = await axios.post("/api/users/addresses", newAddressData, { headers: getAuthHeaders() });
-            setAddresses([...addresses, response.data]);
-            setNewAddressData({ postCode: "", roadAddress: "", jibunAddress: "", detailAddress: "", reference: "" });
+            setAddresses([...addresses, response.data]); // UI 업데이트
+            setNewAddressData({ zonecode: "", roadAddress: "", jibunAddress: "", detailAddress: "", reference: "" });
         } catch (error) {
             console.error("❌ 주소 추가 중 오류 발생:", error);
         }
@@ -104,9 +100,26 @@ const Address = () => {
 
         try {
             await axios.delete(`/api/users/addresses/${id}`, { headers: getAuthHeaders() });
-            setAddresses(addresses.filter(addr => addr.id !== id));
+            setAddresses(addresses.filter(addr => addr.id !== id)); // UI에서 삭제
         } catch (error) {
             console.error("❌ 주소 삭제 중 오류 발생:", error);
+        }
+    };
+
+    // ✅ 주소 수정 모드 활성화
+    const enableEditMode = (address) => {
+        setEditAddress(address.id);
+        setEditedAddressData({ ...address });
+    };
+
+    // ✅ 주소 수정 저장
+    const handleUpdateAddress = async (id) => {
+        try {
+            const response = await axios.put(`/api/users/addresses/${id}`, editedAddressData, { headers: getAuthHeaders() });
+            setAddresses(addresses.map(addr => addr.id === id ? response.data : addr)); // UI 업데이트
+            setEditAddress(null); // 수정 모드 종료
+        } catch (error) {
+            console.error("❌ 주소 수정 중 오류 발생:", error);
         }
     };
 
@@ -114,14 +127,13 @@ const Address = () => {
         <div className="address-container">
             <h2>주소 관리</h2>
 
-            {/* ✅ 새 주소 입력 폼 */}
+            {/* ✅ 새 주소 추가 */}
             <div className="add-address">
                 <button onClick={handleSearchAddress}>주소 검색</button>
-                <input type="text" placeholder="우편번호" value={newAddressData.postCode} readOnly />
+                <input type="text" placeholder="우편번호" value={newAddressData.zonecode} readOnly />
                 <input type="text" placeholder="도로명 주소" value={newAddressData.roadAddress} readOnly />
                 <input type="text" placeholder="지번 주소" value={newAddressData.jibunAddress} readOnly />
-                <input type="text" placeholder="상세 주소" value={newAddressData.detailAddress} 
-                    onChange={(e) => setNewAddressData({ ...newAddressData, detailAddress: e.target.value })} />
+                <input type="text" placeholder="상세 주소" value={newAddressData.detailAddress} onChange={(e) => setNewAddressData({ ...newAddressData, detailAddress: e.target.value })} />
                 <input type="text" placeholder="참고 항목" value={newAddressData.reference} readOnly />
                 <button onClick={handleAddAddress}>추가</button>
             </div>
@@ -130,20 +142,23 @@ const Address = () => {
             <ul className="address-list">
                 {addresses.map((addr) => (
                     <li key={addr.id} className="address-item">
-                        <div>
-                            <strong>{addr.roadAddress} ({addr.jibunAddress})</strong>
-                            <p>우편번호: {addr.postCode}</p>
-                            <p>상세주소: {addr.detailAddress}</p>
-                            {addr.reference && <p>참고항목: {addr.reference}</p>}
-                        </div>
-
-                        {defaultAddressId === addr.id ? (
-                            <span className="default-badge">기본 배송지</span>
+                        {editAddress === addr.id ? (
+                            <>
+                                <input type="text" value={editedAddressData.detailAddress} onChange={(e) => setEditedAddressData({ ...editedAddressData, detailAddress: e.target.value })} />
+                                <button onClick={() => handleUpdateAddress(addr.id)}>저장</button>
+                            </>
                         ) : (
-                            <button onClick={() => handleSetDefault(addr.id)}>기본 설정</button>
+                            <>
+                                <span>{addr.zonecode} | {addr.roadAddress} ({addr.detailAddress})</span>
+                                {defaultAddressId === addr.id ? (
+                                    <span className="default-badge">기본 배송지</span>
+                                ) : (
+                                    <button onClick={() => handleSetDefault(addr.id)}>기본 설정</button>
+                                )}
+                                <button onClick={() => enableEditMode(addr)}>수정</button>
+                                <button onClick={() => handleDeleteAddress(addr.id)} className="delete-btn">삭제</button>
+                            </>
                         )}
-
-                        <button onClick={() => handleDeleteAddress(addr.id)} className="delete-btn">삭제</button>
                     </li>
                 ))}
             </ul>
