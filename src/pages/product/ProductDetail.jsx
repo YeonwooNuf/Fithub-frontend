@@ -11,10 +11,24 @@ const ProductDetail = () => {
     const [product, setProduct] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [selectedSize, setSelectedSize] = useState(null);
-    const [selectedColor, setSelectedColor] = useState(null);
+    const [selectedSize, setSelectedSize] = useState("");
+    const [selectedColor, setSelectedColor] = useState("");
     const [currentSlide, setCurrentSlide] = useState(0);
     const sliderRef = React.useRef(null);
+
+    // ✅ JSON 데이터를 안전하게 변환하는 함수 (함수를 먼저 정의)
+    const parseJSON = (data) => {
+        try {
+            let parsedData = JSON.parse(data);
+            if (typeof parsedData === "string") {
+                parsedData = JSON.parse(parsedData);
+            }
+            return Array.isArray(parsedData) ? parsedData : [];
+        } catch (error) {
+            console.error("❌ JSON 파싱 오류:", error);
+            return [];
+        }
+    };
 
     useEffect(() => {
         const fetchProduct = async () => {
@@ -27,11 +41,15 @@ const ProductDetail = () => {
                 console.log("✅ 상품 상세 API 응답:", response.data);
                 setProduct(response.data);
 
-                if (response.data.sizes && response.data.sizes.length > 0) {
-                    setSelectedSize(response.data.sizes[0]);
+                // ✅ JSON 데이터 파싱 후 첫 번째 값 선택
+                const sizes = parseJSON(response.data.sizes);
+                const colors = parseJSON(response.data.colors);
+
+                if (sizes.length > 0) {
+                    setSelectedSize(sizes[0]);
                 }
-                if (response.data.colors && response.data.colors.length > 0) {
-                    setSelectedColor(response.data.colors[0]);
+                if (colors.length > 0) {
+                    setSelectedColor(colors[0]);
                 }
             } catch (error) {
                 console.error("❌ 상품 정보를 불러오는 중 오류 발생:", error);
@@ -48,55 +66,51 @@ const ProductDetail = () => {
     if (error) return <p className="error">{error}</p>;
     if (!product) return <p className="error">상품 정보를 찾을 수 없습니다.</p>;
 
-    const parsedSizes = typeof product.sizes === "string" ? JSON.parse(product.sizes) : product.sizes;
-    const parsedColors = typeof product.colors === "string" ? JSON.parse(product.colors) : product.colors;
-
-    const handleSizeSelect = (size) => {
-        setSelectedSize(size);
-    };
-
-    const handleColorSelect = (color) => {
-        setSelectedColor(color);
-    };
-
-    // ✅ react-slick 슬라이더 설정
-    const sliderSettings = {
-        dots: true,
-        infinite: true,
-        speed: 500,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        autoplay: true,
-        autoplaySpeed: 3000,
-        pauseOnHover: true,
-        swipe: true,
-        beforeChange: (oldIndex, newIndex) => setCurrentSlide(newIndex),
-        customPaging: function(i) {
-            return (
-                <img
-                    src={product.images[i]}
-                    alt={`썸네일 ${i + 1}`}
-                    className={`thumbnail-image ${i === currentSlide ? "active" : "inactive"}`}
-                />
-            );
-        },
-        dotsClass: "slick-dots custom-dots"
-    };
+    // ✅ JSON 문자열을 배열로 변환
+    const parsedSizes = parseJSON(product.sizes);
+    const parsedColors = parseJSON(product.colors);
 
     return (
         <div className="product-detail">
             <div className="product-image-container">
-                <Slider ref={sliderRef} {...sliderSettings} className="product-slider">
+                {/* ✅ 상품 이미지 슬라이더 */}
+                <Slider 
+                    ref={sliderRef} 
+                    dots={true} // ✅ 기본 dots 유지
+                    infinite={true}
+                    speed={500}
+                    slidesToShow={1}
+                    slidesToScroll={1}
+                    autoplay={true}
+                    autoplaySpeed={3000}
+                    pauseOnHover={true}
+                    swipe={true}
+                    beforeChange={(oldIndex, newIndex) => setCurrentSlide(newIndex)}
+                    className="product-slider"
+                >
                     {product.images?.map((image, index) => (
                         <div key={index} className="slider-image-container">
                             <img src={image} alt={`${product.name} ${index + 1}`} className="slider-image" />
                         </div>
                     ))}
                 </Slider>
+
+                {/* ✅ 썸네일 컨테이너 (상품 이미지 오른쪽에 배치) */}
+                <div className="thumbnail-container">
+                    {product.images?.map((image, index) => (
+                        <img
+                            key={index}
+                            src={image}
+                            alt={`썸네일 ${index + 1}`}
+                            className={index === currentSlide ? "active" : ""}
+                            onClick={() => sliderRef.current.slickGoTo(index)}
+                        />
+                    ))}
+                </div>
             </div>
 
             <div className="product-info">
-                {/* ✅ 브랜드 정보 (로고 + 브랜드 명 + subName) */}
+                {/* ✅ 브랜드 정보 */}
                 <div className="brand-info">
                     {product.brandLogoUrl && (
                         <img src={product.brandLogoUrl} alt={product.brandName} className="brand-logo" />
@@ -111,38 +125,34 @@ const ProductDetail = () => {
                 <p className="description">{product.description}</p>
                 <p className="price">{product.price?.toLocaleString()} 원</p>
 
-                {parsedSizes && parsedSizes.length > 0 && (
+                {/* ✅ 사이즈 선택 (드롭다운) */}
+                {parsedSizes.length > 0 && (
                     <div className="size-selector">
                         <h4>사이즈 선택</h4>
-                        {parsedSizes.map((size, index) => (
-                            <button
-                                key={index}
-                                className={`size-button ${selectedSize === size ? "selected" : ""}`}
-                                onClick={() => handleSizeSelect(size)}
-                            >
-                                {size}
-                            </button>
-                        ))}
+                        <select value={selectedSize} onChange={(e) => setSelectedSize(e.target.value)}>
+                            {parsedSizes.map((size, index) => (
+                                <option key={index} value={size}>{size}</option>
+                            ))}
+                        </select>
                     </div>
                 )}
 
-                {parsedColors && parsedColors.length > 0 && (
+                {/* ✅ 색상 선택 (드롭다운) */}
+                {parsedColors.length > 0 && (
                     <div className="color-selector">
                         <h4>색상 선택</h4>
-                        {parsedColors.map((color, index) => (
-                            <button
-                                key={index}
-                                className={`color-button ${selectedColor === color ? "selected" : ""}`}
-                                onClick={() => handleColorSelect(color)}
-                            >
-                                {color}
-                            </button>
-                        ))}
+                        <select value={selectedColor} onChange={(e) => setSelectedColor(e.target.value)}>
+                            {parsedColors.map((color, index) => (
+                                <option key={index} value={color}>{color}</option>
+                            ))}
+                        </select>
                     </div>
                 )}
 
-                <button className="add-to-cart">장바구니에 담기</button>
-                <button className="payment">결제하기</button>
+                <div className="action-buttons">
+                    <button className="add-to-cart">장바구니에 담기</button>
+                    <button className="payment">결제하기</button>
+                </div>
             </div>
         </div>
     );
