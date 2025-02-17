@@ -12,6 +12,7 @@ import MyPage from "./pages/mypage/MyPage";
 import Points from "./pages/point/Points";
 import Coupons from "./pages/coupon/Coupons";
 
+import Address from "./pages/address/Address";
 import Asking from "./pages/asking/Asking";
 import Review from "./pages/review/Reviews";
 import Orders from "./pages/order/Orders";
@@ -39,6 +40,7 @@ function App() {
             <Route path="/points" element={<Points />} />
             <Route path="/coupons" element={<Coupons />} />
 
+            <Route path="/address" element={<Address />} />
             <Route path="/orders" element={<Orders />} />
             <Route path="/asking" element={<Asking />} />
             <Route path="/review/:id" element={<Review />} />

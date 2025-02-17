@@ -81,6 +81,10 @@ function MyPage() {
       </div>
 
       <ul className="mypage-list">
+        <li onClick={() => navigate("/address")}> 
+          <span>주소 설정</span>
+          <span className="arrow">&gt;</span>
+        </li>
         <li onClick={() => navigate("/orders")}> 
           <span>주문 내역</span>
           <span className="arrow">&gt;</span>
