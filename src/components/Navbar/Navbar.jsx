@@ -1,11 +1,14 @@
 import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 import "./Navbar.css";
 
 function Navbar() {
   const { isLoggedIn, userInfo, logout } = useContext(AuthContext);
+  const navigate = useNavigate();
   const [role, setRole] = useState(localStorage.getItem("role") || "USER");
-  const [nickname, setNickname] = useState(localStorage.getItem("nickname"))
+  const [nickname, setNickname] = useState(localStorage.getItem("nickname")
+)
 
   useEffect(() => {
     console.log("🟡 [Navbar] 현재 로그인 상태:", isLoggedIn);
@@ -19,6 +22,11 @@ function Navbar() {
       setNickname(userInfo.nickname)
     }
   }, [userInfo]);
+
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  }
 
   return (
     <nav className="navbar">
@@ -39,7 +47,7 @@ function Navbar() {
             <span>안녕하세요, {userInfo.nickname || "사용자"} 님</span>
             <a href="/cart">Cart</a>
             <a href="/mypage">MyPage</a>
-            <button onClick={logout}>Logout</button>
+            <button onClick={handleLogout}>Logout</button>
           </>
         ) : (
           <>
