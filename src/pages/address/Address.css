@@ -1,5 +1,5 @@
 .address-container {
-    max-width: 600px;
+    max-width: 900px;
     margin: 50px auto;
     padding: 20px;
     background: #fff;
@@ -12,8 +12,52 @@ h2 {
     margin-bottom: 20px;
 }
 
+/* ✅ 주소 테이블 스타일 */
+.address-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.address-table th, .address-table td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.address-table th {
+    background: #007bff;
+    color: white;
+}
+
+.address-table tr:nth-child(even) {
+    background: #f9f9f9;
+}
+
+/* ✅ 기본 배송지 체크박스 */
+.address-table input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+}
+
+/* ✅ 삭제 버튼 스타일 */
+.delete-btn {
+    background: #dc3545;
+    color: white;
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-btn:hover {
+    background: #c82333;
+}
+
+/* ✅ 추가 버튼 스타일 */
 .add-address {
     display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 20px;
 }
@@ -34,48 +78,6 @@ h2 {
     cursor: pointer;
 }
 
-.address-list {
-    list-style: none;
-    padding: 0;
-}
-
-.address-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    background: #f9f9f9;
-    padding: 10px;
-    border-radius: 5px;
-    margin-bottom: 10px;
-}
-
-.default-badge {
-    background: #007bff;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 12px;
-}
-
-input {
-    width: 60%;
-    padding: 8px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-}
-
-button {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-button.delete-btn {
-    background: #dc3545;
-    color: white;
-}
-
-button.delete-btn:hover {
-    background: #c82333;
+.add-address button:hover {
+    background: #218838;
 }
