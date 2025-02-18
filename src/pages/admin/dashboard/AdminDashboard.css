@@ -1,7 +1,7 @@
 /* 전체 페이지 스타일 */
 .admin-dashboard {
     max-width: 700px;
-    margin: 150px auto;
+    margin: 80px auto;
     padding: 50px;
     background-color: #1e1e1e; /* 다크 모드 스타일 */
     border-radius: 15px;
