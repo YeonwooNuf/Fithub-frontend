@@ -151,7 +151,7 @@ const ProductDetail = () => {
 
                 <div className="action-buttons">
                     <button className="add-to-cart">장바구니에 담기</button>
-                    <button className="payment">결제하기</button>
+                    <button className="payment">구매하기</button>
                 </div>
             </div>
         </div>
