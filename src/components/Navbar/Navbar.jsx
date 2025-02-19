@@ -44,14 +44,15 @@ function Navbar() {
       <div className="nav-icons">
         {isLoggedIn ? (
           <>
-            <span>안녕하세요, {userInfo.nickname || "사용자"} 님</span>
+            <span>안녕하세요, {userInfo.nickname || "사용자"} 님</span>   {/* 로그인 한 경우 */}
             <a href="/cart">Cart</a>
             <a href="/mypage">MyPage</a>
             <button onClick={handleLogout}>Logout</button>
           </>
         ) : (
+          
           <>
-            <a href="/login">Login</a>
+            <a href="/login">Login</a>    {/* 로그인 안한 경우 */}
             <a href="/register">Register</a>
           </>
         )}
