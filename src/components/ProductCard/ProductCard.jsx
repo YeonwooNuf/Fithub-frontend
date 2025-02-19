@@ -30,7 +30,7 @@ function ProductCard({ product, onLikeToggle }) {
           }}
           className={`like-button ${product.likedByCurrentUser ? "liked" : ""}`}
         >
-          {product.likedByCurrentUser ? "❤️" : "🤍"}{" "}
+          {product.likedByCurrentUser ? "❤️" : "🤍"}{" "}   {/* 사용자의 하트 누름 여부 */}
           <span className="like-count">{product.likeCount || 0}</span>
         </button>
       </div>
