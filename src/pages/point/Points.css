@@ -1,23 +1,65 @@
 .points-container {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 20px;
-    text-align: center;
-  }
-  
-  .points-container h1 {
-    font-size: 2rem;
-    margin-bottom: 20px;
-  }
-  
-  .points-value {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333;
-  }
-  
-  .error {
-    color: red;
-    font-size: 1.2rem;
-  }
-  
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.points-container h1 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.points-value {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+h2 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+
+.points-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.points-table th,
+.points-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+}
+
+.points-table th {
+  background-color: #f4f4f4;
+}
+
+.status-earned {
+  color: green;
+  font-weight: bold;
+}
+
+.status-used {
+  color: red;
+  font-weight: bold;
+}
+
+.status-cancelled {
+  color: orange;
+  font-weight: bold;
+}
+
+.status-expired {
+  color: gray;
+  font-weight: bold;
+}
+
+.error {
+  color: red;
+  font-size: 1.2rem;
+}
