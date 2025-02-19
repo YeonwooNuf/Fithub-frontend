@@ -24,6 +24,7 @@ import AdminBrand from "./pages/admin/brand/AdminBrand";
 import AdminCoupon from "./pages/admin/coupon/AdminCoupon";
 import AddCoupon from "./pages/admin/coupon/AddCoupon";
 import ProductDetail from "./pages/product/ProductDetail";
+import Checkout from "./pages/checkout/Checkout";
 
 function App() {
   return (
@@ -46,6 +47,7 @@ function App() {
             <Route path="/review/:id" element={<Review />} />
 
             <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/checkout" element={<Checkout />} />
 
             {/* 관리자 탭 */}
             <Route path="/admin" element={<AdminDashboard />} />
