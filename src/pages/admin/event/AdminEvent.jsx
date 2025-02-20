@@ -1,8 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { getAuthToken } from "./auth"; // JWT 토큰 가져오는 유틸
+import { AuthContext } from "../../../context/AuthContext"; // ✅ AuthContext 사용
+import "./AdminEvent.css"; // ✅ CSS 파일 적용
 
 const AdminEventPage = () => {
+  const { userInfo } = useContext(AuthContext);
   const [events, setEvents] = useState([]);
   const [form, setForm] = useState({
     title: "",
@@ -13,14 +15,13 @@ const AdminEventPage = () => {
     couponCode: "",
     rewardPoint: 0,
   });
-  const [selectedEvent, setSelectedEvent] = useState(null); // 수정할 이벤트 선택
-  const token = getAuthToken(); // JWT 토큰 가져오기
+  const [selectedEvent, setSelectedEvent] = useState(null);
 
   // 📌 이벤트 목록 불러오기
   useEffect(() => {
     axios
       .get("/api/admin/events", {
-        headers: { Authorization: `Bearer ${token}` }, // JWT 포함
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       })
       .then((res) => setEvents(res.data))
       .catch((err) => console.error(err));
@@ -35,10 +36,9 @@ const AdminEventPage = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (selectedEvent) {
-      // ✅ 이벤트 수정
       axios
         .put(`/api/admin/events/${selectedEvent.id}`, form, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         })
         .then(() => {
           alert("이벤트 수정 성공!");
@@ -46,10 +46,9 @@ const AdminEventPage = () => {
         })
         .catch((err) => console.error(err));
     } else {
-      // ✅ 새로운 이벤트 등록
       axios
         .post("/api/admin/events", form, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         })
         .then(() => {
           alert("이벤트 등록 성공!");
@@ -64,7 +63,7 @@ const AdminEventPage = () => {
     if (window.confirm("정말 삭제하시겠습니까?")) {
       axios
         .delete(`/api/admin/events/${eventId}`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         })
         .then(() => {
           alert("이벤트 삭제 성공!");
@@ -74,26 +73,12 @@ const AdminEventPage = () => {
     }
   };
 
-  // 📌 이벤트 수정 버튼 클릭 시 해당 이벤트 데이터 불러오기
-  const handleEdit = (event) => {
-    setSelectedEvent(event);
-    setForm({
-      title: event.title,
-      mainContent: event.mainContent,
-      additionalContent: event.additionalContent,
-      imageUrl: event.imageUrl,
-      eventType: event.eventType,
-      couponCode: event.couponCode || "",
-      rewardPoint: event.rewardPoint || 0,
-    });
-  };
-
   return (
-    <div>
+    <div className="admin-container">
       <h1>🛠 관리자 이벤트 관리</h1>
 
       {/* 이벤트 등록 / 수정 폼 */}
-      <form onSubmit={handleSubmit}>
+      <form className="admin-form" onSubmit={handleSubmit}>
         <input type="text" name="title" placeholder="이벤트 제목" value={form.title} onChange={handleChange} required />
         <textarea name="mainContent" placeholder="본 내용" value={form.mainContent} onChange={handleChange} required />
         <textarea name="additionalContent" placeholder="부가 내용" value={form.additionalContent} onChange={handleChange} />
@@ -113,12 +98,12 @@ const AdminEventPage = () => {
 
       {/* 이벤트 목록 */}
       <h2>📜 이벤트 목록</h2>
-      <ul>
+      <ul className="event-list">
         {events.map((event) => (
           <li key={event.id}>
-            <strong>{event.title}</strong> - {event.eventType}{" "}
-            <button onClick={() => handleEdit(event)}>✏️ 수정</button>
-            <button onClick={() => handleDelete(event.id)}>🗑 삭제</button>
+            <strong>{event.title}</strong> - {event.eventType}
+            <button className="edit-button" onClick={() => setSelectedEvent(event)}>✏️ 수정</button>
+            <button className="delete-button" onClick={() => handleDelete(event.id)}>🗑 삭제</button>
           </li>
         ))}
       </ul>
