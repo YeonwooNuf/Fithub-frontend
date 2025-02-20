@@ -34,8 +34,10 @@ function MyPage() {
 
         if (pointsRes.ok) {
           const pointsData = await pointsRes.json();
-          setPoints(pointsData.totalPoints || 0);
+          console.log("🔥 포인트 API 응답:", pointsData); // ✅ 응답 데이터 확인
+          setPoints(pointsData ?? 0);  // ✅ totalPoints 대신 직접 값 사용
         }
+        
 
         if (couponsRes.ok) {
           const couponsData = await couponsRes.json();
