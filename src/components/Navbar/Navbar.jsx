@@ -33,7 +33,7 @@ function Navbar() {
       <div className="logo">Musinsa</div>
       <ul className="nav-links">
         <li><a href="/">Shop</a></li>
-        <li><a href="/">Review</a></li>
+        <li><a href="/event">Event</a></li>
         <li><a href="#">Community</a></li>
         <li><a href="#">About</a></li>
         {/* ✅ 관리자 전용 탭 */}
