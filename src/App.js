@@ -16,6 +16,8 @@ import Address from "./pages/address/Address";
 import Asking from "./pages/asking/Asking";
 import Review from "./pages/review/Reviews";
 import Orders from "./pages/order/Orders";
+import Event from "./pages/event/Event";
+
 import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
 import AdminUser from "./pages/admin/user/AdminUser";
 import AdminProduct from "./pages/admin/product/AdminProduct";
@@ -25,6 +27,7 @@ import AdminCoupon from "./pages/admin/coupon/AdminCoupon";
 import AddCoupon from "./pages/admin/coupon/AddCoupon";
 import ProductDetail from "./pages/product/ProductDetail";
 import Checkout from "./pages/checkout/Checkout";
+import AdminEvent from "./pages/admin/event/AdminEvent";
 
 function App() {
   return (
@@ -45,6 +48,7 @@ function App() {
             <Route path="/orders" element={<Orders />} />
             <Route path="/asking" element={<Asking />} />
             <Route path="/review/:id" element={<Review />} />
+            <Route path="/event" element={<Event />} />
 
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/checkout" element={<Checkout />} />
@@ -57,6 +61,7 @@ function App() {
             <Route path="/admin/products/add" element={<AddProduct />} />
             <Route path="/admin/coupons" element={<AdminCoupon />} />
             <Route path="/admin/coupons/add" element={<AddCoupon />} />
+            <Route path="/admin/event" element={<AdminEvent />} />
           </Routes>
         </main>
         <Footer />
