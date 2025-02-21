@@ -30,7 +30,7 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="logo">Musinsa</div>
+      <div className="logo">FitHub</div>
       <ul className="nav-links">
         <li><a href="/">Shop</a></li>
         <li><a href="/event">Event</a></li>
