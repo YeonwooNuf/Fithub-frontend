@@ -1,84 +1,153 @@
 /* 전체 컨테이너 */
 .event-container {
-    max-width: 900px;
-    margin: 40px auto;
-    padding: 30px;
-    background: #121212;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
-    color: #e0e0e0;
-    font-family: "Arial", sans-serif;
-  }
-  
-  /* 제목 */
-  .event-container h1 {
-    text-align: center;
-    font-size: 24px;
-    font-weight: bold;
-    color: #ffffff;
-    margin-bottom: 20px;
-  }
-  
-  /* 이벤트 목록 */
-  .event-list {
-    list-style: none;
-    padding: 0;
-  }
-  
-  .event-list li {
-    background: #1f1f1f;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .event-list li:hover {
-    background: #2b2b2b;
-  }
-  
-  /* 선택한 이벤트 상세 정보 */
-  .event-details {
-    background: #1f1f1f;
-    padding: 20px;
-    border-radius: 10px;
-    margin-top: 20px;
-    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
-  }
-  
-  .event-details h2 {
-    font-size: 22px;
-    margin-bottom: 10px;
-  }
-  
-  .event-details p {
-    font-size: 16px;
-    line-height: 1.6;
-  }
-  
-  .event-details img {
-    width: 100%;
-    max-width: 400px;
-    border-radius: 8px;
-    margin-top: 10px;
-    display: block;
-  }
-  
-  /* 버튼 스타일 */
-  .claim-button {
-    background: #00c853;
-    color: white;
-    font-size: 16px;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    margin-top: 15px;
-    transition: all 0.3s ease;
-  }
-  
-  .claim-button:hover {
-    background: #009624;
-  }
-  
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #1a1a1a; /* 더 어두운 배경 */
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(255, 255, 255, 0.05);
+  color: #e0e0e0;
+  font-family: "Poppins", sans-serif;
+  border: 1px solid rgba(255, 255, 255, 0.1); /* 외곽선 추가 */
+}
+
+/* 제목 */
+.event-container h1 {
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  color: #d0d0d0; /* 무채색 */
+  text-shadow: 0 0 4px rgba(255, 255, 255, 0.2);
+  margin-bottom: 20px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2); /* 제목 하단 구분선 */
+  padding-bottom: 10px;
+}
+
+/* 이벤트 탭 */
+.event-tabs {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.1); /* 탭 구분선 */
+  padding-bottom: 10px;
+}
+
+.event-tabs button {
+  background: #2a2a2a; /* 어두운 버튼 */
+  color: #cccccc; /* 연한 회색 */
+  font-size: 14px;
+  padding: 8px 14px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid rgba(255, 255, 255, 0.15); /* 버튼 테두리 */
+}
+
+.event-tabs button.active {
+  background: #444; /* 선택된 탭 강조 */
+  color: #ffffff;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.event-tabs button:hover {
+  background: #555;
+}
+
+/* 이벤트 목록 */
+.event-list {
+  list-style: none;
+  padding: 0;
+  border-top: 2px solid rgba(255, 255, 255, 0.1); /* 목록 구분선 */
+  padding-top: 10px;
+}
+
+.event-list li {
+  background: #222;
+  padding: 12px;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+  border: 1px solid rgba(255, 255, 255, 0.15); /* 리스트 테두리 */
+}
+
+.event-list li:hover {
+  background: #333;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* 선택한 이벤트 상세 정보 */
+.event-details {
+  background: #1f1f1f;
+  padding: 18px;
+  border-radius: 12px;
+  margin-top: 20px;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+  border: 2px solid rgba(255, 255, 255, 0.1); /* 박스 테두리 */
+}
+
+/* 상세 정보 제목 */
+.event-details h2 {
+  font-size: 22px;
+  margin-bottom: 12px;
+  color: #d0d0d0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 8px;
+}
+
+/* 쿠폰 코드 및 복사 버튼 */
+.coupon-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #222;
+  padding: 10px;
+  border-radius: 6px;
+  margin-top: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.coupon-container p {
+  font-size: 16px;
+  font-weight: bold;
+  color: #bbbbbb;
+  margin: 0;
+}
+
+/* 복사 버튼 스타일 */
+.copy-button {
+  background: #444; /* 기존 하늘색 대신 어두운 버튼 */
+  color: white;
+  font-size: 14px;
+  padding: 6px 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+
+.copy-button:hover {
+  background: #555;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+/* 적립금 지급 버튼 */
+.claim-button {
+  background: #444;
+  color: white;
+  font-size: 14px;
+  padding: 10px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 12px;
+  transition: all 0.2s ease-in-out;
+}
+
+.claim-button:hover {
+  background: #555;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
