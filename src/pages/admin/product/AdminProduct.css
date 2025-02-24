@@ -1,87 +1,92 @@
-/* 전체 페이지 컨테이너 */
-.admin-product-container {
+/* ✅ 전체 컨테이너 스타일 */
+.admin-product-page .admin-product-container {
     max-width: 1000px;
     margin: 50px auto;
     padding: 30px;
-    background: #fff;
-    border-radius: 10px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background: #1a1a1a; /* ✅ 다크 테마 배경 */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.08);
     text-align: center;
+    color: #e0e0e0;
 }
 
 /* 제목 */
-.title {
-    font-size: 2em;
+.admin-product-page .title {
+    font-size: 1.8em;
     font-weight: bold;
     margin-bottom: 20px;
+    color: #f5f5f5;
 }
 
 /* 검색 및 추가 버튼 컨테이너 */
-.search-box {
+.admin-product-page .search-box {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
 }
 
-.search-box input {
+.admin-product-page .search-box input {
     width: 60%;
     padding: 10px;
     font-size: 14px;
-    border: 1px solid #ccc;
+    border: 1px solid #444;
     border-radius: 5px;
+    background: #222;
+    color: #ddd;
 }
 
-.search-box button {
+.admin-product-page .search-box button {
     padding: 10px 15px;
-    background-color: #007bff;
-    color: white;
-    border: none;
+    background-color: #333;
+    color: #ffffff;
+    border: 1px solid #555;
     border-radius: 5px;
     font-size: 14px;
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
 
-.search-box button:hover {
-    background-color: #0056b3;
+.admin-product-page .search-box button:hover {
+    background-color: #444;
 }
 
-.add-btn {
-    background-color: #28a745;
-}
-
-.add-btn:hover {
-    background-color: #218838;
-}
-
-/* 상품 목록 테이블 */
-.product-table {
+/* ✅ 테이블 스타일 */
+.admin-product-page .product-table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
+    border: 1px solid #555;
 }
 
-.product-table th, .product-table td {
+.admin-product-page .product-table th {
     padding: 14px;
-    border: 1px solid #ddd;
     text-align: center;
+    background: #292929;
+    color: #ffffff;
+    border-bottom: 2px solid #555;
 }
 
-.product-table th {
-    font-weight: bold;
+.admin-product-page .product-table td {
+    padding: 14px;
+    text-align: center;
+    background: #222;
+    color: #ddd;
+    border-bottom: 1px solid #444;
 }
 
-.product-table tr:nth-child(even) {
-    background-color: #f2f2f2;
+/* ✅ 테이블 줄무늬 */
+.admin-product-page .product-table tr:nth-child(even) {
+    background-color: #252525;
 }
 
-.product-table tr:hover {
-    background-color: #e9ecef;
+/* ✅ 테이블 행 호버 효과 */
+.admin-product-page .product-table tr:hover {
+    background-color: #383838;
 }
 
 /* 버튼 스타일 */
-.edit-btn, .delete-btn {
+.admin-product-page .edit-btn, .admin-product-page .delete-btn {
     padding: 8px 12px;
     border: none;
     border-radius: 5px;
@@ -91,97 +96,20 @@
     margin-right: 5px;
 }
 
-.edit-btn {
-    background-color: #ffc107;
-    color: #000;
+.admin-product-page .edit-btn {
+    background-color: #666;
+    color: #ffffff;
 }
 
-.edit-btn:hover {
-    background-color: #e0a800;
+.admin-product-page .edit-btn:hover {
+    background-color: #777;
 }
 
-.delete-btn {
-    background-color: #dc3545;
+.admin-product-page .delete-btn {
+    background-color: #8b0000;
     color: white;
 }
 
-.delete-btn:hover {
-    background-color: #c82333;
-}
-
-/* 데이터 없을 때 */
-.no-data {
-    font-size: 1.2em;
-    color: #666;
-    margin-top: 20px;
-}
-
-/* 뒤로 가기 버튼 */
-.back-btn {
-    display: inline-block;
-    padding: 10px 15px;
-    margin-bottom: 20px;
-    background-color: #6c757d;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.back-btn:hover {
-    background-color: #5a6268;
-}
-
-/* 상품 추가 폼 스타일 */
-.product-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    max-width: 500px;
-    margin: 0 auto;
-    text-align: left;
-}
-
-.product-form label {
-    font-size: 1em;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.product-form input,
-.product-form textarea,
-.product-form select {
-    width: 100%;
-    padding: 10px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    font-size: 14px;
-}
-
-.product-form textarea {
-    height: 100px;
-    resize: vertical;
-}
-
-/* 파일 업로드 스타일 */
-.product-form input[type="file"] {
-    padding: 8px;
-}
-
-/* 버튼 스타일 */
-.submit-btn {
-    padding: 12px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.submit-btn:hover {
-    background-color: #218838;
+.admin-product-page .delete-btn:hover {
+    background-color: #b22222;
 }
