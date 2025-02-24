@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { AuthContext } from "../../../context/AuthContext"; // ✅ AuthContext 사용
-import "./AdminEvent.css"; // ✅ CSS 파일 적용
+import { AuthContext } from "../../../context/AuthContext";
+import "./AdminEvent.css";
 
 const AdminEvent = () => {
   const { userInfo } = useContext(AuthContext);
   const [events, setEvents] = useState([]);
-  const [manualCoupons, setManualCoupons] = useState([]); // ✅ 수동 쿠폰 목록 상태 추가
+  const [manualCoupons, setManualCoupons] = useState([]);
   const [form, setForm] = useState({
     title: "",
     mainContent: "",
@@ -15,6 +15,7 @@ const AdminEvent = () => {
     eventType: "COUPON",
     couponCode: "",
     rewardPoint: 0,
+    endDate: "" // ✅ 종료 날짜만 입력받음
   });
   const [selectedEvent, setSelectedEvent] = useState(null);
 
@@ -46,9 +47,15 @@ const AdminEvent = () => {
   // 📌 이벤트 등록 또는 수정
   const handleSubmit = (e) => {
     e.preventDefault();
+    
+    const eventData = {
+      ...form,
+      startDate: undefined, // ✅ 시작 날짜를 프론트엔드에서 보내지 않음
+    };
+
     if (selectedEvent) {
       axios
-        .put(`/api/admin/events/${selectedEvent.id}`, form, {
+        .put(`/api/admin/events/${selectedEvent.id}`, eventData, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         })
         .then(() => {
@@ -58,7 +65,7 @@ const AdminEvent = () => {
         .catch((err) => console.error(err));
     } else {
       axios
-        .post("/api/admin/events", form, {
+        .post("/api/admin/events", eventData, {
           headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         })
         .then(() => {
@@ -94,14 +101,18 @@ const AdminEvent = () => {
         <textarea name="mainContent" placeholder="본 내용" value={form.mainContent} onChange={handleChange} required />
         <textarea name="additionalContent" placeholder="부가 내용" value={form.additionalContent} onChange={handleChange} />
         <input type="text" name="imageUrl" placeholder="이미지 URL" value={form.imageUrl} onChange={handleChange} />
-        
+
+        {/* 📌 종료일만 입력받음 */}
+        <label>이벤트 종료일:</label>
+        <input type="date" name="endDate" value={form.endDate} onChange={handleChange} required />
+
         {/* 이벤트 유형 선택 */}
         <select name="eventType" value={form.eventType} onChange={handleChange}>
           <option value="COUPON">쿠폰 지급</option>
           <option value="POINT">적립금 지급</option>
         </select>
 
-        {/* 📌 쿠폰 지급 이벤트일 경우, 수동 쿠폰 목록을 선택하게 변경 */}
+        {/* 📌 쿠폰 지급 이벤트일 경우, 수동 쿠폰 목록을 선택 */}
         {form.eventType === "COUPON" && (
           <select name="couponCode" value={form.couponCode} onChange={handleChange} required>
             <option value="">쿠폰을 선택하세요</option>

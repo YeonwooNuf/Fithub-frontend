@@ -1,96 +1,146 @@
 /* 전체 페이지 스타일 */
 .admin-container {
-    max-width: 900px;
-    margin: 40px auto;
-    padding: 30px;
-    background: #1f1f1f;
-    border-radius: 12px;
-    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.1);
-    color: #e0e0e0;
-    font-family: "Arial", sans-serif;
-  }
-  
-  /* 제목 */
-  .admin-container h1 {
-    text-align: center;
-    font-size: 24px;
-    font-weight: bold;
-    color: #ffffff;
-    margin-bottom: 20px;
-  }
-  
-  /* 폼 스타일 */
-  .admin-form {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-    background: #2b2b2b;
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
-  }
-  
-  .admin-form input,
-  .admin-form textarea,
-  .admin-form select {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: none;
-    background: #3a3a3a;
-    color: #ffffff;
-    font-size: 14px;
-  }
-  
-  .admin-form button {
-    background: #007bff;
-    color: white;
-    font-size: 16px;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .admin-form button:hover {
-    background: #0056b3;
-  }
-  
-  /* 이벤트 목록 */
-  .event-list {
-    margin-top: 30px;
-    list-style: none;
-    padding: 0;
-  }
-  
-  .event-list li {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: #2b2b2b;
-    padding: 15px;
-    border-radius: 8px;
-    margin-bottom: 10px;
-    transition: all 0.3s ease;
-  }
-  
-  .event-list li:hover {
-    background: #353535;
-  }
-  
-  /* 버튼 스타일 */
-  .event-list button {
-    background: #ff4747;
-    border: none;
-    padding: 8px 12px;
-    color: white;
-    border-radius: 6px;
-    cursor: pointer;
-    transition: all 0.3s ease;
-  }
-  
-  .event-list button:hover {
-    background: #cc0000;
-  }
-  
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 30px;
+  background: #1a1a1a; /* 어두운 배경 */
+  border-radius: 15px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  color: #e0e0e0;
+  font-family: "Arial", sans-serif;
+}
+
+/* 제목 */
+.admin-container h1 {
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 25px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+  padding-bottom: 10px;
+}
+
+/* 폼 스타일 */
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: #2a2a2a; /* 어두운 배경 */
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: inset 0 0 10px rgba(255, 255, 255, 0.05);
+}
+
+/* 입력 필드 & 버튼 */
+.admin-form input,
+.admin-form textarea,
+.admin-form select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  background: #3a3a3a;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: all 0.3s ease-in-out;
+}
+
+.admin-form input::placeholder,
+.admin-form textarea::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.admin-form input:focus,
+.admin-form textarea:focus,
+.admin-form select:focus {
+  background: #444;
+  border: 1px solid #bbbbbb;
+}
+
+/* 버튼 스타일 (무채색) */
+.admin-form button {
+  background: #4d4d4d; /* 버튼 색상 무채색 */
+  color: white;
+  font-size: 16px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.admin-form button:hover {
+  background: #666;
+  transform: scale(1.02);
+}
+
+/* 이벤트 목록 */
+.event-list {
+  margin-top: 30px;
+  list-style: none;
+  padding: 0;
+}
+
+/* 리스트 스타일 */
+.event-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #252525; /* 리스트 배경 */
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  transition: all 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.event-list li:hover {
+  background: #303030;
+  transform: scale(1.02);
+}
+
+/* 이벤트 정보 */
+.event-list strong {
+  font-size: 16px;
+  color: #ffffff;
+}
+
+/* 버튼 스타일 */
+.event-list .edit-button {
+  background: #5a5a5a;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 10px;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+
+.event-list .edit-button:hover {
+  background: #767676;
+  transform: scale(1.05);
+}
+
+.event-list .delete-button {
+  background: #6b6b6b;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 6px 10px;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: bold;
+}
+
+.event-list .delete-button:hover {
+  background: #888;
+  transform: scale(1.05);
+}
