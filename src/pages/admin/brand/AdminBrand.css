@@ -1,17 +1,18 @@
 /* 🔹 브랜드 관리 페이지 컨테이너 */
 .admin-brand-container {
     max-width: 900px;
-    margin: 40px auto;
+    margin: 50px auto;
     padding: 25px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    background: #1a1a1a; /* ✅ 다크 테마 배경 */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(255, 255, 255, 0.08);
     text-align: center;
+    color: #e0e0e0;
 }
 
 /* 🔹 뒤로가기 버튼 */
 .back-btn {
-    background-color: #007bff;
+    background-color: #444;
     color: white;
     padding: 10px 15px;
     border: none;
@@ -24,15 +25,15 @@
 }
 
 .back-btn:hover {
-    background-color: #0056b3;
+    background-color: #555;
 }
 
 /* 🔹 제목 */
-h1 {
+.admin-brand-container h1 {
     font-size: 1.8em;
     margin-bottom: 20px;
     font-weight: bold;
-    color: #333;
+    color: #f5f5f5;
 }
 
 /* 🔹 브랜드 추가 / 수정 폼 */
@@ -47,16 +48,19 @@ h1 {
 
 .brand-form input {
     padding: 10px;
-    border: 1px solid #1d1d1d;
+    border: 1px solid #444;
     border-radius: 5px;
     font-size: 14px;
     width: 220px;
+    background: #222;
+    color: #ddd;
 }
 
+/* 🔹 추가 버튼 */
 .brand-form button {
-    background-color: #7b7c7b;
+    background-color: #333;
     color: white;
-    border: none;
+    border: 1px solid #555;
     padding: 10px 15px;
     border-radius: 5px;
     cursor: pointer;
@@ -65,7 +69,7 @@ h1 {
 }
 
 .brand-form button:hover {
-    background-color: #363535;
+    background-color: #444;
 }
 
 /* 🔹 브랜드 목록 테이블 */
@@ -73,28 +77,35 @@ h1 {
     width: 100%;
     border-collapse: collapse;
     margin-top: 10px;
-    border-radius: 8px;
-    overflow: hidden;
+    border: 1px solid #555;
 }
 
-.brand-table th,
+/* 🔹 테이블 헤더 */
+.brand-table th {
+    padding: 14px;
+    text-align: center;
+    background: #292929;
+    color: #ffffff;
+    border-bottom: 2px solid #555;
+}
+
+/* 🔹 테이블 본문 */
 .brand-table td {
     padding: 14px;
-    border: 1px solid #ddd;
     text-align: center;
+    background: #222;
+    color: #ddd;
+    border-bottom: 1px solid #444;
 }
 
-.brand-table th {
-    background-color: #f8f9fa;
-    font-weight: bold;
-}
-
+/* 🔹 테이블 줄무늬 */
 .brand-table tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #252525;
 }
 
+/* 🔹 테이블 행 호버 효과 */
 .brand-table tr:hover {
-    background-color: #e9ecef;
+    background-color: #383838;
 }
 
 /* 🔹 브랜드 로고 스타일 */
@@ -103,15 +114,14 @@ h1 {
     height: 55px;
     object-fit: cover;
     border-radius: 50%;
-    border: 2px solid #747474da; /* 회색 테두리 */
+    border: 2px solid #666; /* ✅ 브랜드 로고 테두리 */
     display: block;
     margin: auto;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2); /* 그림자 효과 */
+    box-shadow: 0 2px 6px rgba(255, 255, 255, 0.2);
 }
 
 /* 🔹 수정 및 삭제 버튼 */
-.edit-btn,
-.delete-btn {
+.edit-btn, .delete-btn {
     padding: 8px 12px;
     border: none;
     border-radius: 5px;
@@ -122,19 +132,19 @@ h1 {
 }
 
 .edit-btn {
-    background-color: #ffc107;
-    color: black;
+    background-color: #666;
+    color: white;
 }
 
 .edit-btn:hover {
-    background-color: #e0a800;
+    background-color: #777;
 }
 
 .delete-btn {
-    background-color: #dc3545;
+    background-color: #8b0000;
     color: white;
 }
 
 .delete-btn:hover {
-    background-color: #c82333;
+    background-color: #b22222;
 }
