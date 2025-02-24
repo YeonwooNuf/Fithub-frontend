@@ -82,55 +82,57 @@ function AdminProduct() {
   }, []);
 
   return (
-    <div className="admin-product-container">
-      <button className="back-btn" onClick={() => navigate("/admin")}>⬅ 관리자 대시보드</button>
-      <h1 className="title">상품 관리</h1>
+    <div className="admin-product-page">
+      <div className="admin-product-container">
+        <button className="back-btn" onClick={() => navigate("/admin")}>⬅ 관리자 대시보드</button>
+        <h1 className="title">상품 관리</h1>
 
-      {/* 검색 및 추가 버튼 */}
-      <div className="search-box">
-        <input
-          type="text"
-          placeholder="상품명 검색"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
+        {/* 검색 및 추가 버튼 */}
+        <div className="search-box">
+          <input
+            type="text"
+            placeholder="상품명 검색"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
           />
-        <button onClick={searchProduct}>검색</button>
-        <button className="add-btn" onClick={() => navigate("/admin/products/add")}>상품 추가</button>
-      </div>
+          <button onClick={searchProduct}>검색</button>
+          <button className="add-btn" onClick={() => navigate("/admin/products/add")}>상품 추가</button>
+        </div>
 
-      {loading ? (
-        <p>로딩 중...</p>
-      ) : error ? (
-        <p className="error">{error}</p>
-      ) : products.length > 0 ? (
-        <table className="product-table">
-          <thead>
-            <tr>
-              <th>상품명</th>
-              <th>가격</th>
-              <th>브랜드</th>
-              <th>카테고리</th>
-              <th>관리</th>
-            </tr>
-          </thead>
-          <tbody>
-            {products.map((product) => (
-              <tr key={product.id}>
-                <td>{product.name}</td>
-                <td>{product.price.toLocaleString()}원</td>
-                <td>{product.brandName}</td>
-                <td>{product.category}</td>
-                <td>
-                  <button className="edit-btn" onClick={() => navigate(`/admin/products/edit/${product.id}`)}>수정</button>
-                  <button className="delete-btn" onClick={() => deleteProduct(product.id)}>삭제</button>
-                </td>
+        {loading ? (
+          <p>로딩 중...</p>
+        ) : error ? (
+          <p className="error">{error}</p>
+        ) : products.length > 0 ? (
+          <table className="product-table">
+            <thead>
+              <tr>
+                <th>상품명</th>
+                <th>가격</th>
+                <th>브랜드</th>
+                <th>카테고리</th>
+                <th>관리</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <p className="no-data">상품이 없습니다.</p>
-      )}
+            </thead>
+            <tbody>
+              {products.map((product) => (
+                <tr key={product.id}>
+                  <td>{product.name}</td>
+                  <td>{product.price.toLocaleString()}원</td>
+                  <td>{product.brandName}</td>
+                  <td>{product.category}</td>
+                  <td>
+                    <button className="edit-btn" onClick={() => navigate(`/admin/products/edit/${product.id}`)}>수정</button>
+                    <button className="delete-btn" onClick={() => deleteProduct(product.id)}>삭제</button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        ) : (
+          <p className="no-data">상품이 없습니다.</p>
+        )}
+      </div>
     </div>
   );
 }
