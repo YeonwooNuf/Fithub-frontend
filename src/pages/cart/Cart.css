@@ -1,5 +1,6 @@
+/* ✅ 장바구니 페이지 전체 스타일 */
 .cart-page {
-    max-width: 800px;
+    max-width: 900px;
     margin: 20px auto;
     padding: 20px;
     background: white;
@@ -7,14 +8,16 @@
     border-radius: 10px;
 }
 
+/* ✅ 장바구니 목록 */
 .cart-items {
     margin-bottom: 20px;
 }
 
+/* ✅ 장바구니 상품 항목 */
 .cart-item {
     display: flex;
     align-items: center;
-    padding: 10px;
+    padding: 15px;
     border-bottom: 1px solid #ddd;
 }
 
@@ -28,6 +31,8 @@
 
 .cart-item-details {
     flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
 .cart-item-details h2 {
@@ -41,11 +46,48 @@
     color: #555;
 }
 
-.coupon-applied {
-    color: #e44d26;
-    font-weight: bold;
+/* ✅ 가격 스타일 (원래 가격 + 할인가) */
+.original-price {
+    text-decoration: line-through;
+    color: #888;
+    font-size: 14px;
+    margin-right: 5px;
 }
 
+.discounted-price {
+    color: red;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+/* ✅ 쿠폰 적용 관련 스타일 */
+.coupon-selector {
+    margin-top: 8px;
+}
+
+.coupon-selector select {
+    width: 100%;
+    padding: 5px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+/* ✅ 쿠폰 선택 시 스타일 */
+.coupon-selector select:focus {
+    border-color: #27ae60;
+    outline: none;
+}
+
+/* ✅ 적용된 쿠폰 강조 */
+.applied-coupon {
+    font-weight: bold;
+    color: #e44d26;
+    margin-top: 5px;
+}
+
+/* ✅ 쿠폰 제거 버튼 */
 .remove-item {
     background: #e44d26;
     color: white;
@@ -53,8 +95,14 @@
     padding: 5px 10px;
     cursor: pointer;
     border-radius: 5px;
+    margin-top: 10px;
 }
 
+.remove-item:hover {
+    background: #c0392b;
+}
+
+/* ✅ 장바구니 결제 요약 */
 .cart-summary {
     padding: 20px;
     background: #f8f8f8;
@@ -65,13 +113,62 @@
     margin-bottom: 10px;
 }
 
+/* ✅ 결제 버튼 */
 .checkout-button {
     width: 100%;
-    padding: 10px;
+    padding: 12px;
     background: #27ae60;
     color: white;
     border: none;
     font-size: 16px;
     cursor: pointer;
     border-radius: 5px;
+    transition: 0.2s;
 }
+
+.checkout-button:hover {
+    background: #218c53;
+}
+
+/* ✅ 포인트 입력 스타일 */
+.point-input {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    text-align: right;
+}
+
+/* ✅ 로딩 및 오류 메시지 */
+.loading,
+.error {
+    text-align: center;
+    font-size: 16px;
+    color: #e44d26;
+}
+
+/* ✅ 쿠폰 적용된 경우 스타일 */
+.coupon-applied {
+    background: #fbe9e7;
+    padding: 8px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: #d84315;
+    display: inline-block;
+    margin-top: 5px;
+}
+
+/* ✅ 드롭다운 내부 스타일 */
+.coupon-selector select option {
+    font-size: 14px;
+    color: #333;
+}
+
+/* ✅ 쿠폰 적용된 항목 강조 */
+.cart-item.coupon-active {
+    border-left: 4px solid #e44d26;
+    padding-left: 10px;
+}
+
+/* ✅ 반응형 조정 (모바일 최적화 제거) */

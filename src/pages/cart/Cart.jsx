@@ -6,94 +6,96 @@ import "./Cart.css";
 const Cart = () => {
     const navigate = useNavigate();
     const [cartItems, setCartItems] = useState([]);
+    const [availableCoupons, setAvailableCoupons] = useState([]);
     const [availablePoints, setAvailablePoints] = useState(0);
+    const [usedPoints, setUsedPoints] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [totalPrice, setTotalPrice] = useState(0);
+    const [appliedCoupons, setAppliedCoupons] = useState({});
 
     useEffect(() => {
-        const fetchCartItems = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                const headers = token ? { Authorization: `Bearer ${token}` } : {};
-                const response = await axios.get("/api/cart", { headers });
-
-                console.log("✅ 장바구니 데이터:", response.data);
-                const itemsWithCoupons = await Promise.all(
-                    response.data.cartItems.map(async (item) => {
-                        const coupons = await fetchApplicableCoupons(item.id);
-                        return { ...item, availableCoupons: coupons };
-                    })
-                );
-                
-                setCartItems(itemsWithCoupons);
-                setAvailablePoints(response.data.availablePoints);
-            } catch (error) {
-                console.error("❌ 장바구니 데이터를 불러오는 중 오류 발생:", error);
-                setError("장바구니 정보를 불러오는 데 실패했습니다.");
-            } finally {
-                setLoading(false);
-            }
-        };
-        
         fetchCartItems();
     }, []);
 
-    const fetchApplicableCoupons = async (cartItemId) => {
+    /** ✅ 장바구니 목록 조회 */
+    const fetchCartItems = async () => {
         try {
             const token = localStorage.getItem("token");
             const headers = token ? { Authorization: `Bearer ${token}` } : {};
-            const response = await axios.get(`/api/cart/${cartItemId}/coupons`, { headers });
+            const response = await axios.get("/api/cart", { headers });
 
-            console.log(`🟢 상품 ${cartItemId} 적용 가능 쿠폰:`, response.data);
-            return response.data;
+            console.log("✅ 장바구니 데이터:", response.data);
+
+            setCartItems(response.data.cartItems);
+            setAvailableCoupons(response.data.availableCoupons);
+            setAvailablePoints(response.data.availablePoints?.amount || 0);
+            updateTotalPrice(response.data.cartItems);
         } catch (error) {
-            console.error(`❌ 상품 ${cartItemId} 쿠폰 조회 중 오류 발생:`, error);
-            return [];
+            console.error("❌ 장바구니 데이터를 불러오는 중 오류 발생:", error);
+            setError("장바구니 정보를 불러오는 데 실패했습니다.");
+        } finally {
+            setLoading(false);
         }
     };
 
-    const handleApplyCoupon = async (cartItemId, couponId) => {
-        try {
-            const token = localStorage.getItem("token");
-            const headers = token ? { Authorization: `Bearer ${token}` } : {};
-            const response = await axios.post(
-                `/api/cart/${cartItemId}/apply-coupon?couponId=${couponId}`,
-                {},
-                { headers }
-            );
+    /** ✅ 쿠폰 적용 */
+    const handleApplyCoupon = (cartItemId, selectedCouponId) => {
+        setAppliedCoupons((prevCoupons) => {
+            const updatedCoupons = { ...prevCoupons };
 
-            console.log(`✅ 상품 ${cartItemId} 쿠폰 적용 성공:`, response.data);
+            if (selectedCouponId === "") {
+                delete updatedCoupons[cartItemId]; // ✅ "선택 없음" 선택 시 쿠폰 제거
+            } else {
+                const selectedCoupon = availableCoupons.find((coupon) => coupon.id === Number(selectedCouponId));
+                updatedCoupons[cartItemId] = selectedCoupon;
+            }
 
-            setCartItems((prevItems) =>
-                prevItems.map((item) =>
-                    item.id === cartItemId ? { ...item, appliedCoupon: response.data.appliedCoupon } : item
-                )
-            );
-        } catch (error) {
-            console.error(`❌ 상품 ${cartItemId} 쿠폰 적용 중 오류 발생:`, error);
-        }
+            updateTotalPrice(cartItems, updatedCoupons); // ✅ 쿠폰 적용 시 총 가격 즉시 반영
+            return updatedCoupons;
+        });
     };
 
-    const handleRemoveCoupon = async (cartItemId) => {
-        try {
-            const token = localStorage.getItem("token");
-            const headers = token ? { Authorization: `Bearer ${token}` } : {};
-            await axios.delete(`/api/cart/${cartItemId}/remove-coupon`, { headers });
+    /** ✅ 포인트 적용 */
+    const handleUsePoints = (event) => {
+        let inputPoints = parseInt(event.target.value, 10) || 0;
+        const maxPoints = Math.min(availablePoints, totalPrice * 0.1);
 
-            console.log(`✅ 상품 ${cartItemId} 쿠폰 제거 성공`);
-
-            setCartItems((prevItems) =>
-                prevItems.map((item) =>
-                    item.id === cartItemId ? { ...item, appliedCoupon: null } : item
-                )
-            );
-        } catch (error) {
-            console.error(`❌ 상품 ${cartItemId} 쿠폰 제거 중 오류 발생:`, error);
+        if (inputPoints > maxPoints) {
+            inputPoints = maxPoints;
         }
+
+        setUsedPoints(inputPoints);
+        updateTotalPrice(cartItems, appliedCoupons, inputPoints);
     };
 
+    /** ✅ 장바구니 총 가격 계산 */
+    const updateTotalPrice = (items, coupons = appliedCoupons, pointsUsed = usedPoints) => {
+        let total = 0;
+
+        items.forEach((item) => {
+            const discount = coupons[item.id] ? (item.price * coupons[item.id].discount) / 100 : 0;
+            total += (item.price - discount) * item.quantity;
+        });
+
+        total -= pointsUsed;
+        setTotalPrice(Math.max(total, 0));
+    };
+
+    /** ✅ 적용 가능한 쿠폰 필터링 */
+    const getApplicableCoupons = (cartItem) => {
+        return availableCoupons.filter(
+            (coupon) =>
+                (coupon.target === "ALL_PRODUCTS" ||
+                    (coupon.target === "CATEGORY" && coupon.targetValue === cartItem.category) ||
+                    (coupon.target === "BRAND" && coupon.targetValue === cartItem.brandName)) &&
+                !Object.values(appliedCoupons).some((appliedCoupon) => appliedCoupon.id === coupon.id && appliedCoupon !== appliedCoupons[cartItem.id])
+        );
+    };
+
+    /** ✅ 결제하기 */
     const handleCheckout = () => {
-        navigate("/checkout", { state: { cartItems, availablePoints } });
+        navigate("/checkout", { state: { cartItems, availablePoints, usedPoints, totalPrice } });
     };
 
     if (loading) return <p className="loading">로딩 중...</p>;
@@ -104,54 +106,67 @@ const Cart = () => {
         <div className="cart-page">
             <h1>장바구니</h1>
             <div className="cart-items">
-                {cartItems.map((item) => (
-                    <div key={item.id} className="cart-item">
-                        <img src={item.productImageUrl} alt={item.productName} className="cart-item-image" />
-                        <div className="cart-item-details">
-                            <h2>{item.productName}</h2>
-                            <p>색상: {item.selectedColor} / 사이즈: {item.selectedSize}</p>
-                            <p className="price">{item.productPrice.toLocaleString()} 원</p>
+                {cartItems.map((item) => {
+                    const discount = appliedCoupons[item.id] ? (item.price * appliedCoupons[item.id].discount) / 100 : 0;
+                    const finalPrice = appliedCoupons[item.id] ? item.price - discount : item.price;
 
-                            {item.appliedCoupon && (
-                                <>
-                                    <p className="discounted-price">
-                                        적용된 쿠폰: {item.appliedCoupon.name} (-{item.appliedCoupon.discount}%)
+                    return (
+                        <div key={item.id} className="cart-item">
+                            <img src={item.productImage} alt={item.productName} className="cart-item-image" />
+                            <div className="cart-item-details">
+                                <h2>{item.productName}</h2>
+                                <p>색상: {item.color} / 사이즈: {item.size} / 수량: {item.quantity}</p>
+
+                                {/* ✅ 기존 가격 (빗금) & 할인 가격 (빨간색) */}
+                                {appliedCoupons[item.id] ? (
+                                    <p>
+                                        <span className="original-price">{item.price.toLocaleString()} 원</span>{" "}
+                                        <span className="discounted-price">{finalPrice.toLocaleString()} 원</span>
                                     </p>
-                                    <button className="remove-item" onClick={() => handleRemoveCoupon(item.id)}>
-                                        쿠폰 제거
-                                    </button>
-                                </>
-                            )}
+                                ) : (
+                                    <p className="price">{item.price.toLocaleString()} 원</p>
+                                )}
 
-                            <div className="coupon-selector">
-                                <label>쿠폰 선택:</label>
-                                <select
-                                    onChange={(e) => handleApplyCoupon(item.id, e.target.value)}
-                                    defaultValue=""
-                                >
-                                    <option value="" disabled>
-                                        적용 가능한 쿠폰 선택
-                                    </option>
-                                    {item.availableCoupons &&
-                                        item.availableCoupons.map((coupon) => (
+                                {/* ✅ 적용된 쿠폰 표시 */}
+                                {appliedCoupons[item.id] && (
+                                    <p className="applied-coupon">
+                                        적용된 쿠폰: {appliedCoupons[item.id].name} (-{appliedCoupons[item.id].discount}%)
+                                    </p>
+                                )}
+
+                                {/* ✅ 쿠폰 선택 */}
+                                <div className="coupon-selector">
+                                    <label>쿠폰 선택:</label>
+                                    <select
+                                        onChange={(e) => handleApplyCoupon(item.id, e.target.value)}
+                                        value={appliedCoupons[item.id]?.id || ""} // ✅ 적용된 쿠폰 유지
+                                    >
+                                        <option value="">선택 없음</option>
+                                        {getApplicableCoupons(item).map((coupon) => (
                                             <option key={coupon.id} value={coupon.id}>
                                                 {coupon.name} (-{coupon.discount}%)
                                             </option>
                                         ))}
-                                </select>
+                                    </select>
+                                </div>
                             </div>
-
-                            <button className="remove-item" onClick={() => handleRemoveItem(item.id)}>
-                                삭제
-                            </button>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
 
             <div className="cart-summary">
                 <h2>결제 요약</h2>
+                <p>총 상품 금액: {totalPrice?.toLocaleString()} 원</p>
                 <p>사용 가능한 포인트: {availablePoints.toLocaleString()} P</p>
+                <label>사용할 포인트:</label>
+                <input
+                    type="number"
+                    value={usedPoints}
+                    onChange={handleUsePoints}
+                    min="0"
+                    max={Math.min(availablePoints || 0, totalPrice * 0.1)}
+                />
                 <button className="checkout-button" onClick={handleCheckout}>
                     결제하기
                 </button>
