@@ -28,6 +28,7 @@ import AddCoupon from "./pages/admin/coupon/AddCoupon";
 import ProductDetail from "./pages/product/ProductDetail";
 import Checkout from "./pages/checkout/Checkout";
 import AdminEvent from "./pages/admin/event/AdminEvent";
+import Cart from "./pages/cart/Cart";
 
 function App() {
   return (
@@ -51,6 +52,7 @@ function App() {
             <Route path="/event" element={<Event />} />
 
             <Route path="/product/:id" element={<ProductDetail />} />
+            <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
 
             {/* 관리자 탭 */}

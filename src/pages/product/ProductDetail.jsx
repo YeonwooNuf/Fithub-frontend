@@ -14,7 +14,7 @@ const ProductDetail = () => {
     const [error, setError] = useState(null);
     const [selectedSize, setSelectedSize] = useState("");
     const [selectedColor, setSelectedColor] = useState("");
-    const [currentSlide, setCurrentSlide] = useState(0);
+    const [message, setMessage] = useState(null); // ✅ 알림 메시지 추가
     const sliderRef = React.useRef(null);
 
     const parseJSON = (data) => {
@@ -63,6 +63,37 @@ const ProductDetail = () => {
     const parsedSizes = parseJSON(product.sizes);
     const parsedColors = parseJSON(product.colors);
 
+    // ✅ 장바구니 담기 기능 추가
+    const handleAddToCart = async () => {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                alert("로그인이 필요합니다.");
+                navigate("/login");
+                return;
+            }
+
+            const headers = { Authorization: `Bearer ${token}` };
+
+            const requestData = {
+                productId: product.id,
+                size: selectedSize,
+                color: selectedColor,
+                quantity: 1, // 기본 수량 1개
+            };
+
+            const response = await axios.post("/api/cart/add", requestData, { headers });
+            console.log("✅ 장바구니 추가 성공:", response.data);
+
+            setMessage("장바구니에 추가되었습니다!");
+            setTimeout(() => setMessage(null), 3000);
+        } catch (error) {
+            console.error("❌ 장바구니 추가 중 오류 발생:", error);
+            setMessage("장바구니 추가에 실패했습니다.");
+            setTimeout(() => setMessage(null), 3000);
+        }
+    };
+
     // ✅ 구매하기 버튼 클릭 시 결제 페이지로 이동
     const handlePurchase = () => {
         navigate("/checkout", {
@@ -81,6 +112,8 @@ const ProductDetail = () => {
 
     return (
         <div className="product-detail">
+            {message && <div className="alert-message">{message}</div>} {/* ✅ 알림 메시지 추가 */}
+
             <div className="product-image-container">
                 <Slider
                     ref={sliderRef}
@@ -93,7 +126,6 @@ const ProductDetail = () => {
                     autoplaySpeed={3000}
                     pauseOnHover={true}
                     swipe={true}
-                    beforeChange={(oldIndex, newIndex) => setCurrentSlide(newIndex)}
                     className="product-slider"
                 >
                     {product.images?.map((image, index) => (
@@ -102,33 +134,10 @@ const ProductDetail = () => {
                         </div>
                     ))}
                 </Slider>
-
-                <div className="thumbnail-container">
-                    {product.images?.map((image, index) => (
-                        <img
-                            key={index}
-                            src={image}
-                            alt={`썸네일 ${index + 1}`}
-                            className={index === currentSlide ? "active" : ""}
-                            onClick={() => sliderRef.current.slickGoTo(index)}
-                        />
-                    ))}
-                </div>
             </div>
 
             <div className="product-info">
-                <div className="brand-info">
-                    {product.brandLogoUrl && (
-                        <img src={product.brandLogoUrl} alt={product.brandName} className="brand-logo" />
-                    )}
-                    <div className="brand-text">
-                        <p className="brand-name">{product.brandName || "알 수 없음"}</p>
-                        {product.brandSubName && <p className="brand-subname">{product.brandSubName}</p>}
-                    </div>
-                </div>
-
                 <h1>{product.name}</h1>
-                <p className="description">{product.description}</p>
                 <p className="price">{product.price?.toLocaleString()} 원</p>
 
                 {parsedSizes.length > 0 && (
@@ -154,7 +163,7 @@ const ProductDetail = () => {
                 )}
 
                 <div className="action-buttons">
-                    <button className="add-to-cart">장바구니에 담기</button>
+                    <button className="add-to-cart" onClick={handleAddToCart}>장바구니에 담기</button>
                     <button className="payment" onClick={handlePurchase}>구매하기</button>
                 </div>
             </div>
