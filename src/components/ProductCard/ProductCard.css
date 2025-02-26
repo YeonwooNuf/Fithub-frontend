@@ -7,7 +7,7 @@
     text-align: center;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-    position: relative; /* ✅ 절대 위치 요소를 위한 relative 설정 */
+    position: relative; /* ✅ 상대 위치 설정 */
 }
 
 .product-card:hover {
@@ -27,27 +27,25 @@
 }
 
 /* ✅ 좋아요 버튼을 이미지 내부 오른쪽 상단에 배치 */
-.like-button {
+.like-container {
     position: absolute;
-    top: 10px; /* ✅ 상단 여백 */
-    right: 10px; /* ✅ 오른쪽 여백 */
-    background: rgba(255, 255, 255, 0.8); /* ✅ 반투명 배경 */
-    border: none;
-    cursor: pointer;
-    font-size: 1.5rem;
-    border-radius: 50%;
-    padding: 8px;
+    top: 10px;
+    right: 10px;
     display: flex;
     align-items: center;
-    justify-content: center;
-    transition: transform 0.2s ease, background 0.2s ease;
-    color: gray;
+    gap: 0.1px; /* 하트와 숫자 간격 */
+    margin-right: 0px;
 }
 
-/* ✅ 좋아요 버튼 호버 효과 */
-.like-button:hover {
-    transform: scale(1.1);
-    background: rgba(255, 255, 255, 1);
+/* ✅ 좋아요 버튼 */
+.like-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.3rem;
+    color: rgba(255, 255, 255, 0.9); /* ✅ 배경 없이 하트만 표시 */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* ✅ 더 자연스러운 그림자 효과 */
+    transition: transform 0.2s ease, color 0.2s ease;
 }
 
 /* ✅ 좋아요가 눌린 경우 */
@@ -57,9 +55,10 @@
 
 /* ✅ 좋아요 수 스타일 */
 .like-count {
-    font-size: 1rem;
+    font-size: 0.8rem;
     font-weight: bold;
-    color: #444;
+    color: rgba(0, 0, 0, 0.9); /* ✅ 숫자도 배경 없이 표시 */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* ✅ 상품 정보 스타일 */

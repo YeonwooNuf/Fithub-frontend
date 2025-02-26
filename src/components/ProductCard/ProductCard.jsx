@@ -1,9 +1,9 @@
 import React from "react";
-import { useNavigate } from "react-router-dom"; // ✅ useNavigate 추가
+import { useNavigate } from "react-router-dom";
 import "./ProductCard.css"; // 스타일 파일 import
 
 function ProductCard({ product, onLikeToggle }) {
-  const navigate = useNavigate(); // ✅ useNavigate 훅 사용
+  const navigate = useNavigate();
 
   // ✅ 상품 클릭 시 상세 페이지로 이동
   const handleCardClick = () => {
@@ -11,28 +11,29 @@ function ProductCard({ product, onLikeToggle }) {
   };
 
   return (
-    <div className="product-card" onClick={handleCardClick}> {/* ✅ 클릭 이벤트 추가 */}
-      <img
-        src={product.imageUrl}
-        alt={product.title}
-        className="product-image"
-      />
-      <div className="product-info">
-        <h3>{product.title}</h3>
-        <p>{product.description}</p>
-        <p className="price">{product.price} 원</p>
-
-        {/* ✅ 좋아요 버튼 클릭 시 상세 페이지 이동 방지 */}
+    <div className="product-card" onClick={handleCardClick}>
+      {/* ✅ 좋아요 버튼을 이미지 내부 우측 상단에 배치 */}
+      <div className="like-container">
         <button
           onClick={(e) => {
-            e.stopPropagation(); // ✅ 좋아요 클릭 시 페이지 이동 방지
+            e.stopPropagation(); // ✅ 좋아요 클릭 시 상세페이지 이동 방지
             onLikeToggle();
           }}
           className={`like-button ${product.likedByCurrentUser ? "liked" : ""}`}
         >
-          {product.likedByCurrentUser ? "❤️" : "🤍"}{" "}   {/* 사용자의 하트 누름 여부 */}
-          <span className="like-count">{product.likeCount || 0}</span>
+          {product.likedByCurrentUser ? "❤️" : "🤍"}
         </button>
+        <span className="like-count">{product.likeCount || 0}</span>
+      </div>
+
+      {/* ✅ 상품 이미지 */}
+      <img src={product.imageUrl} alt={product.title} className="product-image" />
+
+      {/* ✅ 상품 정보 */}
+      <div className="product-info">
+        <h3>{product.title}</h3>
+        <p>{product.description}</p>
+        <p className="price">{product.price.toLocaleString()} 원</p>
       </div>
     </div>
   );
