@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Cart.css";
+import AddressModal from "../address/AddressModal";  // ✅ 모달 컴포넌트 import
 
 const Cart = () => {
     const navigate = useNavigate();
@@ -12,10 +13,13 @@ const Cart = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [totalPrice, setTotalPrice] = useState(0);
-    const [appliedCoupons, setAppliedCoupons] = useState({});
+    const [appliedCoupons, setAppliedCoupons] = useState({})
+    const [selectedAddress, setSelectedAddress] = useState(null);
+    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false); // ✅ 모달 상태;
 
     useEffect(() => {
         fetchCartItems();
+        fetchDefaultAddress();
     }, []);
 
     /** ✅ 장바구니 목록 조회 */
@@ -93,6 +97,30 @@ const Cart = () => {
         );
     };
 
+    /** ✅ 기본 배송지 가져오기 */
+    const fetchDefaultAddress = async () => {
+        try {
+            const token = localStorage.getItem("token"); // 🔥 JWT 토큰 가져오기
+            if (!token) {
+                console.warn("❌ 토큰 없음: 로그인 필요");
+                return;
+            }
+
+            const headers = { Authorization: `Bearer ${token}` }; // ✅ Authorization 헤더 추가
+            const response = await axios.get("/api/users/addresses", { headers });
+
+            const defaultAddr = response.data.find(addr => addr.default);
+            if (defaultAddr) {
+                setSelectedAddress(defaultAddr);
+            }
+        } catch (error) {
+            console.error("❌ 배송지 불러오기 오류:", error);
+            if (error.response?.status === 401) {
+                alert("로그인이 필요합니다. 다시 로그인해주세요.");
+            }
+        }
+    };
+
     /** ✅ 결제하기 */
     const handleCheckout = () => {
         navigate("/checkout", { state: { cartItems, availablePoints, usedPoints, totalPrice } });
@@ -105,6 +133,22 @@ const Cart = () => {
     return (
         <div className="cart-page">
             <h1>장바구니</h1>
+
+            {/* ✅ 배송지 정보 */}
+            <div className="card delivery-card">
+                <h2>배송지</h2>
+                {selectedAddress ? (
+                    <div className="selected-address">
+                        <p>배송 주소 : <strong>{selectedAddress.roadAddress}</strong></p>
+                        <p>상세 주소 : {selectedAddress.detailAddress}</p>
+                        <button className="btn btn-light" onClick={() => setIsAddressModalOpen(true)}>배송지 변경</button>
+                    </div>
+                ) : (
+                    <button className="btn btn-primary" onClick={() => setIsAddressModalOpen(true)}>배송지 선택</button>
+                )}
+            </div>
+
+
             <div className="cart-items">
                 {cartItems.map((item) => {
                     const discount = appliedCoupons[item.id] ? (item.price * appliedCoupons[item.id].discount) / 100 : 0;
@@ -119,10 +163,10 @@ const Cart = () => {
 
                                 {/* ✅ 기존 가격 (빗금) & 할인 가격 (빨간색) */}
                                 {appliedCoupons[item.id] ? (
-                                    <p>
-                                        <span className="original-price">{item.price.toLocaleString()} 원</span>{" "}
-                                        <span className="discounted-price">{finalPrice.toLocaleString()} 원</span>
-                                    </p>
+                                    <p className="price">
+                                    {appliedCoupons[item.id] && <span className="original-price">{item.price.toLocaleString()} 원</span>}
+                                    <span className="discounted-price">{finalPrice.toLocaleString()} 원</span>
+                                </p>
                                 ) : (
                                     <p className="price">{item.price.toLocaleString()} 원</p>
                                 )}
@@ -168,9 +212,14 @@ const Cart = () => {
                     max={Math.min(availablePoints || 0, totalPrice * 0.1)}
                 />
                 <button className="checkout-button" onClick={handleCheckout}>
-                    결제하기
+                    구매하기
                 </button>
             </div>
+            {/* ✅ 주소 선택 모달 */}
+            {isAddressModalOpen && <AddressModal
+                onClose={() => setIsAddressModalOpen(false)}
+                onSelectAddress={setSelectedAddress}
+            />}
         </div>
     );
 };

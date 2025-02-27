@@ -1,52 +1,108 @@
-/* ✅ 장바구니 페이지 전체 스타일 */
+/* ✅ 전체 페이지 컨테이너 */
 .cart-page {
-    max-width: 900px;
-    margin: 20px auto;
+    max-width: 1000px;
+    margin: 40px auto;
     padding: 20px;
-    background: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
+    background: #f8f9fa; /* 연한 회색 배경 */
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-/* ✅ 장바구니 목록 */
-.cart-items {
+/* ✅ 카드형 컨테이너 */
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
     margin-bottom: 20px;
 }
 
-/* ✅ 장바구니 상품 항목 */
+/* ✅ 배송지 정보 */
+.delivery-card h2 {
+    font-size: 20px;
+    margin-bottom: 10px;
+    color: #333;
+}
+
+.selected-address p {
+    margin: 5px 0;
+    font-size: 16px;
+    color: #555;
+}
+
+.btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s ease-in-out;
+}
+
+.btn-light {
+    background: #ddd;
+    color: #333;
+}
+
+.btn-primary {
+    background: #27ae60;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #218c53;
+}
+
+/* ✅ 장바구니 목록 */
+.cart-items-card h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+/* ✅ 상품 목록 */
 .cart-item {
     display: flex;
     align-items: center;
-    padding: 15px;
-    border-bottom: 1px solid #ddd;
+    border-bottom: 1px solid #e0e0e0;
+    padding: 15px 0;
 }
 
+/* ✅ 상품 이미지 */
 .cart-item-image {
-    width: 80px;
-    height: 80px;
+    width: 100px;
+    height: 100px;
     object-fit: cover;
     border-radius: 8px;
-    margin-right: 15px;
+    margin-right: 20px;
 }
 
+/* ✅ 상품 정보 */
 .cart-item-details {
     flex: 1;
     display: flex;
     flex-direction: column;
 }
 
-.cart-item-details h2 {
+.cart-item-details h3 {
     font-size: 18px;
     margin: 0;
+    color: #333;
 }
 
 .cart-item-details p {
-    margin: 5px 0;
     font-size: 14px;
     color: #555;
+    margin: 3px 0;
 }
 
-/* ✅ 가격 스타일 (원래 가격 + 할인가) */
+/* ✅ 가격 스타일 */
+.price {
+    font-size: 16px;
+    font-weight: bold;
+    color: #333;
+}
+
 .original-price {
     text-decoration: line-through;
     color: #888;
@@ -60,21 +116,29 @@
     font-size: 16px;
 }
 
-/* ✅ 쿠폰 적용 관련 스타일 */
+/* ✅ 쿠폰 선택 */
 .coupon-selector {
     margin-top: 8px;
 }
 
+.coupon-selector label {
+    font-size: 14px;
+    color: #555;
+    display: block;
+    margin-bottom: 5px;
+}
+
 .coupon-selector select {
     width: 100%;
-    padding: 5px;
+    padding: 8px;
     font-size: 14px;
     border: 1px solid #ccc;
     border-radius: 5px;
+    background: #fff;
     cursor: pointer;
+    transition: border-color 0.2s ease-in-out;
 }
 
-/* ✅ 쿠폰 선택 시 스타일 */
 .coupon-selector select:focus {
     border-color: #27ae60;
     outline: none;
@@ -87,30 +151,28 @@
     margin-top: 5px;
 }
 
-/* ✅ 쿠폰 제거 버튼 */
-.remove-item {
-    background: #e44d26;
-    color: white;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
+/* ✅ 결제 요약 */
+.checkout-card h2 {
+    font-size: 20px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.checkout-card p {
+    font-size: 16px;
+    margin: 5px 0;
+    color: #555;
+}
+
+/* ✅ 포인트 입력 */
+.point-input {
+    width: 100%;
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
     border-radius: 5px;
+    text-align: right;
     margin-top: 10px;
-}
-
-.remove-item:hover {
-    background: #c0392b;
-}
-
-/* ✅ 장바구니 결제 요약 */
-.cart-summary {
-    padding: 20px;
-    background: #f8f8f8;
-    border-radius: 8px;
-}
-
-.cart-summary h2 {
-    margin-bottom: 10px;
 }
 
 /* ✅ 결제 버튼 */
@@ -123,21 +185,12 @@
     font-size: 16px;
     cursor: pointer;
     border-radius: 5px;
-    transition: 0.2s;
+    transition: background 0.2s ease-in-out;
+    margin-top: 10px;
 }
 
 .checkout-button:hover {
     background: #218c53;
-}
-
-/* ✅ 포인트 입력 스타일 */
-.point-input {
-    width: 100%;
-    padding: 8px;
-    font-size: 14px;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    text-align: right;
 }
 
 /* ✅ 로딩 및 오류 메시지 */
@@ -148,27 +201,28 @@
     color: #e44d26;
 }
 
-/* ✅ 쿠폰 적용된 경우 스타일 */
-.coupon-applied {
-    background: #fbe9e7;
-    padding: 8px;
-    border-radius: 5px;
-    font-weight: bold;
-    color: #d84315;
-    display: inline-block;
-    margin-top: 5px;
-}
+/* ✅ 반응형 조정 */
+@media screen and (max-width: 768px) {
+    .cart-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
 
-/* ✅ 드롭다운 내부 스타일 */
-.coupon-selector select option {
-    font-size: 14px;
-    color: #333;
-}
+    .cart-item-image {
+        width: 80px;
+        height: 80px;
+        margin-bottom: 10px;
+    }
 
-/* ✅ 쿠폰 적용된 항목 강조 */
-.cart-item.coupon-active {
-    border-left: 4px solid #e44d26;
-    padding-left: 10px;
-}
+    .cart-item-details h3 {
+        font-size: 16px;
+    }
 
-/* ✅ 반응형 조정 (모바일 최적화 제거) */
+    .cart-item-details p {
+        font-size: 13px;
+    }
+
+    .checkout-button {
+        font-size: 14px;
+    }
+}
