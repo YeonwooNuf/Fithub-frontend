@@ -1,145 +1,168 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import axios from "axios";
+import AddressModal from "../address/AddressModal";
 import "./Checkout.css";
 
-function Checkout() {
-    const location = useLocation();
+const getAuthHeaders = () => {
+    const token = localStorage.getItem("token");
+
+    if (!token) {
+        console.warn("🚨 인증 토큰 없음! 로그인 페이지로 이동");
+        alert("로그인이 필요합니다.");
+        window.location.href = "/login";  // 로그인 페이지로 이동
+        return {};
+    }
+
+    return { Authorization: `Bearer ${token}` };
+};
+
+
+const Checkout = () => {
     const navigate = useNavigate();
+    const location = useLocation();
+    const { cartItems = [], appliedCoupons = {}, totalPrice = 0 } = location.state || {};
 
-    // 상품 정보 (단일 상품 구매 or 장바구니 구매)
-    const singleProduct = location.state?.product;
-    const cartItems = location.state?.cartItems || [];
-    const isCartPurchase = cartItems.length > 0;
-    const products = isCartPurchase ? cartItems : [singleProduct];
-
+    const [selectedAddress, setSelectedAddress] = useState(null);
+    const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
+    const [availablePoints, setAvailablePoints] = useState(0);
+    const [usedPoints, setUsedPoints] = useState(0);
+    const [finalPrice, setFinalPrice] = useState(totalPrice);
     const [availableCoupons, setAvailableCoupons] = useState([]);
-    const [selectedCoupon, setSelectedCoupon] = useState(null);
-    const [points, setPoints] = useState(0);
-    const [usePoints, setUsePoints] = useState(0);
-    const [finalAmount, setFinalAmount] = useState(0);
+    const [selectedCoupons, setSelectedCoupons] = useState(appliedCoupons);
 
-    // ✅ 사용자의 쿠폰 & 포인트 정보 불러오기
     useEffect(() => {
-        if (!products || products.length === 0) {
-            navigate("/cart");
-            return;
-        }
-
-        const fetchUserData = async () => {
-            try {
-                const token = localStorage.getItem("token");
-
-                // ✅ 쿠폰 조회
-                const couponRes = await fetch("/api/coupons", {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-
-                const couponData = await couponRes.json();
-                console.log("✅ 쿠폰 API 응답:", couponData);
-
-                // ✅ `coupons`가 배열인지 확인 후 설정
-                if (couponData.success && Array.isArray(couponData.coupons)) {
-                    setAvailableCoupons(couponData.coupons);
-                } else {
-                    setAvailableCoupons([]);
-                }
-
-                // ✅ 포인트 조회
-                const pointRes = await fetch("/api/points/balance", {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-
-                const pointBalance = await pointRes.json();
-                setPoints(typeof pointBalance === "number" ? pointBalance : 0);
-            } catch (err) {
-                console.error("❌ 데이터 로딩 오류:", err);
-                setAvailableCoupons([]);
-                setPoints(0);
-            }
-        };
-
-        fetchUserData();
+        fetchDefaultAddress();
+        fetchAvailablePoints();
+        fetchUserCoupons();
     }, []);
 
-    // ✅ 최종 결제 금액 계산 (할인율 적용 + 최대 할인 금액 고려)
-    useEffect(() => {
-        const totalProductPrice = products.reduce((acc, item) => acc + item.price, 0);
-        let discountAmount = 0;
-
-        if (selectedCoupon) {
-            const calculatedDiscount = (totalProductPrice * selectedCoupon.discount) / 100;
-            discountAmount = Math.min(calculatedDiscount, selectedCoupon.maxDiscountAmount);
+    const fetchDefaultAddress = async () => {
+        try {
+            const headers = getAuthHeaders();
+            if (!headers.Authorization) {
+                navigate("/login");
+                return;
+            }
+            const response = await axios.get("/api/users/addresses", { headers });
+            const defaultAddr = response.data.find(addr => addr.default);
+            if (defaultAddr) {
+                setSelectedAddress(defaultAddr);
+            }
+        } catch (error) {
+            console.error("❌ 배송지 불러오기 오류:", error);
         }
+    };
 
-        let newFinalAmount = totalProductPrice - discountAmount - usePoints;
-        setFinalAmount(newFinalAmount > 0 ? newFinalAmount : 0);
-    }, [selectedCoupon, usePoints, products]);
+    const fetchAvailablePoints = async () => {
+        try {
+            const headers = getAuthHeaders();
+            if (!headers.Authorization) {
+                navigate("/login");
+                return;
+            }
+            const response = await axios.get("/api/points", { headers });
+            setAvailablePoints(response.data.amount || 0);
+        } catch (error) {
+            console.error("❌ 포인트 정보를 불러오는 중 오류 발생:", error);
+        }
+    };
+
+    const fetchUserCoupons = async () => {
+        try {
+            const headers = getAuthHeaders();
+            if (!headers.Authorization) {
+                navigate("/login");
+                return;
+            }
+            const response = await axios.get("/api/coupons", { headers });
+            setAvailableCoupons(response.data.coupons || []);
+        } catch (error) {
+            console.error("❌ 쿠폰 정보를 불러오는 중 오류 발생:", error);
+        }
+    };
+
+    const getApplicableCoupons = (cartItem) => {
+        return availableCoupons.filter(
+            (coupon) =>
+                coupon.target === "ALL_PRODUCTS" ||
+                (coupon.target === "CATEGORY" && coupon.targetValue === cartItem.category) ||
+                (coupon.target === "BRAND" && coupon.targetValue === cartItem.brandName)
+        );
+    };
+
+    const handleApplyCoupon = (cartItemId, selectedCouponId) => {
+        setSelectedCoupons((prevCoupons) => {
+            const updatedCoupons = { ...prevCoupons };
+            if (selectedCouponId === "") {
+                delete updatedCoupons[cartItemId];
+            } else {
+                const selectedCoupon = availableCoupons.find((coupon) => coupon.id === Number(selectedCouponId));
+                updatedCoupons[cartItemId] = selectedCoupon;
+            }
+            updateFinalPrice(cartItems, updatedCoupons, usedPoints);
+            return updatedCoupons;
+        });
+    };
+
+    const handleUsePoints = (event) => {
+        let inputPoints = parseInt(event.target.value, 10) || 0;
+        const maxPoints = Math.min(availablePoints, totalPrice * 0.1);
+        if (inputPoints > maxPoints) {
+            inputPoints = maxPoints;
+        }
+        setUsedPoints(inputPoints);
+        updateFinalPrice(cartItems, selectedCoupons, inputPoints);
+    };
+
+    const updateFinalPrice = (items, coupons, pointsUsed) => {
+        let total = 0;
+        items.forEach((item) => {
+            const discount = coupons[item.id] ? (item.price * coupons[item.id].discount) / 100 : 0;
+            total += (item.price - discount) * item.quantity;
+        });
+        total -= pointsUsed;
+        setFinalPrice(Math.max(total, 0));
+    };
 
     return (
-        <div className="checkout-container">
-            <h1>주문 결제</h1>
+        <div className="checkout-page">
+            <h1>결제하기</h1>
 
-            {/* ✅ 상품 목록 */}
-            <div className="product-list">
-                {products.map((item, index) => (
-                    <div className="product-info" key={index}>
-                        <img src={item.imageUrl} alt={item.name} />
-                        <div>
-                            <h2>{item.name}</h2>
-                            <p>{item.price.toLocaleString()}원</p>
-                            <p>사이즈: {item.selectedSize}</p>
-                            <p>색상: {item.selectedColor}</p>
-                        </div>
+            <div className="card delivery-card">
+                <h2>배송지</h2>
+                {selectedAddress ? (
+                    <div className="selected-address">
+                        <p><strong>{selectedAddress.roadAddress}</strong></p>
+                        <p>{selectedAddress.detailAddress}</p>
+                        <button className="btn btn-light" onClick={() => setIsAddressModalOpen(true)}>배송지 변경</button>
                     </div>
-                ))}
+                ) : (
+                    <button className="btn btn-primary" onClick={() => setIsAddressModalOpen(true)}>배송지 선택</button>
+                )}
             </div>
 
-            {/* ✅ 쿠폰 선택 */}
-            <div className="payment-options">
-                <h3>쿠폰 선택</h3>
-                <select
-                    onChange={(e) => {
-                        const value = e.target.value;
-                        setSelectedCoupon(value ? JSON.parse(value) : null); // 빈 값일 경우 null 설정
-                    }}
-                >
-                    <option value="">쿠폰 선택 안함</option>
-                    {Array.isArray(availableCoupons) && availableCoupons.length > 0 ? (
-                        availableCoupons.map((coupon) => (
-                            <option key={coupon.id} value={JSON.stringify(coupon)}>
-                                {coupon.name} (-최대 {coupon.maxDiscountAmount.toLocaleString()}원 할인)
-                            </option>
-                        ))
-                    ) : (
-                        <option value="">사용 가능한 쿠폰이 없습니다.</option>
-                    )}
-                </select>
-
-                {/* ✅ 포인트 사용 */}
-                <h3>포인트 사용</h3>
-                <input
-                    type="number"
-                    value={usePoints}
-                    onChange={(e) => {
-                        let value = Math.min(Number(e.target.value), points);
-                        value = Math.max(value, 0);
-                        setUsePoints(value);
-                    }}
-                />
-                <p>보유 포인트: {points.toLocaleString()}원</p>
+            <div className="card cart-items-card">
+                <h2>주문 상품</h2>
+                {cartItems.map((item) => {
+                    const discount = selectedCoupons[item.id] ? (item.price * selectedCoupons[item.id].discount) / 100 : 0;
+                    const finalItemPrice = item.price - discount;
+                    return (
+                        <div key={item.id} className="cart-item">
+                            <img src={item.productImage} alt={item.productName} className="cart-item-image" />
+                            <h3>{item.productName}</h3>
+                            <p>색상: {item.color} | 사이즈: {item.size} | 수량: {item.quantity}</p>
+                            <p className="price"><span className="discounted-price">{finalItemPrice.toLocaleString()} 원</span></p>
+                        </div>
+                    );
+                })}
             </div>
 
-            {/* ✅ 최종 결제 금액 */}
-            <div className="final-amount">
-                <h3>최종 결제 금액: {finalAmount.toLocaleString()}원</h3>
-            </div>
+            <button className="btn btn-primary checkout-button">결제하기</button>
 
-            {/* ✅ 결제하기 버튼 (추후 구현) */}
-            <button className="payment-button" onClick={() => alert("결제 기능 구현 예정!")}>
-                결제하기
-            </button>
+            {isAddressModalOpen && <AddressModal onClose={() => setIsAddressModalOpen(false)} onSelectAddress={setSelectedAddress} />}
         </div>
     );
-}
+};
 
 export default Checkout;
