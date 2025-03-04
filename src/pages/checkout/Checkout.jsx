@@ -85,22 +85,28 @@ const Checkout = () => {
     const getApplicableCoupons = (cartItem) => {
         return availableCoupons.filter(
             (coupon) =>
-                coupon.target === "ALL_PRODUCTS" ||
-                (coupon.target === "CATEGORY" && coupon.targetValue === cartItem.category) ||
-                (coupon.target === "BRAND" && coupon.targetValue === cartItem.brandName)
+                (coupon.target === "ALL_PRODUCTS" ||
+                    (coupon.target === "CATEGORY" && coupon.targetValue === cartItem.category) ||
+                    (coupon.target === "BRAND" && coupon.targetValue === cartItem.brandName)) &&
+                // ✅ 이미 선택된 쿠폰이 다른 상품에서 사용되었는지 확인
+                !Object.values(selectedCoupons).some(
+                    (appliedCoupon) => appliedCoupon.id === coupon.id && appliedCoupon !== selectedCoupons[cartItem.id]
+                )
         );
     };
 
     const handleApplyCoupon = (cartItemId, selectedCouponId) => {
         setSelectedCoupons((prevCoupons) => {
             const updatedCoupons = { ...prevCoupons };
+
             if (selectedCouponId === "") {
-                delete updatedCoupons[cartItemId];
+                delete updatedCoupons[cartItemId]; // ✅ "선택 없음" 선택 시 쿠폰 제거
             } else {
                 const selectedCoupon = availableCoupons.find((coupon) => coupon.id === Number(selectedCouponId));
                 updatedCoupons[cartItemId] = selectedCoupon;
             }
-            updateFinalPrice(cartItems, updatedCoupons, usedPoints);
+
+            updateFinalPrice(cartItems, updatedCoupons, usedPoints); // ✅ 가격 업데이트
             return updatedCoupons;
         });
     };
@@ -127,8 +133,52 @@ const Checkout = () => {
 
     return (
         <div className="checkout-page">
-            <h1>결제하기</h1>
+            
+            <h2>주문 상품</h2>
+            <div className="card cart-items-card">
+                
+                {cartItems.map((item) => {
+                    const applicableCoupons = getApplicableCoupons(item);
+                    const discount = selectedCoupons[item.id] ? (item.price * selectedCoupons[item.id].discount) / 100 : 0;
+                    const finalItemPrice = item.price - discount;
 
+                    return (
+                        <div key={item.id} className="cart-item">
+                            <img src={item.productImage} alt={item.productName} className="cart-item-image" />
+                            <h3>{item.productName}</h3>
+                            <p>색상: {item.color} | 사이즈: {item.size} | 수량: {item.quantity}</p>
+
+                            <p className="price">
+                                {discount > 0 ? (
+                                    <>
+                                        <span className="original-price">{item.price.toLocaleString()} 원</span>
+                                        <span className="discounted-price">{finalItemPrice.toLocaleString()} 원</span>
+                                    </>
+                                ) : (
+                                    <span className="final-price">{item.price.toLocaleString()} 원</span>
+                                )}
+                            </p>
+
+                            {applicableCoupons.length > 0 && (
+                                <div className="coupon-selector">
+                                    <label>쿠폰 선택:</label>
+                                    <select
+                                        value={selectedCoupons[item.id]?.id || ""}
+                                        onChange={(e) => handleApplyCoupon(item.id, e.target.value)}
+                                    >
+                                        <option value="">쿠폰 선택 없음</option>
+                                        {applicableCoupons.map((coupon) => (
+                                            <option key={coupon.id} value={coupon.id}>
+                                                {coupon.name} (-{coupon.discount}%)
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
             <div className="card delivery-card">
                 <h2>배송지</h2>
                 {selectedAddress ? (
@@ -142,24 +192,23 @@ const Checkout = () => {
                 )}
             </div>
 
-            <div className="card cart-items-card">
-                <h2>주문 상품</h2>
-                {cartItems.map((item) => {
-                    const discount = selectedCoupons[item.id] ? (item.price * selectedCoupons[item.id].discount) / 100 : 0;
-                    const finalItemPrice = item.price - discount;
-                    return (
-                        <div key={item.id} className="cart-item">
-                            <img src={item.productImage} alt={item.productName} className="cart-item-image" />
-                            <h3>{item.productName}</h3>
-                            <p>색상: {item.color} | 사이즈: {item.size} | 수량: {item.quantity}</p>
-                            <p className="price"><span className="discounted-price">{finalItemPrice.toLocaleString()} 원</span></p>
-                        </div>
-                    );
-                })}
-            </div>
-
+            {/* <div className="checkout-summary">
+                <h2>결제 요약</h2>
+                <p>총 상품 금액: {totalPrice?.toLocaleString()} 원</p>
+                <p>사용 가능한 포인트: {availablePoints.toLocaleString()} P</p>
+                <label>사용할 포인트:</label>
+                <input
+                    type="number"
+                    value={usedPoints}
+                    onChange={handleUsePoints}
+                    min="0"
+                    max={Math.min(availablePoints || 0, totalPrice * 0.1)}
+                />
+                <button className="payment-button" onClick={handleCheckout}>
+                    결제하기
+                </button>
+            </div> */}
             <button className="btn btn-primary checkout-button">결제하기</button>
-
             {isAddressModalOpen && <AddressModal onClose={() => setIsAddressModalOpen(false)} onSelectAddress={setSelectedAddress} />}
         </div>
     );
