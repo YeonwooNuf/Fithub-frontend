@@ -120,7 +120,7 @@ const ProductDetail = () => {
                     id: product.id,
                     productName: product.name,
                     price: product.price,
-                    imageUrl: product.images[0], // 첫 번째 이미지 사용
+                    productImage: product.images[0], // 첫 번째 이미지 사용
                     size: selectedSize,
                     color: selectedColor,
                     quantity: 1, // 단일 상품이므로 수량 1
