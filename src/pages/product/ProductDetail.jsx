@@ -103,17 +103,20 @@ const ProductDetail = () => {
                 navigate("/login");
                 return;
             }
-
+    
             const headers = { Authorization: `Bearer ${token}` };
-
+    
             // ✅ 사용 가능한 포인트 가져오기
             const pointsResponse = await axios.get("/api/points", { headers });
             const availablePoints = pointsResponse.data.amount || 0;
-
-            // ✅ 사용 가능한 쿠폰 목록 가져오기
+    
+            // ✅ 사용 가능한 쿠폰 목록 가져오기 (전체 쿠폰)
             const couponsResponse = await axios.get("/api/coupons", { headers });
-            const availableCoupons = couponsResponse.data.coupons || [];
-
+            const allCoupons = couponsResponse.data.coupons || [];
+    
+            // ✅ 초기에는 선택된 쿠폰 없음
+            const appliedCoupons = {};
+    
             // ✅ 단일 상품을 cartItems 형식으로 변환하여 Checkout으로 전달
             const cartItems = [
                 {
@@ -126,14 +129,14 @@ const ProductDetail = () => {
                     quantity: 1, // 단일 상품이므로 수량 1
                 },
             ];
-
+    
             // ✅ Checkout 페이지로 이동 (Cart와 동일한 방식)
             navigate("/checkout", {
                 state: {
                     cartItems,
                     availablePoints,
-                    availableCoupons,
-                    appliedCoupons: {}, // 초기에는 선택된 쿠폰 없음
+                    availableCoupons: allCoupons, // ✅ 필터링하지 않고 전체 쿠폰 전달
+                    appliedCoupons, // ✅ 초기에는 선택된 쿠폰 없음
                     totalPrice: product.price, // 단일 상품 가격
                 },
             });
@@ -142,7 +145,7 @@ const ProductDetail = () => {
             alert("결제 페이지로 이동 중 오류가 발생했습니다.");
         }
     };
-
+    
     return (
         <div className="product-detail">
             {message && <div className="alert-message">{message}</div>} {/* ✅ 알림 메시지 추가 */}
