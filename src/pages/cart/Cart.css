@@ -226,3 +226,44 @@
         font-size: 14px;
     }
 }
+
+/* ✅ 상품 정보 (색상 / 사이즈 / 수량) */
+.product-info {
+    font-size: 16px;
+    display: inline-flex; /* ✅ 같은 줄 유지 */
+    flex-direction: column; /* ✅ 수량을 아래로 배치 */
+    align-items: center;
+    gap: 8px; /* ✅ 텍스트와 수량 변경 UI 간격 조정 */
+}
+
+/* ✅ 수량 변경 버튼 컨테이너 */
+.quantity-controls {
+    display: inline-flex; /* ✅ 같은 줄 유지 */
+    align-items: flex-start;
+    gap: 6px;
+    margin-left: 5px; /* ✅ "수량:"과 간격 추가 */
+}
+
+/* ✅ 수량 변경 버튼 */
+.quantity-controls button {
+    width: 26px;
+    height: 26px;
+    border: 1px solid #ddd;
+    background-color: white;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.quantity-controls button:hover {
+    background-color: #f8f8f8;
+}
+
+/* ✅ 수량 숫자 */
+.quantity-controls span {
+    min-width: 24px;
+    text-align: center;
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 26px; /* ✅ 버튼과 수직 정렬 맞추기 */
+}
