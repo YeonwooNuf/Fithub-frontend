@@ -127,6 +127,8 @@ const ProductDetail = () => {
                     size: selectedSize,
                     color: selectedColor,
                     quantity: 1, // 단일 상품이므로 수량 1
+                    category: product.category,
+                    brandName: product.brandName,
                 },
             ];
 

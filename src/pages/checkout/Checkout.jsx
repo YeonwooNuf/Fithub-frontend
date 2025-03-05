@@ -76,6 +76,9 @@ const Checkout = () => {
                 return;
             }
             const response = await axios.get("/api/coupons", { headers });
+
+            console.log("📌 불러온 쿠폰 목록:", response.data.coupons); // 쿠폰 데이터 확인
+
             setAvailableCoupons(response.data.coupons || []);
         } catch (error) {
             console.error("❌ 쿠폰 정보를 불러오는 중 오류 발생:", error);
@@ -83,16 +86,18 @@ const Checkout = () => {
     };
 
     const getApplicableCoupons = (cartItem) => {
-        return availableCoupons.filter(
-            (coupon) =>
-                (coupon.target === "ALL_PRODUCTS" ||
-                    (coupon.target === "CATEGORY" && coupon.targetValue === cartItem.category) ||
-                    (coupon.target === "BRAND" && coupon.targetValue === cartItem.brandName)) &&
-                // ✅ 이미 선택된 쿠폰이 다른 상품에서 사용되었는지 확인
-                !Object.values(selectedCoupons).some(
-                    (appliedCoupon) => appliedCoupon.id === coupon.id && appliedCoupon !== selectedCoupons[cartItem.id]
-                )
-        );
+        console.log("🛍️ 상품:", cartItem.productName, "| 카테고리:", cartItem.category, "| 브랜드:", cartItem.brandName);
+        console.log("📌 Checkout에서 보유 쿠폰 목록:", availableCoupons);
+
+        return availableCoupons.filter((coupon) => {
+            const isApplicable =
+                coupon.target === "ALL_PRODUCTS" ||
+                (coupon.target === "CATEGORY" && coupon.targetValue === cartItem.category) ||
+                (coupon.target === "BRAND" && coupon.targetValue === cartItem.brandName);
+
+            console.log(`🔎 쿠폰 [${coupon.name}]: 적용 가능 여부 =`, isApplicable);
+            return isApplicable;
+        });
     };
 
     const handleApplyCoupon = (cartItemId, selectedCouponId) => {
@@ -100,16 +105,22 @@ const Checkout = () => {
             const updatedCoupons = { ...prevCoupons };
 
             if (selectedCouponId === "") {
-                delete updatedCoupons[cartItemId]; // ✅ "선택 없음" 선택 시 쿠폰 제거
+                delete updatedCoupons[cartItemId];
             } else {
                 const selectedCoupon = availableCoupons.find((coupon) => coupon.id === Number(selectedCouponId));
-                updatedCoupons[cartItemId] = selectedCoupon;
+
+                // ✅ 기존에 선택된 쿠폰을 검사하지 않고, 새로운 쿠폰만 적용
+                if (selectedCoupon) {
+                    updatedCoupons[cartItemId] = selectedCoupon;
+                }
             }
 
-            updateFinalPrice(cartItems, updatedCoupons, usedPoints); // ✅ 가격 업데이트
+            console.log("📝 적용된 쿠폰:", updatedCoupons);
+            updateFinalPrice(cartItems, updatedCoupons, usedPoints);
             return updatedCoupons;
         });
     };
+
 
     const handleUsePoints = (event) => {
         let inputPoints = parseInt(event.target.value, 10) || 0;
@@ -133,10 +144,10 @@ const Checkout = () => {
 
     return (
         <div className="checkout-page">
-            
+
             <h2>주문 상품</h2>
             <div className="card cart-items-card">
-                
+
                 {cartItems.map((item) => {
                     const applicableCoupons = getApplicableCoupons(item);
                     const discount = selectedCoupons[item.id] ? (item.price * selectedCoupons[item.id].discount) / 100 : 0;
