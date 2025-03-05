@@ -45,6 +45,22 @@ const Cart = () => {
         }
     };
 
+    /** ✅ 장바구니 상품 삭제 */
+    const deleteCartItem = async (cartItemId) => {
+        try {
+            const token = localStorage.getItem("token");
+            const headers = token ? { Authorization: `Bearer ${token}` } : {};
+
+            await axios.delete(`/api/cart/remove/${cartItemId}`, { headers });
+
+            // ✅ 삭제 후 장바구니 목록 다시 불러오기
+            fetchCartItems();
+        } catch (error) {
+            console.error("❌ 장바구니 아이템 삭제 실패:", error);
+            alert("상품 삭제에 실패했습니다.");
+        }
+    };
+
     /** ✅ 수량 업데이트 API 호출 */
     const updateQuantityInDB = async (cartItemId, newQuantity) => {
         try {
@@ -297,6 +313,11 @@ const Cart = () => {
                                 checked={selectedItems.includes(item.id)}
                                 onChange={() => handleSelectItem(item.id)}
                             />
+                            {/* ✅ 삭제 버튼 추가 */}
+                            <button className="delete-button" onClick={() => deleteCartItem(item.id)}>
+                                삭제
+                            </button>
+
                             <img src={item.productImage} alt={item.productName} className="cart-item-image" />
                             <div className="cart-item-details">
                                 <h2>{item.productName}</h2>

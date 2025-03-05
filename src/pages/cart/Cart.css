@@ -151,6 +151,22 @@
     margin-top: 5px;
 }
 
+/* ✅ 삭제 버튼 */
+.delete-button {
+    background-color: #ff4d4f;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.delete-button:hover {
+    background-color: #d9363e;
+}
+
+
 /* ✅ 결제 요약 */
 .checkout-card h2 {
     font-size: 20px;
