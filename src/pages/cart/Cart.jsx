@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import "./Cart.css";
 import AddressModal from "../address/AddressModal";  // ✅ 모달 컴포넌트 import
+import { v4 as uuidv4 } from 'uuid';
 
 const Cart = () => {
     const navigate = useNavigate();
@@ -93,97 +94,92 @@ const Cart = () => {
         updateQuantityInDB(cartItemId, newQuantity);
     };
 
-    /** ✅ 쿠폰 적용 & 해제 */
     const handleApplyCoupon = (cartItemId, selectedCouponId) => {
-        setCartItems((prevItems) => {
-            let updatedItems = [...prevItems];
-
-            // ✅ 해당 상품 찾기
-            const itemIndex = updatedItems.findIndex((item) => item.id === cartItemId);
-            if (itemIndex === -1) return prevItems;
-
-            const item = updatedItems[itemIndex];
-
-            if (selectedCouponId === "") {
-                // ✅ "선택 없음" 선택 시 쿠폰 해제
-                setAppliedCoupons((prevCoupons) => {
-                    const newCoupons = { ...prevCoupons };
-                    delete newCoupons[cartItemId];  // ✅ 쿠폰 삭제
-                    return newCoupons;
-                });
-
-                // ✅ 강제 리렌더링을 위해 새로운 배열을 생성
-                updatedItems = [...mergeCartItems(updatedItems)];
-            } else {
-                // ✅ 쿠폰 찾기
-                const selectedCoupon = availableCoupons.find((coupon) => coupon.id === Number(selectedCouponId));
-                if (!selectedCoupon) return prevItems;
-
-                if (item.quantity === 1) {
-                    // ✅ 수량이 1개면 그대로 쿠폰 적용
-                    setAppliedCoupons((prevCoupons) => ({
-                        ...prevCoupons,
-                        [cartItemId]: selectedCoupon,
-                    }));
-                } else {
-                    // ✅ 수량이 2개 이상이면 상품을 분리
-                    const newItem = {
-                        ...item,
-                        id: `${item.id}-coupon`,  // ✅ 기존 ID에 '-coupon' 추가
-                        quantity: 1,
-                    };
-
-                    updatedItems[itemIndex].quantity -= 1; // ✅ 기존 상품 수량 감소
-                    updatedItems.push(newItem);
-
-                    // ✅ 새로운 상품에만 쿠폰 적용
-                    setAppliedCoupons((prevCoupons) => ({
-                        ...prevCoupons,
-                        [newItem.id]: selectedCoupon,
-                    }));
+        setCartItems(prevItems => {
+            return prevItems.flatMap(item => {
+                if (item.id === cartItemId) {
+                    if (!selectedCouponId) {
+                        // ✅ 쿠폰 해제 시 기존 상품과 병합
+                        const mergedItems = mergeCartItems([...prevItems]);
+    
+                        setAppliedCoupons(prev => {
+                            const updated = { ...prev };
+                            delete updated[cartItemId];  // ✅ 적용된 쿠폰 해제
+                            return updated;
+                        });
+    
+                        return mergedItems;
+                    } else {
+                        const selectedCoupon = availableCoupons.find(coupon => coupon.id === Number(selectedCouponId));
+                        if (!selectedCoupon) return [item];
+    
+                        if (item.quantity > 1) {
+                            // ✅ 쿠폰 적용 시 기존 상품을 나누고, 새로운 상품에 고유 ID 부여
+                            const updatedItems = prevItems.map(prevItem => {
+                                if (prevItem.id === item.id) {
+                                    return { ...prevItem, quantity: item.quantity - 1 }; // 기존 상품에서 1개 차감
+                                }
+                                return prevItem;
+                            });
+    
+                            const newItem = {
+                                ...item,
+                                id: uuidv4(), // ✅ 고유한 ID 부여
+                                quantity: 1,
+                            };
+    
+                            setAppliedCoupons(prev => ({
+                                ...prev,
+                                [newItem.id]: selectedCoupon,
+                            }));
+    
+                            return [...updatedItems, newItem];
+                        } else {
+                            // ✅ 수량이 1개면 기존 상품에 쿠폰만 적용
+                            setAppliedCoupons(prev => ({
+                                ...prev,
+                                [cartItemId]: selectedCoupon,
+                            }));
+                            return [item];
+                        }
+                    }
                 }
-            }
-
-            // ✅ 강제 리렌더링을 위해 새로운 배열을 반환
-            return [...updatedItems];
+                return [item];
+            });
         });
-
-        updateTotalPrice();
     };
-
+    
     /** ✅ 동일한 상품을 다시 합치는 함수 */
     const mergeCartItems = (items) => {
         let mergedItems = [];
         let newCoupons = { ...appliedCoupons };
-
+    
         items.forEach((item) => {
             const existingItem = mergedItems.find(
-                (merged) =>
+                merged =>
                     merged.productId === item.productId &&
                     merged.size === item.size &&
                     merged.color === item.color &&
                     !appliedCoupons[item.id] // ✅ 쿠폰이 없는 상품끼리만 병합
             );
-
+    
             if (existingItem) {
                 existingItem.quantity += item.quantity;
             } else {
                 mergedItems.push({ ...item });
             }
         });
-
+    
         // ✅ 병합 후 쿠폰이 적용되지 않은 상품들은 appliedCoupons에서 삭제
         Object.keys(newCoupons).forEach((key) => {
             if (!mergedItems.find((item) => item.id === key)) {
                 delete newCoupons[key];
             }
         });
-
+    
         setAppliedCoupons(newCoupons); // ✅ 적용된 쿠폰 상태 업데이트
-
-        // ✅ 리렌더링을 위해 새로운 배열을 반환
-        setCartItems([...mergedItems]);
-
+        setCartItems([...mergedItems]); // ✅ 새로운 병합된 상품 리스트 반영
+    
         return mergedItems;
     };
 
@@ -232,14 +228,14 @@ const Cart = () => {
     /** ✅ 적용 가능한 쿠폰 필터링 */
     const getApplicableCoupons = (cartItem) => {
         return availableCoupons.filter(
-            (coupon) =>
+            coupon =>
                 (coupon.target === "ALL_PRODUCTS" ||
                     (coupon.target === "CATEGORY" && coupon.targetValue === cartItem.category) ||
                     (coupon.target === "BRAND" && coupon.targetValue === cartItem.brandName)) &&
-                !Object.values(appliedCoupons).some((appliedCoupon) => appliedCoupon.id === coupon.id && appliedCoupon !== appliedCoupons[cartItem.id])
+                !Object.values(appliedCoupons).some(appliedCoupon => appliedCoupon.id === coupon.id)
         );
     };
-
+    
     /** ✅ 기본 배송지 가져오기 */
     const fetchDefaultAddress = async () => {
         try {
@@ -300,74 +296,67 @@ const Cart = () => {
             </div>
 
 
-            <div className="cart-items">
-                {cartItems.map((item) => {
-                    const discount = appliedCoupons[item.id] ? (item.price * appliedCoupons[item.id].discount) / 100 : 0;
-                    const finalPrice = appliedCoupons[item.id] ? item.price - discount : item.price;
+            {cartItems.map((item) => {
+                const discount = appliedCoupons[item.id] ? (item.price * appliedCoupons[item.id].discount) / 100 : 0;
+                const finalPrice = appliedCoupons[item.id] ? item.price - discount : item.price;
 
-                    return (
-                        <div key={item.id} className="cart-item">
-                            {/* ✅ 체크박스 추가 */}
-                            <input
-                                type="checkbox"
-                                checked={selectedItems.includes(item.id)}
-                                onChange={() => handleSelectItem(item.id)}
-                            />
-                            {/* ✅ 삭제 버튼 추가 */}
-                            <button className="delete-button" onClick={() => deleteCartItem(item.id)}>
-                                삭제
-                            </button>
+                return (
+                    <div key={`${item.id}-${item.quantity}`} className="cart-item"> {/* 🔥 key 중복 방지 */}
+                        <input
+                            type="checkbox"
+                            checked={selectedItems.includes(item.id)}
+                            onChange={() => handleSelectItem(item.id)}
+                        />
+                        <button className="delete-button" onClick={() => deleteCartItem(item.id)}>
+                            삭제
+                        </button>
 
-                            <img src={item.productImage} alt={item.productName} className="cart-item-image" />
-                            <div className="cart-item-details">
-                                <h2>{item.productName}</h2>
-                                <div className="product-info">
-                                    <p>색상: {item.color} / 사이즈: {item.size}</p>
-                                    {/* ✅ 수량 변경 UI */}
-                                    <div className="quantity-controls">
-                                        <button onClick={() => decreaseQuantity(item.id, item.quantity)} disabled={item.quantity <= 1}>−</button>
-                                        <p>수량 :</p>
-                                        <span>{item.quantity}</span>
-                                        <button onClick={() => increaseQuantity(item.id, item.quantity)}>+</button>
-                                    </div>
-                                </div>
-                                {/* ✅ 기존 가격 (빗금) & 할인 가격 (빨간색) */}
-                                {appliedCoupons[item.id] ? (
-                                    <p className="price">
-                                        {appliedCoupons[item.id] && <span className="original-price">{item.price.toLocaleString()} 원</span>}
-                                        <span className="discounted-price">{finalPrice.toLocaleString()} 원</span>
-                                    </p>
-                                ) : (
-                                    <p className="price">{item.price.toLocaleString()} 원</p>
-                                )}
-
-                                {/* ✅ 적용된 쿠폰 표시 */}
-                                {appliedCoupons[item.id] && (
-                                    <p className="applied-coupon">
-                                        적용된 쿠폰: {appliedCoupons[item.id].name} (-{appliedCoupons[item.id].discount}%)
-                                    </p>
-                                )}
-
-                                {/* ✅ 쿠폰 선택 */}
-                                <div className="coupon-selector">
-                                    <label>쿠폰 선택:</label>
-                                    <select
-                                        onChange={(e) => handleApplyCoupon(item.id, e.target.value)}
-                                        value={appliedCoupons[item.id]?.id || ""} // ✅ 적용된 쿠폰 유지
-                                    >
-                                        <option value="">선택 없음</option>
-                                        {getApplicableCoupons(item).map((coupon) => (
-                                            <option key={coupon.id} value={coupon.id}>
-                                                {coupon.name} (-{coupon.discount}%)
-                                            </option>
-                                        ))}
-                                    </select>
+                        <img src={item.productImage} alt={item.productName} className="cart-item-image" />
+                        <div className="cart-item-details">
+                            <h2>{item.productName}</h2>
+                            <div className="product-info">
+                                <p>색상: {item.color} / 사이즈: {item.size}</p>
+                                <div className="quantity-controls">
+                                    <button onClick={() => decreaseQuantity(item.id, item.quantity)} disabled={item.quantity <= 1}>−</button>
+                                    <p>수량 :</p>
+                                    <span>{item.quantity}</span>
+                                    <button onClick={() => increaseQuantity(item.id, item.quantity)}>+</button>
                                 </div>
                             </div>
+                            {appliedCoupons[item.id] ? (
+                                <p className="price">
+                                    <span className="original-price">{item.price.toLocaleString()} 원</span>
+                                    <span className="discounted-price">{finalPrice.toLocaleString()} 원</span>
+                                </p>
+                            ) : (
+                                <p className="price">{item.price.toLocaleString()} 원</p>
+                            )}
+
+                            {appliedCoupons[item.id] && (
+                                <p className="applied-coupon">
+                                    적용된 쿠폰: {appliedCoupons[item.id].name} (-{appliedCoupons[item.id].discount}%)
+                                </p>
+                            )}
+
+                            <div className="coupon-selector">
+                                <label>쿠폰 선택:</label>
+                                <select
+                                    onChange={(e) => handleApplyCoupon(item.id, e.target.value)}
+                                    value={appliedCoupons[item.id]?.id || ""}
+                                >
+                                    <option value="">선택 없음</option>
+                                    {getApplicableCoupons(item).map((coupon) => (
+                                        <option key={coupon.id} value={coupon.id}>
+                                            {coupon.name} (-{coupon.discount}%)
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
                         </div>
-                    );
-                })}
-            </div>
+                    </div>
+                );
+            })}
+
 
             <div className="cart-summary">
                 <h2>결제 요약</h2>
