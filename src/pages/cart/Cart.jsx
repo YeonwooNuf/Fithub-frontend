@@ -264,7 +264,7 @@ const Cart = () => {
         }
     };
 
-    /** ✅ 결제하기 (선택된 상품만 전달) */
+    /** ✅ 구매하기 (선택된 상품만 전달) */
     const handleCheckout = () => {
         const itemsToPurchase = cartItems.filter(item => selectedItems.includes(item.id));
         if (itemsToPurchase.length === 0) {
