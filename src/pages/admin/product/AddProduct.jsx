@@ -170,6 +170,7 @@ function AdminProductAdd() {
           <option value="">카테고리 선택</option>
           <option value="TOP">상의</option>
           <option value="BOTTOM">하의</option>
+          <option value="OUTER">아우터</option>
           <option value="SHOES">신발</option>
           <option value="ACCESSORY">악세서리</option>
         </select>
