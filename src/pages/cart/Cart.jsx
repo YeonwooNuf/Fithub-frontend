@@ -95,36 +95,48 @@ const Cart = () => {
     };
 
     /** ✅ 쿠폰 적용/해제 및 변경 */
-    /** ✅ 쿠폰 적용/해제 및 변경 */
     const handleApplyCoupon = (cartItemId, selectedCouponId) => {
         setCartItems(prevItems => {
             return prevItems.flatMap(item => {
                 if (item.id === cartItemId) {
+                    const previousCoupon = appliedCoupons[item.id]; // ✅ 기존 적용된 쿠폰 저장
+                    console.log("✅ 기존 쿠폰:", previousCoupon);
+
                     if (!selectedCouponId) {
-                        // ✅ 쿠폰 해제 시 원래 상품과 병합
-                        const mergedItems = mergeCartItems(prevItems.map(i =>
-                            i.id === item.id ? { ...item, quantity: item.quantity } : i
-                        ));
+                        // ✅ 쿠폰 해제 시 기존 쿠폰 다시 availableCoupons에 추가하는지 확인
+                        console.log("🚀 쿠폰 해제됨: 기존 쿠폰을 다시 추가해야 함", previousCoupon);
 
                         setAppliedCoupons(prev => {
                             const updated = { ...prev };
-                            delete updated[item.id];  // ✅ 적용된 쿠폰 제거
+                            delete updated[item.id];
                             return updated;
                         });
 
-                        updateTotalPrice(mergedItems); // ✅ 총 가격 업데이트
+                        if (previousCoupon) {
+                            setAvailableCoupons(prevCoupons => {
+                                console.log("📢 기존 쿠폰 availableCoupons에 추가됨:", previousCoupon);
+                                return [...prevCoupons, previousCoupon];
+                            });
+                        }
+
+                        // ✅ 상품 병합 과정 확인
+                        console.log("🔍 기존 상품 병합 전:", prevItems);
+                        const mergedItems = mergeCartItems(prevItems);
+                        console.log("🔍 병합 후:", mergedItems);
+
+                        updateTotalPrice(mergedItems);
                         return mergedItems;
                     } else {
                         const selectedCoupon = availableCoupons.find(coupon => coupon.id === Number(selectedCouponId));
                         if (!selectedCoupon) return [item];
 
-                        const previousCoupon = appliedCoupons[item.id]; // ✅ 기존 적용된 쿠폰 저장
-
                         if (item.quantity > 1) {
-                            // ✅ 쿠폰 적용 시 기존 상품을 나누고, 새로운 상품 생성
+                            // ✅ 쿠폰 적용 시 상품이 나누어지는 과정 확인
+                            console.log("🆕 새로운 쿠폰 적용: 기존 상품을 나누고 새로운 상품 생성", selectedCoupon);
+
                             const newItem = {
                                 ...item,
-                                id: uuidv4(), // ✅ 새로운 상품 ID
+                                id: uuidv4(),
                                 quantity: 1,
                             };
 
@@ -133,23 +145,27 @@ const Cart = () => {
                                 [newItem.id]: selectedCoupon,
                             }));
 
-                            const updatedItem = { ...item, quantity: item.quantity - 1 };
-
-                            // ✅ 기존 쿠폰을 availableCoupons 목록에 다시 추가
-                            if (previousCoupon && !availableCoupons.some(coupon => coupon.id === previousCoupon.id)) {
+                            // ✅ 기존 쿠폰을 다시 availableCoupons에 추가하는지 확인
+                            if (previousCoupon) {
+                                console.log("📢 기존 쿠폰 availableCoupons에 다시 추가됨:", previousCoupon);
                                 setAvailableCoupons(prevCoupons => [...prevCoupons, previousCoupon]);
                             }
 
-                            updateTotalPrice([...prevItems, newItem]); // ✅ 총 가격 업데이트
+                            const updatedItem = { ...item, quantity: item.quantity - 1 };
+                            updateTotalPrice([...prevItems, newItem]);
                             return [updatedItem, newItem];
                         } else {
-                            // ✅ 수량이 1개면 기존 상품에 쿠폰만 적용
                             setAppliedCoupons(prev => ({
                                 ...prev,
                                 [cartItemId]: selectedCoupon,
                             }));
 
-                            updateTotalPrice(prevItems); // ✅ 총 가격 업데이트
+                            if (previousCoupon) {
+                                console.log("📢 기존 쿠폰 availableCoupons에 다시 추가됨:", previousCoupon);
+                                setAvailableCoupons(prevCoupons => [...prevCoupons, previousCoupon]);
+                            }
+
+                            updateTotalPrice(prevItems);
                             return [item];
                         }
                     }
@@ -159,36 +175,40 @@ const Cart = () => {
         });
     };
 
+
     /** ✅ 동일한 상품을 다시 합치는 함수 */
     const mergeCartItems = (items) => {
         let mergedItems = [];
-        let newCoupons = {}; // ✅ 쿠폰 정보를 새로 생성하여 적용
+        let newCoupons = {};
 
         items.forEach((item) => {
-            // ✅ 같은 상품 + 같은 옵션 + 쿠폰 미적용 상태일 때 병합
+            console.log("🔍 현재 병합 확인: ", item.productId, " - 쿠폰 적용 여부:", appliedCoupons[item.id] ? "✅ 적용됨" : "❌ 미적용");
+
             const existingItem = mergedItems.find(
                 merged =>
                     merged.productId === item.productId &&
                     merged.size === item.size &&
                     merged.color === item.color &&
-                    (!appliedCoupons[item.id] || !appliedCoupons[merged.id]) // ✅ 쿠폰 미적용 상태일 때만 병합
+                    (!appliedCoupons[item.id] && !appliedCoupons[merged.id]) // ✅ 쿠폰이 없는 경우만 병합
             );
 
             if (existingItem) {
+                console.log("🔄 병합되는 상품:", existingItem.productId, "기존 수량:", existingItem.quantity, "새로운 수량:", item.quantity);
                 existingItem.quantity += item.quantity;
             } else {
                 mergedItems.push({ ...item });
             }
 
-            // ✅ 쿠폰 적용된 상품의 쿠폰 정보를 유지
             if (appliedCoupons[item.id]) {
                 newCoupons[item.id] = appliedCoupons[item.id];
             }
         });
 
-        setAppliedCoupons(newCoupons); // ✅ 쿠폰 정보 업데이트
-        setCartItems([...mergedItems]); // ✅ 병합된 상품 리스트 반영
-        updateTotalPrice(mergedItems); // ✅ 총 가격 업데이트
+        console.log("📌 병합 완료 후 결과:", mergedItems);
+
+        setAppliedCoupons(newCoupons);
+        setCartItems([...mergedItems]);
+        updateTotalPrice(mergedItems);
 
         return mergedItems;
     };
@@ -233,7 +253,6 @@ const Cart = () => {
     };
 
     /** ✅ 특정 상품에 적용 가능한 쿠폰 필터링 */
-    /** ✅ 특정 상품에 적용 가능한 쿠폰 필터링 (중복 제거) */
     const getApplicableCoupons = (cartItem) => {
         const appliedCouponId = appliedCoupons[cartItem.id]?.id;
 
@@ -242,14 +261,13 @@ const Cart = () => {
             ? availableCoupons.find(coupon => coupon.id === appliedCouponId)
             : null;
 
-        // ✅ 적용 가능한 쿠폰 필터링 (카테고리 & 브랜드 적용 유지)
         let applicableCoupons = availableCoupons.filter(
             coupon =>
                 (coupon.target === "ALL_PRODUCTS" ||
                     (coupon.target === "CATEGORY" && coupon.targetValue === cartItem.category) ||
                     (coupon.target === "BRAND" && coupon.targetValue === cartItem.brandName)) &&
-                (!Object.values(appliedCoupons).some(applied => applied.id === coupon.id) || // ✅ 다른 상품에서 사용한 쿠폰 제외
-                    (appliedCoupon && appliedCoupon.id === coupon.id)) // ✅ 현재 상품에 적용된 쿠폰은 유지
+                (!Object.values(appliedCoupons).some(applied => applied.id === coupon.id) ||
+                    (appliedCoupon && appliedCoupon.id === coupon.id))
         );
 
         // ✅ 적용된 쿠폰이 이미 목록에 없다면 추가
@@ -259,6 +277,7 @@ const Cart = () => {
 
         return applicableCoupons;
     };
+
 
     /** ✅ 기본 배송지 가져오기 */
     const fetchDefaultAddress = async () => {
