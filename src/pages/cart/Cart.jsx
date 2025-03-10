@@ -25,6 +25,12 @@ const Cart = () => {
         fetchDefaultAddress();
     }, []);
 
+    useEffect(() => {
+        console.log("🖥 availableCoupons 상태 변경 감지:", availableCoupons);
+        setForceRender(prev => prev + 1); // ✅ 강제 리렌더링
+    }, [availableCoupons]);
+
+
     /** ✅ 장바구니 목록 조회 */
     const fetchCartItems = async () => {
         try {
@@ -95,62 +101,67 @@ const Cart = () => {
     };
 
     /** ✅ 쿠폰 적용/해제 및 변경 */
+    const [forceRender, setForceRender] = useState(0); // ✅ UI 강제 리렌더링을 위한 상태 추가
+
     const handleApplyCoupon = (cartItemId, selectedCouponId) => {
         setCartItems(prevItems => {
             return prevItems.flatMap(item => {
                 if (item.id === cartItemId) {
                     const previousCoupon = appliedCoupons[item.id]; // ✅ 기존 적용된 쿠폰 저장
                     console.log("✅ 기존 쿠폰:", previousCoupon);
-
+    
                     if (!selectedCouponId) {
-                        // ✅ 쿠폰 해제 시 기존 쿠폰 다시 availableCoupons에 추가하는지 확인
                         console.log("🚀 쿠폰 해제됨: 기존 쿠폰을 다시 추가해야 함", previousCoupon);
-
+    
                         setAppliedCoupons(prev => {
                             const updated = { ...prev };
                             delete updated[item.id];
                             return updated;
                         });
-
+    
                         if (previousCoupon) {
                             setAvailableCoupons(prevCoupons => {
-                                console.log("📢 기존 쿠폰 availableCoupons에 추가됨:", previousCoupon);
-                                return [...prevCoupons, previousCoupon];
+                                const updatedCoupons = new Set([...prevCoupons, previousCoupon]); // ✅ Set 사용하여 중복 방지
+                                console.log("📢 기존 쿠폰 availableCoupons에 다시 추가됨:", Array.from(updatedCoupons));
+                                return Array.from(updatedCoupons); // ✅ React가 상태 변경을 감지할 수 있도록 배열로 변환
                             });
+    
+                            setForceRender(prev => prev + 1); // ✅ UI 강제 리렌더링 트리거
                         }
-
-                        // ✅ 상품 병합 과정 확인
-                        console.log("🔍 기존 상품 병합 전:", prevItems);
+    
                         const mergedItems = mergeCartItems(prevItems);
                         console.log("🔍 병합 후:", mergedItems);
-
+    
                         updateTotalPrice(mergedItems);
                         return mergedItems;
                     } else {
                         const selectedCoupon = availableCoupons.find(coupon => coupon.id === Number(selectedCouponId));
                         if (!selectedCoupon) return [item];
-
+    
                         if (item.quantity > 1) {
-                            // ✅ 쿠폰 적용 시 상품이 나누어지는 과정 확인
                             console.log("🆕 새로운 쿠폰 적용: 기존 상품을 나누고 새로운 상품 생성", selectedCoupon);
-
+    
                             const newItem = {
                                 ...item,
                                 id: uuidv4(),
                                 quantity: 1,
                             };
-
+    
                             setAppliedCoupons(prev => ({
                                 ...prev,
                                 [newItem.id]: selectedCoupon,
                             }));
-
-                            // ✅ 기존 쿠폰을 다시 availableCoupons에 추가하는지 확인
+    
                             if (previousCoupon) {
-                                console.log("📢 기존 쿠폰 availableCoupons에 다시 추가됨:", previousCoupon);
-                                setAvailableCoupons(prevCoupons => [...prevCoupons, previousCoupon]);
+                                setAvailableCoupons(prevCoupons => {
+                                    const updatedCoupons = new Set([...prevCoupons, previousCoupon]);
+                                    console.log("📢 기존 쿠폰 availableCoupons에 다시 추가됨:", Array.from(updatedCoupons));
+                                    return Array.from(updatedCoupons);
+                                });
+    
+                                setForceRender(prev => prev + 1); // ✅ UI 강제 리렌더링 트리거
                             }
-
+    
                             const updatedItem = { ...item, quantity: item.quantity - 1 };
                             updateTotalPrice([...prevItems, newItem]);
                             return [updatedItem, newItem];
@@ -159,12 +170,17 @@ const Cart = () => {
                                 ...prev,
                                 [cartItemId]: selectedCoupon,
                             }));
-
+    
                             if (previousCoupon) {
-                                console.log("📢 기존 쿠폰 availableCoupons에 다시 추가됨:", previousCoupon);
-                                setAvailableCoupons(prevCoupons => [...prevCoupons, previousCoupon]);
+                                setAvailableCoupons(prevCoupons => {
+                                    const updatedCoupons = new Set([...prevCoupons, previousCoupon]);
+                                    console.log("📢 기존 쿠폰 availableCoupons에 다시 추가됨:", Array.from(updatedCoupons));
+                                    return Array.from(updatedCoupons);
+                                });
+    
+                                setForceRender(prev => prev + 1); // ✅ UI 강제 리렌더링 트리거
                             }
-
+    
                             updateTotalPrice(prevItems);
                             return [item];
                         }
@@ -174,7 +190,7 @@ const Cart = () => {
             });
         });
     };
-
+    
 
     /** ✅ 동일한 상품을 다시 합치는 함수 */
     const mergeCartItems = (items) => {
@@ -189,7 +205,7 @@ const Cart = () => {
                     merged.productId === item.productId &&
                     merged.size === item.size &&
                     merged.color === item.color &&
-                    (!appliedCoupons[item.id] && !appliedCoupons[merged.id]) // ✅ 쿠폰이 없는 경우만 병합
+                    (!appliedCoupons[item.id] && !appliedCoupons[merged.id]) // ✅ 쿠폰이 적용되지 않은 상품끼리만 병합
             );
 
             if (existingItem) {
@@ -212,6 +228,7 @@ const Cart = () => {
 
         return mergedItems;
     };
+
 
     /** ✅ 포인트 적용 */
     const handleUsePoints = (event) => {
@@ -384,6 +401,7 @@ const Cart = () => {
                             <div className="coupon-selector">
                                 <label>쿠폰 선택:</label>
                                 <select
+                                    key={availableCoupons.length + forceRender} // ✅ 강제 리렌더링
                                     onChange={(e) => handleApplyCoupon(item.id, e.target.value)}
                                     value={appliedCoupons[item.id]?.id || ""}
                                 >
