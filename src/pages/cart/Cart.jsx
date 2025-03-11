@@ -26,10 +26,25 @@ const Cart = () => {
     }, []);
 
     useEffect(() => {
-        console.log("🖥 availableCoupons 상태 변경 감지:", availableCoupons);
-        setForceRender(prev => prev + 1); // ✅ 강제 리렌더링
-    }, [availableCoupons]);
+        console.log("🖥 appliedCoupons 상태 변경 감지:", appliedCoupons);
 
+        setAvailableCoupons(prevCoupons => {
+            let updatedCoupons = new Set([...prevCoupons]);
+
+            // 기존 쿠폰을 다시 추가해야 하는 경우 감지
+            Object.values(appliedCoupons).forEach(coupon => {
+                if (!updatedCoupons.has(coupon)) {
+                    updatedCoupons.add(coupon);
+                }
+            });
+
+            console.log("📢 availableCoupons 업데이트됨:", Array.from(updatedCoupons));
+            return Array.from(updatedCoupons);
+        });
+
+        // ✅ 강제 렌더링을 트리거하여 UI에서 즉시 반영되도록 함
+        setTimeout(() => setForceRender(prev => prev + 1), 0);
+    }, [appliedCoupons]); // ✅ appliedCoupons가 변경될 때 실행
 
     /** ✅ 장바구니 목록 조회 */
     const fetchCartItems = async () => {
@@ -104,93 +119,149 @@ const Cart = () => {
     const [forceRender, setForceRender] = useState(0); // ✅ UI 강제 리렌더링을 위한 상태 추가
 
     const handleApplyCoupon = (cartItemId, selectedCouponId) => {
+        console.log("🟢 쿠폰 변경 시작 | cartItemId:", cartItemId, "| 선택된 쿠폰 ID:", selectedCouponId);
+    
         setCartItems(prevItems => {
             return prevItems.flatMap(item => {
-                if (item.id === cartItemId) {
-                    const previousCoupon = appliedCoupons[item.id]; // ✅ 기존 적용된 쿠폰 저장
-                    console.log("✅ 기존 쿠폰:", previousCoupon);
+                if (item.id === cartItemId) {  // ✅ 현재 선택한 상품(cartItemId)인지 확인
+                    const previousCoupon = appliedCoupons[item.id]; // ✅ 기존에 적용된 쿠폰 가져오기
+                    console.log("🔵 기존 쿠폰:", previousCoupon);
     
-                    if (!selectedCouponId) {
-                        console.log("🚀 쿠폰 해제됨: 기존 쿠폰을 다시 추가해야 함", previousCoupon);
+                    /** 
+                     * ✅ 1️⃣ 선택 없음 (쿠폰 해제)
+                     * - 사용자가 '선택 없음'을 선택한 경우 실행
+                     * - 즉, 기존에 적용된 쿠폰을 제거해야 하는 상황
+                     **/
+                    if (!selectedCouponId) {  
+                        console.log("⚪ 쿠폰 해제됨. 기존 쿠폰 다시 추가 예정:", previousCoupon);
     
+                        // ✅ 현재 상품에서 적용된 쿠폰을 제거 (appliedCoupons에서 삭제)
                         setAppliedCoupons(prev => {
                             const updated = { ...prev };
                             delete updated[item.id];
                             return updated;
                         });
     
+                        // ✅ 기존 쿠폰을 availableCoupons에 다시 추가
                         if (previousCoupon) {
                             setAvailableCoupons(prevCoupons => {
-                                const updatedCoupons = new Set([...prevCoupons, previousCoupon]); // ✅ Set 사용하여 중복 방지
-                                console.log("📢 기존 쿠폰 availableCoupons에 다시 추가됨:", Array.from(updatedCoupons));
-                                return Array.from(updatedCoupons); // ✅ React가 상태 변경을 감지할 수 있도록 배열로 변환
+                                let updatedCoupons = new Set([...prevCoupons, previousCoupon]);
+                                console.log("📢 기존 쿠폰 availableCoupons에 추가됨:", Array.from(updatedCoupons));
+                                return Array.from(updatedCoupons);
                             });
-    
-                            setForceRender(prev => prev + 1); // ✅ UI 강제 리렌더링 트리거
                         }
     
-                        const mergedItems = mergeCartItems(prevItems);
-                        console.log("🔍 병합 후:", mergedItems);
+                        setForceRender(prev => prev + 1); // ✅ UI 강제 리렌더링
     
-                        updateTotalPrice(mergedItems);
-                        return mergedItems;
-                    } else {
+                        // ✅ 비동기적으로 availableCoupons 업데이트 확인
+                        setTimeout(() => {
+                            console.log("📌 쿠폰 해제 후 availableCoupons 최신 상태:", availableCoupons);
+                        }, 500);
+    
+                        // ✅ 쿠폰 해제 시, 기존 상품들을 다시 병합 (같은 상품이면 합쳐짐)
+                        let updatedItems = mergeCartItems(prevItems.map(i =>
+                            i.id === cartItemId ? { ...i, quantity: i.quantity } : i
+                        ));
+                        console.log("🔍 병합 후:", updatedItems);
+    
+                        updateTotalPrice(updatedItems);
+                        return updatedItems;
+                    } 
+                    
+                    /** 
+                     * ✅ 2️⃣ 새로운 쿠폰 적용
+                     * - 사용자가 다른 쿠폰을 선택했을 때 실행
+                     * - 기존 쿠폰을 제거하고, 새로운 쿠폰을 적용해야 하는 상황
+                     **/
+                    else {  
                         const selectedCoupon = availableCoupons.find(coupon => coupon.id === Number(selectedCouponId));
-                        if (!selectedCoupon) return [item];
+                        if (!selectedCoupon) return [item]; // ❌ 쿠폰이 존재하지 않으면 아무 변경 없이 반환
     
-                        if (item.quantity > 1) {
-                            console.log("🆕 새로운 쿠폰 적용: 기존 상품을 나누고 새로운 상품 생성", selectedCoupon);
+                        console.log("🆕 새로운 쿠폰 적용:", selectedCoupon);
     
+                        /** 
+                         * ✅ 2-1️⃣ 수량이 2개 이상인 경우 (상품 분할 필요)
+                         * - 하나의 상품에 여러 개의 수량이 있을 때, 일부 상품만 쿠폰을 적용해야 하는 경우
+                         * - 기존 상품에서 수량을 1개 줄이고, 새로운 상품을 생성하여 쿠폰을 적용
+                         **/
+                        if (item.quantity > 1) {  
+                            console.log("✂️ 기존 상품을 나누고 새로운 상품 생성");
+    
+                            // ✅ 기존 상품을 복사하여 새 상품 생성 (수량 1로 설정)
                             const newItem = {
                                 ...item,
                                 id: uuidv4(),
                                 quantity: 1,
                             };
     
+                            // ✅ 새로운 상품에 선택한 쿠폰 적용
                             setAppliedCoupons(prev => ({
                                 ...prev,
                                 [newItem.id]: selectedCoupon,
                             }));
     
+                            // ✅ 기존 쿠폰을 다시 availableCoupons에 추가
                             if (previousCoupon) {
                                 setAvailableCoupons(prevCoupons => {
-                                    const updatedCoupons = new Set([...prevCoupons, previousCoupon]);
-                                    console.log("📢 기존 쿠폰 availableCoupons에 다시 추가됨:", Array.from(updatedCoupons));
+                                    let updatedCoupons = new Set([...prevCoupons, previousCoupon]);
+                                    console.log("📢 기존 쿠폰 availableCoupons에 추가됨:", Array.from(updatedCoupons));
                                     return Array.from(updatedCoupons);
                                 });
-    
-                                setForceRender(prev => prev + 1); // ✅ UI 강제 리렌더링 트리거
                             }
     
+                            setForceRender(prev => prev + 1); // ✅ UI 강제 리렌더링
+    
+                            // ✅ 비동기적으로 availableCoupons 업데이트 확인
+                            setTimeout(() => {
+                                console.log("📌 쿠폰 변경 후 availableCoupons 최신 상태:", availableCoupons);
+                            }, 500);
+    
+                            // ✅ 기존 상품에서 수량을 1 줄이고, 새로운 상품을 추가하여 상태 업데이트
                             const updatedItem = { ...item, quantity: item.quantity - 1 };
                             updateTotalPrice([...prevItems, newItem]);
-                            return [updatedItem, newItem];
-                        } else {
+                            return [updatedItem, newItem];  // 🔄 기존 상품과 새 상품을 함께 반환
+                        } 
+                        
+                        /** 
+                         * ✅ 2-2️⃣ 수량이 1개인 경우 (상품 분할 불필요)
+                         * - 상품이 1개밖에 없기 때문에 단순히 쿠폰을 변경하면 됨
+                         **/
+                        else {  
+                            // ✅ 기존 상품에 선택한 쿠폰 적용
                             setAppliedCoupons(prev => ({
                                 ...prev,
                                 [cartItemId]: selectedCoupon,
                             }));
     
+                            // ✅ 기존 쿠폰을 다시 availableCoupons에 추가
                             if (previousCoupon) {
                                 setAvailableCoupons(prevCoupons => {
-                                    const updatedCoupons = new Set([...prevCoupons, previousCoupon]);
-                                    console.log("📢 기존 쿠폰 availableCoupons에 다시 추가됨:", Array.from(updatedCoupons));
+                                    let updatedCoupons = new Set([...prevCoupons, previousCoupon]);
+                                    console.log("📢 기존 쿠폰 availableCoupons에 추가됨:", Array.from(updatedCoupons));
                                     return Array.from(updatedCoupons);
                                 });
-    
-                                setForceRender(prev => prev + 1); // ✅ UI 강제 리렌더링 트리거
                             }
     
+                            setForceRender(prev => prev + 1); // ✅ UI 강제 리렌더링
+    
+                            // ✅ 비동기적으로 availableCoupons 업데이트 확인
+                            setTimeout(() => {
+                                console.log("📌 쿠폰 변경 후 availableCoupons 최신 상태:", availableCoupons);
+                            }, 500);
+    
                             updateTotalPrice(prevItems);
-                            return [item];
+                            return [item];  // 🔄 기존 상품을 그대로 반환 (수량 변화 없음)
                         }
                     }
                 }
-                return [item];
+                return [item];  // 🔄 선택한 상품이 아닌 경우 그대로 유지
             });
         });
     };
-    
+
+    /** ✅ 리스트 렌더링 시점에 로그 추가 */
+    console.log("📌 장바구니 렌더링 | appliedCoupons:", appliedCoupons);
+    console.log("📌 장바구니 렌더링 | availableCoupons:", availableCoupons);
 
     /** ✅ 동일한 상품을 다시 합치는 함수 */
     const mergeCartItems = (items) => {
