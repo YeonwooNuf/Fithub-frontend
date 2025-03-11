@@ -24,6 +24,12 @@ const Cart = () => {
         fetchDefaultAddress();
     }, []);
 
+    // ✅ cartItems가 변경될 때마다 자동으로 총 결제 금액 업데이트
+    useEffect(() => {
+        updateTotalPrice(cartItems);
+    }, [cartItems]); // cartItems 상태가 변경될 때마다 실행
+
+
     /** ✅ 장바구니 목록 조회 */
     const fetchCartItems = async () => {
         try {
@@ -132,56 +138,44 @@ const Cart = () => {
     };
 
     /** ✅ 쿠폰 적용/해제 및 변경 */
+    /** ✅ 쿠폰 적용/해제 및 변경 */
     const handleApplyCoupon = (cartItemId, selectedCouponId) => {
         console.log("🟢 쿠폰 변경 시작 | cartItemId:", cartItemId, "| 선택된 쿠폰 ID:", selectedCouponId);
 
         setCartItems(prevItems => {
             let newAppliedCoupons = { ...appliedCoupons }; // ✅ appliedCoupons 복사본 생성
-            let newAvailableCoupons = new Set([...availableCoupons]); // ✅ availableCoupons 복사본 생성
-
-            const updatedItems = prevItems.map(item => {
+            let updatedItems = prevItems.map(item => {
                 if (item.id === cartItemId) {
                     const previousCoupon = appliedCoupons[item.id]; // ✅ 기존 쿠폰 저장
                     console.log("🔵 기존 쿠폰:", previousCoupon);
 
-                    /** ✅ 1. 선택 없음 (쿠폰 해제) **/
+                    let newDiscount = 0;
                     if (!selectedCouponId) {
-                        console.log("⚪ 쿠폰 해제됨. 기존 쿠폰 다시 추가 예정:", previousCoupon);
-
-                        // ✅ 기존 쿠폰 삭제
+                        // ✅ 선택된 쿠폰이 없을 경우, 기존 쿠폰 해제
                         delete newAppliedCoupons[item.id];
-
-                        // ✅ 기존 쿠폰을 availableCoupons에 다시 추가
-                        if (previousCoupon) {
-                            newAvailableCoupons.add(previousCoupon);
-                        }
                     } else {
-                        /** ✅ 2. 새로운 쿠폰 적용 **/
+                        // ✅ 선택한 쿠폰을 적용
                         const selectedCoupon = availableCoupons.find(coupon => coupon.id === Number(selectedCouponId));
                         if (!selectedCoupon) return item;
 
                         console.log("🆕 새로운 쿠폰 적용:", selectedCoupon);
-
-                        // ✅ 새로운 쿠폰 적용
                         newAppliedCoupons[cartItemId] = selectedCoupon;
-
-                        // ✅ 기존 쿠폰을 availableCoupons에 추가
-                        if (previousCoupon) {
-                            newAvailableCoupons.add(previousCoupon);
-                        }
+                        newDiscount = (item.price * selectedCoupon.discount) / 100;
                     }
-                    return { ...item }; // 기존 상품 그대로 유지
+
+                    // ✅ 즉시 적용된 가격을 업데이트
+                    return { ...item, finalPrice: (item.price - newDiscount) * item.quantity };
                 }
                 return item;
             });
 
-            // ✅ 상태 업데이트 (한 번만 실행)
+            // ✅ 쿠폰 적용 후 상태 즉시 업데이트
             setAppliedCoupons(newAppliedCoupons);
-            setAvailableCoupons(Array.from(newAvailableCoupons));
-            updateTotalPrice(updatedItems);
 
             return updatedItems;
         });
+
+        // ✅ `cartItems` 변경 후 `totalPrice`를 자동 업데이트 (useEffect에서 처리)
     };
 
     /** ✅ 포인트 적용 */
