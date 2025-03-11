@@ -332,13 +332,12 @@ const Cart = () => {
                             </div>
 
                             {/* ✅ 가격 표시 로직 수정 */}
-                            <p className="price">
+                            <div className="price-container">
                                 {appliedCoupons[item.id] ? (
                                     <>
-                                        <span className="original-price" style={{ textDecoration: "line-through", color: "#888" }}>
+                                        <span className="original-price">
                                             {(item.price * item.quantity).toLocaleString()} 원
                                         </span>
-                                        <br />
                                         <span className="discounted-price">
                                             {finalPrice.toLocaleString()} 원
                                         </span>
@@ -346,7 +345,8 @@ const Cart = () => {
                                 ) : (
                                     <span>{(item.price * item.quantity).toLocaleString()} 원</span>
                                 )}
-                            </p>
+                            </div>
+
 
                             {appliedCoupons[item.id] && (
                                 <p className="applied-coupon">
