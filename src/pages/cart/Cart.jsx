@@ -138,7 +138,6 @@ const Cart = () => {
     };
 
     /** ✅ 쿠폰 적용/해제 및 변경 */
-    /** ✅ 쿠폰 적용/해제 및 변경 */
     const handleApplyCoupon = (cartItemId, selectedCouponId) => {
         console.log("🟢 쿠폰 변경 시작 | cartItemId:", cartItemId, "| 선택된 쿠폰 ID:", selectedCouponId);
 
@@ -268,16 +267,35 @@ const Cart = () => {
         }
     };
 
-    /** ✅ 구매하기 (선택된 상품만 전달) */
+    /** ✅ 구매하기 (선택된 상품, 쿠폰 적용 정보 및 최종 가격 전달) */
     const handleCheckout = () => {
-        const itemsToPurchase = cartItems.filter(item => selectedItems.includes(item.id));
+        const itemsToPurchase = cartItems
+            .filter(item => selectedItems.includes(item.id)) // ✅ 선택된 상품만 필터링
+            .map(item => {
+                const appliedCoupon = appliedCoupons[item.id]; // ✅ 해당 상품에 적용된 쿠폰 정보
+                const discount = appliedCoupon ? (item.price * appliedCoupon.discount) / 100 : 0;
+                const finalPrice = (item.price - discount) * item.quantity; // ✅ 개수 반영된 최종 가격 계산
+
+                return {
+                    ...item,
+                    appliedCoupon,  // ✅ 해당 상품에 적용된 쿠폰 정보 포함
+                    availableCoupons: item.availableCoupons || [], // ✅ 적용 가능한 쿠폰 목록 포함
+                    finalPrice, // ✅ 최종 가격 포함
+                };
+            });
+
         if (itemsToPurchase.length === 0) {
             alert("구매할 상품을 선택해주세요.");
             return;
         }
 
+        // ✅ `/checkout` 페이지로 이동하면서 구매할 상품 데이터 전달
         navigate("/checkout", {
-            state: { cartItems: itemsToPurchase, availablePoints, usedPoints, totalPrice }
+            state: {
+                cartItems: itemsToPurchase,
+                usedPoints,
+                totalPrice
+            }
         });
     };
 
