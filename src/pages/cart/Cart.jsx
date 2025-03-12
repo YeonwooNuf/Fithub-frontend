@@ -190,7 +190,7 @@ const Cart = () => {
         updateTotalPrice(cartItems, appliedCoupons, inputPoints);
     };
 
-    /** ✅ 체크박스 선택 시 실행 */
+    /** ✅ 체크박스 선택 시 즉시 총 가격 업데이트 */
     const handleSelectItem = (itemId) => {
         setSelectedItems((prevSelected) => {
             let updatedSelection;
@@ -199,23 +199,28 @@ const Cart = () => {
             } else {
                 updatedSelection = [...prevSelected, itemId];
             }
-            updateTotalPrice(updatedSelection); // ✅ 선택된 상품 가격만 반영
+
+            // ✅ 선택된 상품 기준으로 즉시 총 가격 업데이트
+            updateTotalPrice(updatedSelection);
+
             return updatedSelection;
         });
     };
 
     /** ✅ 선택된 상품 기준으로 총 가격 계산 */
-    const updateTotalPrice = (updatedCartItems) => {
+    const updateTotalPrice = (selectedItemsList) => {
         let total = 0;
-        updatedCartItems.forEach((item) => {
-            const discount = appliedCoupons[item.id] ? (item.price * appliedCoupons[item.id].discount) / 100 : 0;
-            total += (item.price - discount) * item.quantity;
+
+        cartItems.forEach((item) => {
+            if (selectedItemsList.includes(item.id)) { // ✅ 선택된 상품만 가격 계산
+                const discount = appliedCoupons[item.id] ? (item.price * appliedCoupons[item.id].discount) / 100 : 0;
+                total += (item.price - discount) * item.quantity;
+            }
         });
 
         total -= usedPoints;
         setTotalPrice(Math.max(total, 0));
     };
-
     /** ✅ 특정 상품에 적용 가능한 쿠폰 필터링 */
     const getApplicableCoupons = (cartItem) => {
         const appliedCouponId = appliedCoupons[cartItem.id]?.id;
