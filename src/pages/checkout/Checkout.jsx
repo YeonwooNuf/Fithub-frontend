@@ -20,17 +20,20 @@ const getAuthHeaders = () => {
 const Checkout = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { cartItems = [], availablePoints = 0, usedPoints = 0, totalPrice = 0 } = location.state || {};
+    const { cartItems = [], totalPrice = 0 } = location.state || {};
 
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
     const [finalPrice, setFinalPrice] = useState(totalPrice);
     const [availableCoupons, setAvailableCoupons] = useState([]);
     const [selectedCoupons, setSelectedCoupons] = useState({});
+    const [availablePoints, setAvailablePoints] = useState(0);
+    const [usedPoints, setUsedPoints] = useState(0); // ✅ 추가: 포인트 사용량 상태
 
     useEffect(() => {
         fetchDefaultAddress();
-        fetchAvailablePoints();
+        console.log("useEffect 🚀 useEffect 실행됨");
+        fetchUserPoints();
         fetchAvailableCoupons();
     }, []);
 
@@ -68,41 +71,67 @@ const Checkout = () => {
     };
 
     /** ✅ 사용 가능한 포인트 가져오기 */
-    const fetchAvailablePoints = async () => {
+    const fetchUserPoints = async () => {
         try {
             const headers = getAuthHeaders();
-            if (!headers.Authorization) {
-                navigate("/login");
-                return;
-            }
+            console.log("📡 포인트 조회 API 호출...");
             const response = await axios.get("/api/points", { headers });
-            setAvailablePoints(response.data.amount || 0);
+            console.log("✅ 포인트 응답 데이터:", response.data);
+
+            setAvailablePoints(response.data.content[0].amount || 0);
+            console.log("🔵 availablePoints 업데이트됨:", response.data.amount || 0);
         } catch (error) {
-            console.error("❌ 포인트 정보를 불러오는 중 오류 발생:", error);
+            console.error("❌ 포인트 정보를 가져오는 중 오류 발생:", error);
         }
     };
 
-    /** ✅ 사용자가 적용 가능한 쿠폰 필터링 */
+    /** ✅ 특정 상품에 적용 가능한 쿠폰 필터링 (중복 적용 방지 추가) */
     const getApplicableCoupons = (cartItem) => {
-        return availableCoupons.filter(
-            (coupon) =>
-                coupon.target === "ALL_PRODUCTS" ||
-                (coupon.target === "CATEGORY" && coupon.targetValue === cartItem.category) ||
-                (coupon.target === "BRAND" && coupon.targetValue === cartItem.brandName)
+        const appliedCouponId = selectedCoupons[cartItem.id]?.id;
+
+        // ✅ 현재 상품에 적용된 쿠폰 가져오기
+        const appliedCoupon = appliedCouponId
+            ? availableCoupons.find(coupon => coupon.id === appliedCouponId)
+            : null;
+
+        let applicableCoupons = availableCoupons.filter(
+            coupon =>
+                (coupon.target === "ALL_PRODUCTS" ||
+                    (coupon.target === "CATEGORY" && coupon.targetValue === cartItem.category) ||
+                    (coupon.target === "BRAND" && coupon.targetValue === cartItem.brandName)) &&
+                (!Object.values(selectedCoupons).some(applied => applied.id === coupon.id) || // ✅ 이미 다른 상품에 적용된 쿠폰은 제거
+                    (appliedCoupon && appliedCoupon.id === coupon.id))
         );
+
+        // ✅ 적용된 쿠폰이 이미 목록에 없다면 추가
+        if (appliedCoupon && !applicableCoupons.some(coupon => coupon.id === appliedCoupon.id)) {
+            applicableCoupons = [appliedCoupon, ...applicableCoupons];
+        }
+
+        return applicableCoupons;
     };
 
     /** ✅ 포인트 사용 */
     const handleUsePoints = (event) => {
         let inputPoints = parseInt(event.target.value, 10) || 0;
         const maxPoints = Math.min(availablePoints, finalPrice * 0.1);
+
         if (inputPoints > maxPoints) {
             inputPoints = maxPoints;
         }
-        setFinalPrice(prev => Math.max(prev - inputPoints, 0));
+
+        setUsedPoints(inputPoints); // ✅ 사용된 포인트 상태 업데이트
+        updateFinalPrice(cartItems, selectedCoupons, inputPoints);
     };
 
-    /** ✅ 쿠폰 적용/해제 및 변경 */
+    /** ✅ 이미 다른 상품에서 사용된 쿠폰인지 확인 */
+    const isCouponUsed = (couponId, cartItemId) => {
+        return Object.entries(selectedCoupons).some(([itemId, coupon]) =>
+            itemId !== String(cartItemId) && coupon.id === couponId
+        );
+    };
+
+    /** ✅ 쿠폰 적용/해제 및 변경 (중복 적용 방지 추가) */
     const handleApplyCoupon = (cartItemId, selectedCouponId) => {
         console.log("🟢 쿠폰 변경 시작 | cartItemId:", cartItemId, "| 선택된 쿠폰 ID:", selectedCouponId);
 
@@ -110,8 +139,16 @@ const Checkout = () => {
             let updatedCoupons = { ...prevCoupons };
 
             if (!selectedCouponId) {
+                // ✅ 선택된 쿠폰이 없을 경우, 기존 쿠폰 해제
                 delete updatedCoupons[cartItemId];
             } else {
+                // ✅ 선택한 쿠폰이 이미 다른 상품에서 사용 중인지 체크
+                if (isCouponUsed(Number(selectedCouponId), cartItemId)) {
+                    alert("이 쿠폰은 이미 다른 상품에 적용되었습니다.");
+                    return prevCoupons;
+                }
+
+                // ✅ 선택한 쿠폰 적용
                 const cartItem = cartItems.find(item => item.id === cartItemId);
                 const selectedCoupon = getApplicableCoupons(cartItem).find(coupon => coupon.id === Number(selectedCouponId));
 
@@ -133,7 +170,7 @@ const Checkout = () => {
             const discount = coupons[item.id] ? (item.price * coupons[item.id].discount) / 100 : 0;
             total += (item.price - discount) * item.quantity;
         });
-        total -= pointsUsed;
+        total -= pointsUsed; // ✅ 사용된 포인트 반영
         setFinalPrice(Math.max(total, 0));
     };
 
@@ -170,11 +207,13 @@ const Checkout = () => {
                                     onChange={(e) => handleApplyCoupon(item.id, e.target.value)}
                                 >
                                     <option value="">쿠폰 선택 없음</option>
-                                    {getApplicableCoupons(item).map(coupon => (
-                                        <option key={coupon.id} value={coupon.id}>
-                                            {coupon.name} (-{coupon.discount}%)
-                                        </option>
-                                    ))}
+                                    {getApplicableCoupons(item)
+                                        .filter(coupon => !isCouponUsed(coupon.id, item.id)) // ✅ 중복 사용된 쿠폰 필터링
+                                        .map(coupon => (
+                                            <option key={coupon.id} value={coupon.id}>
+                                                {coupon.name} (-{coupon.discount}%)
+                                            </option>
+                                        ))}
                                 </select>
                             </div>
                         </div>
