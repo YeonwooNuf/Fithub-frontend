@@ -20,13 +20,14 @@ const getAuthHeaders = () => {
 const Checkout = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { cartItems = [], totalPrice = 0 } = location.state || {};
+    const { cartItems = [], totalPrice = 0, applicableCoupons = {} } = location.state || {};
+    const appliedCoupons = location.state?.appliedCoupons || {};
 
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [isAddressModalOpen, setIsAddressModalOpen] = useState(false);
     const [finalPrice, setFinalPrice] = useState(totalPrice);
     const [availableCoupons, setAvailableCoupons] = useState([]);
-    const [selectedCoupons, setSelectedCoupons] = useState({});
+    const [selectedCoupons, setSelectedCoupons] = useState(appliedCoupons);
     const [availablePoints, setAvailablePoints] = useState(0);
     const [usedPoints, setUsedPoints] = useState(0); // ✅ 추가: 포인트 사용량 상태
 
