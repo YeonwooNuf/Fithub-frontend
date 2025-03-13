@@ -181,6 +181,11 @@ const Checkout = () => {
         navigate("/payment", {
             state: { cartItems, finalPrice, usedPoints }
         });
+        console.log("🚀 Checkout → Payment 이동: ", {
+            cartItems,
+            finalPrice,
+            usedPoints
+        });
     };
 
     return (
