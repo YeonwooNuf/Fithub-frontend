@@ -18,6 +18,7 @@ const getAuthHeaders = () => {
 };
 
 const Checkout = () => {
+
     const navigate = useNavigate();
     const location = useLocation();
     const { cartItems = [], totalPrice = 0, applicableCoupons = {} } = location.state || {};
@@ -175,6 +176,13 @@ const Checkout = () => {
         setFinalPrice(Math.max(total, 0));
     };
 
+    /** ✅ 결제 실행 */
+    const handlePayment = () => {
+        navigate("/payment", {
+            state: { cartItems, finalPrice, usedPoints }
+        });
+    };
+
     return (
         <div className="checkout-page">
             <h2>주문 상품</h2>
@@ -247,7 +255,8 @@ const Checkout = () => {
                     min="0"
                     max={Math.min(availablePoints || 0, finalPrice * 0.1)}
                 />
-                <button className="payment-button">결제하기</button>
+                <button className="payment-button" onClick={handlePayment}>결제하기</button>
+                <script></script>
             </div>
 
             {isAddressModalOpen && <AddressModal onClose={() => setIsAddressModalOpen(false)} onSelectAddress={setSelectedAddress} />}
