@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
 import AddressModal from "../address/AddressModal";
 import "./Checkout.css";
+import * as PortOne from "@portone/browser-sdk/v2"; // 결제 APi
 
 const getAuthHeaders = () => {
     const token = localStorage.getItem("token");
@@ -31,6 +32,16 @@ const Checkout = () => {
     const [selectedCoupons, setSelectedCoupons] = useState(appliedCoupons);
     const [availablePoints, setAvailablePoints] = useState(0);
     const [usedPoints, setUsedPoints] = useState(0); // ✅ 추가: 포인트 사용량 상태
+    const [paymentMethod, setPaymentMethod] = useState("CARD"); // 기본 결제 수단은 카드
+
+    // merchantData 에서 한글 제거
+    const encodeToBase64 = (data) => {
+        return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
+    };
+
+    const decodeFromBase64 = (encodedData) => {
+        return JSON.parse(decodeURIComponent(escape(atob(encodedData))));
+    };
 
     useEffect(() => {
         fetchDefaultAddress();
@@ -38,6 +49,19 @@ const Checkout = () => {
         fetchUserPoints();
         fetchAvailableCoupons();
     }, []);
+
+    useEffect(() => {
+        if (!cartItems.length) {
+            alert("결제할 상품이 없습니다.");
+            navigate("/checkout");
+        }
+    }, [cartItems, navigate]);
+
+    function randomId() {
+        return [...crypto.getRandomValues(new Uint32Array(2))]
+            .map(word => word.toString(16).padStart(8, "0"))
+            .join("");
+    }
 
     /** ✅ 사용 가능 쿠폰 가져오기 */
     const fetchAvailableCoupons = async () => {
@@ -176,17 +200,65 @@ const Checkout = () => {
         setFinalPrice(Math.max(total, 0));
     };
 
-    /** ✅ 결제 실행 */
-    const handlePayment = () => {
-        navigate("/payment", {
-            state: { cartItems, finalPrice, usedPoints }
-        });
-        console.log("🚀 Checkout → Payment 이동: ", {
-            cartItems,
-            finalPrice,
-            usedPoints
-        });
-    };
+    const handlePayment = async () => {
+            const paymentId = randomId();
+    
+            const customDataEncoded = encodeToBase64({
+                cartItems: cartItems.map(item => ({
+                    id: item.id,
+                    name: item.productName, // ✅ 한글 포함
+                    color: item.color, // ✅ 한글 포함 가능
+                    size: item.size,
+                    price: item.price
+                })),
+                selectedCoupons 
+            });
+    
+    
+            const payment = await PortOne.requestPayment({
+                storeId: "store-648c3fc7-1da1-467a-87bb-3b235f5c9879",
+                channelKey: "channel-key-f3019356-750d-42dd-b2ba-9c857896bd38",
+                paymentId,
+                orderName: `총 ${cartItems.length}개 상품`,
+                totalAmount: finalPrice, // ✅ 사용한 포인트를 반영한 최종 결제 금액
+                currency: "KRW",
+                customer: {
+                    fullName: "asd1234",
+                    phoneNumber: "010-0000-1234",
+                    email: "test@portone.io",
+                },
+                payMethod: "CARD", // 선택한 결제 수단 사용
+                customData: customDataEncoded
+            });
+    
+            if (payment.code !== undefined) {
+                alert(`결제 실패: ${payment.message}`);
+                return;
+            }
+    
+            // ✅ JWT 인증 헤더 추가
+            const headers = getAuthHeaders();
+            if (!headers.Authorization) {
+                return;
+            }
+    
+            // ✅ JWT 인증 헤더 추가하여 요청 전송
+            const completeResponse = await fetch("/api/payment/complete", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    ...headers // ✅ JWT 인증 토큰 포함
+                },
+                body: JSON.stringify({ paymentId, usedPoints })
+            });
+    
+            if (completeResponse.ok) {
+                alert("결제가 성공적으로 완료되었습니다.");
+                navigate("/payment"); // 결제 완료 페이지로 이동
+            } else {
+                alert("결제 검증 실패");
+            }
+        };
 
     return (
         <div className="checkout-page">
