@@ -16,6 +16,7 @@ import Address from "./pages/address/Address";
 import Asking from "./pages/asking/Asking";
 import Review from "./pages/review/Reviews";
 import Orders from "./pages/order/Orders";
+import OrderComplete from "./pages/order/OrderComplete";
 import Event from "./pages/event/Event";
 
 import AdminDashboard from "./pages/admin/dashboard/AdminDashboard";
@@ -56,6 +57,7 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route path="/checkout" element={<Checkout />} />
             <Route path="/payment" element={<Payment />} />
+            <Route path="/order/complete" element={<OrderComplete />} />
 
             {/* 관리자 탭 */}
             <Route path="/admin" element={<AdminDashboard />} />
