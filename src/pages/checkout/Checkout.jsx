@@ -201,20 +201,20 @@ const Checkout = () => {
     };
 
     const handlePayment = async () => {
-            const paymentId = randomId();
-    
-            const customDataEncoded = encodeToBase64({
-                cartItems: cartItems.map(item => ({
-                    id: item.id,
-                    name: item.productName, // ✅ 한글 포함
-                    color: item.color, // ✅ 한글 포함 가능
-                    size: item.size,
-                    price: item.price
-                })),
-                selectedCoupons 
-            });
-    
-    
+        const paymentId = randomId();
+
+        const customDataEncoded = encodeToBase64({
+            cartItems: cartItems.map(item => ({
+                id: item.id,
+                name: item.productName, // ✅ 한글 포함
+                color: item.color, // ✅ 한글 포함 가능
+                size: item.size,
+                price: item.price
+            })),
+            usedCoupons: Object.values(selectedCoupons) // ✅ 선택된 쿠폰 데이터 전송
+        });
+
+        try {
             const payment = await PortOne.requestPayment({
                 storeId: "store-648c3fc7-1da1-467a-87bb-3b235f5c9879",
                 channelKey: "channel-key-f3019356-750d-42dd-b2ba-9c857896bd38",
@@ -227,38 +227,64 @@ const Checkout = () => {
                     phoneNumber: "010-0000-1234",
                     email: "test@portone.io",
                 },
-                payMethod: "CARD", // 선택한 결제 수단 사용
+                payMethod: paymentMethod.toUpperCase(), // ✅ 선택한 결제 수단 사용
                 customData: customDataEncoded
             });
-    
+
+            // ✅ 결제 실패 처리
             if (payment.code !== undefined) {
-                alert(`결제 실패: ${payment.message}`);
+                console.error(`🚨 PortOne 결제 실패: ${payment.message} (코드: ${payment.code})`);
+                alert(`결제 실패: ${payment.message} (코드: ${payment.code})`);
                 return;
             }
-    
+
             // ✅ JWT 인증 헤더 추가
             const headers = getAuthHeaders();
             if (!headers.Authorization) {
                 return;
             }
-    
+
             // ✅ JWT 인증 헤더 추가하여 요청 전송
             const completeResponse = await fetch("/api/payment/complete", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    ...headers // ✅ JWT 인증 토큰 포함
+                    ...headers
                 },
-                body: JSON.stringify({ paymentId, usedPoints })
+                body: JSON.stringify({
+                    paymentId,
+                    usedPoints,
+                    usedCoupons: Object.values(selectedCoupons), // ✅ 쿠폰 데이터 올바르게 전달
+                    finalAmount: finalPrice
+                })
             });
-    
+
+            // ✅ 결제 검증 성공
             if (completeResponse.ok) {
-                alert("결제가 성공적으로 완료되었습니다.");
-                navigate("/payment"); // 결제 완료 페이지로 이동
-            } else {
-                alert("결제 검증 실패");
+                const responseData = await completeResponse.json();
+                alert("✅ 결제가 성공적으로 완료되었습니다!");
+                navigate("/order/complete", { state: responseData });
             }
-        };
+            // ✅ 결제 검증 실패 시 응답 메시지를 확인하여 상세 로그 출력
+            else {
+                const errorData = await completeResponse.json();
+                console.error("❌ 결제 검증 실패: ", errorData);
+
+                let errorMessage = "결제 검증 실패: 서버 응답 오류";
+                if (errorData.message) {
+                    errorMessage += `\n🛠 오류 메시지: ${errorData.message}`;
+                }
+                if (errorData.reason) {
+                    errorMessage += `\n📌 실패 원인: ${errorData.reason}`;
+                }
+
+                alert(errorMessage);
+            }
+        } catch (error) {
+            console.error("🚨 네트워크 또는 서버 오류 발생:", error);
+            alert(`⚠️ 결제 처리 중 문제가 발생했습니다.\n에러 메시지: ${error.message || "알 수 없는 오류"}`);
+        }
+    };
 
     return (
         <div className="checkout-page">
