@@ -259,7 +259,8 @@ const Checkout = () => {
                     usedPoints,
                     usedCoupons: Object.values(selectedCoupons), // ✅ 쿠폰 데이터 올바르게 전달
                     totalAmount, // ✅ 원래 상품 가격 (쿠폰 & 포인트 적용 전)
-                    finalAmount: finalPrice // ✅ 포트원에서 받은 결제 금액 (할인 & 포인트 적용 후)
+                    finalAmount: finalPrice, // ✅ 포트원에서 받은 결제 금액 (할인 & 포인트 적용 후)
+                    cartItems,
                 })
             });
 
@@ -267,7 +268,12 @@ const Checkout = () => {
             if (completeResponse.ok) {
                 const responseData = await completeResponse.json();
                 alert("✅ 결제가 성공적으로 완료되었습니다!");
-                navigate("/order/complete", { state: responseData });
+                navigate("/order/complete", {
+                    state: {
+                        ...responseData, // 기존 응답 데이터
+                        cartItems // 🚀 명확하게 cartItems 추가
+                    }
+                });
             }
             // ✅ 결제 검증 실패 시 응답 메시지를 확인하여 상세 로그 출력
             else {

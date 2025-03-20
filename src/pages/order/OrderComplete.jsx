@@ -4,10 +4,10 @@ import { useLocation, useNavigate } from "react-router-dom";
 const OrderComplete = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { orderId, cartItems, finalAmount, usedPoints, usedCoupons, paymentStatus } = location.state || {};
+    const { paymentId, usedPoints, usedCoupons, totalAmount, finalAmount, cartItems } = location.state || {};
 
     // ✅ 주문 정보가 없는 경우 처리
-    if (!orderId) {
+    if (!paymentId) {
         return (
             <div style={{ padding: "20px" }}>
                 <h2>❌ 주문 정보를 찾을 수 없습니다.</h2>
@@ -21,10 +21,11 @@ const OrderComplete = () => {
     return (
         <div style={{ padding: "20px" }}>
             <h1>✅ 결제가 완료되었습니다!</h1>
-            <p><strong>주문 번호:</strong> {orderId}</p>
-            <p><strong>결제 상태:</strong> {paymentStatus || "결제 완료"}</p>
-            <p><strong>총 결제 금액:</strong> {finalAmount.toLocaleString()} 원</p>
-            <p><strong>사용한 포인트:</strong> {usedPoints.toLocaleString()} P</p>
+            <p><strong>주문 번호:</strong> {paymentId}</p>
+            {/*<p><strong>결제 상태:</strong> {paymentStatus || "결제 완료"}</p>*/}
+            <p><strong>할인 전 금액:</strong> {totalAmount} 원</p>
+            <p><strong>총 결제 금액:</strong> {finalAmount} 원</p>
+            <p><strong>사용한 포인트:</strong> {usedPoints} P</p>
 
             {/* ✅ 사용한 쿠폰 정보 표시 */}
             {usedCoupons && usedCoupons.length > 0 && (
@@ -33,7 +34,7 @@ const OrderComplete = () => {
                     <ul>
                         {usedCoupons.map((coupon, index) => (
                             <li key={index}>
-                                <p><strong>{coupon.couponName}</strong> - 할인 {coupon.discountAmount.toLocaleString()} 원</p>
+                                <p><strong>{coupon.couponName}</strong> - 할인 {coupon.discountAmount} 원</p>
                             </li>
                         ))}
                     </ul>
@@ -45,7 +46,7 @@ const OrderComplete = () => {
             <ul>
                 {cartItems.map((item, index) => (
                     <li key={index}>
-                        <p>{item.name} - {item.price.toLocaleString()} 원</p>
+                        <p>{item.name} - {item.price} 원</p>
                     </li>
                 ))}
             </ul>
