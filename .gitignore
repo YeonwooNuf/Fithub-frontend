@@ -4,6 +4,10 @@
 /node_modules
 /.pnp
 .pnp.js
+.env
+package-lock.json
+package.json
+Dockerfile
 
 # testing
 /coverage
