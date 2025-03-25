@@ -15,6 +15,19 @@ const Payment = () => {
         console.log("🚀 Payment 페이지 state 값:", location.state);
     }, []);
 
+    const getAuthHeaders = () => {
+        const token = localStorage.getItem("token"); // ✅ JWT 토큰 가져오기
+
+        if (!token) {
+            console.warn("🚨 인증 토큰 없음! 로그인 페이지로 이동");
+            alert("로그인이 필요합니다.");
+            window.location.href = "/login"; // 로그인 페이지로 이동
+            return {};
+        }
+
+        return { Authorization: `Bearer ${token}` };
+    };
+
     // merchantData 에서 한글 제거
     const encodeToBase64 = (data) => {
         return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
@@ -41,7 +54,7 @@ const Payment = () => {
 
     const handlePayment = async () => {
         const paymentId = randomId();
-        
+
         const customDataEncoded = encodeToBase64({
             cartItems: cartItems.map(item => ({
                 id: item.id,
@@ -49,7 +62,8 @@ const Payment = () => {
                 color: item.color, // ✅ 한글 포함 가능
                 size: item.size,
                 price: item.price
-            }))
+            })),
+            usedCoupons 
         });
 
 
@@ -66,7 +80,7 @@ const Payment = () => {
                 email: "test@portone.io",
             },
             payMethod: "CARD", // 선택한 결제 수단 사용
-            customData: customDataEncoded 
+            customData: customDataEncoded
         });
 
         if (payment.code !== undefined) {
@@ -74,10 +88,19 @@ const Payment = () => {
             return;
         }
 
-        // 결제 성공 후 백엔드에 결제 완료 요청
+        // ✅ JWT 인증 헤더 추가
+        const headers = getAuthHeaders();
+        if (!headers.Authorization) {
+            return;
+        }
+
+        // ✅ JWT 인증 헤더 추가하여 요청 전송
         const completeResponse = await fetch("/api/payment/complete", {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+                "Content-Type": "application/json",
+                ...headers // ✅ JWT 인증 토큰 포함
+            },
             body: JSON.stringify({ paymentId, usedPoints })
         });
 
