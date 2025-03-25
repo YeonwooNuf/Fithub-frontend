@@ -18,6 +18,32 @@ const OrderComplete = () => {
         );
     }
 
+    // const handleUseCoupon = async () => {
+    //     try {
+    //         const headers = getAuthHeaders();
+    //         if (!headers.Authorization) {
+    //             navigate("/login");
+    //             return;
+    //         }
+    //         const response = await axios.get("/api/coupon/use", {headers});
+    //     } catch (error) {
+    //         console.error("쿠폰이 사용처리되지 않았습니다.", error);
+    //     }
+    // }
+
+    // const handleUsePoints = async () => {
+    //     try {
+    //         const headers = getAuthHeaders();
+    //         if (!headers.Authorization) {
+    //             navigate("/login");
+    //             return;
+    //         }
+    //         const response = await axios.get("/api/points/use", {headers});
+    //     } catch (error) {
+    //         console.error("적립금이 사용처리되지 않았습니다.", error);
+    //     }
+    // }
+
     return (
         <div style={{ padding: "20px" }}>
             <h1>✅ 결제가 완료되었습니다!</h1>
