@@ -11,7 +11,7 @@ const getAuthHeaders = () => {
     if (!token) {
         console.warn("🚨 인증 토큰 없음! 로그인 페이지로 이동");
         alert("로그인이 필요합니다.");
-        window.location.href = "/login"; // 로그인 페이지로 이동
+        window.location.href = "/login"; // 로그인 페이지로 이동 navigate랑 다른가?
         return {};
     }
 
