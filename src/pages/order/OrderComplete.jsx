@@ -61,7 +61,7 @@ const OrderComplete = () => {
                     <ul>
                         {usedCoupons.map((coupon, index) => (
                             <li key={index}>
-                                <p><strong>{coupon.couponName}</strong> - 할인 {coupon.discountAmount} 원</p>
+                                <p><strong>{usedCoupons.couponName}</strong> - 할인 {usedCoupons.discountAmount} 원</p>
                             </li>
                         ))}
                     </ul>
@@ -73,7 +73,7 @@ const OrderComplete = () => {
             <ul>
                 {cartItems.map((item, index) => (
                     <li key={index}>
-                        <p>{item.name} - {item.price} 원</p>
+                        <p>{item.productName} - {item.price} 원</p>
                     </li>
                 ))}
             </ul>
