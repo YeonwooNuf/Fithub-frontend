@@ -4,7 +4,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 const OrderComplete = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { paymentId, usedPoints, usedCoupons, totalAmount, finalAmount, cartItems } = location.state || {};
+    const { paymentId, usedPoints, usedCoupons, totalAmount, finalAmount, cartItems, paymentDate } = location.state || {};
 
     // ✅ 주문 정보가 없는 경우 처리
     if (!paymentId) {
@@ -52,6 +52,7 @@ const OrderComplete = () => {
             <p><strong>할인 전 금액:</strong> {totalAmount} 원</p>
             <p><strong>총 결제 금액:</strong> {finalAmount} 원</p>
             <p><strong>사용한 포인트:</strong> {usedPoints} P</p>
+            <p><strong>결제 일자:</strong> {new Date(paymentDate).toLocaleString()}</p>
 
             {/* ✅ 사용한 쿠폰 정보 표시 */}
             {usedCoupons && usedCoupons.length > 0 && (
