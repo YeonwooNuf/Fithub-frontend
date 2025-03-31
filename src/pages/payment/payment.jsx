@@ -79,7 +79,7 @@ const Payment = () => {
                 phoneNumber: "010-0000-1234",
                 email: "test@portone.io",
             },
-            payMethod: "CARD", // 선택한 결제 수단 사용
+            payMethod: paymentMethod.toUpperCase(), // 선택한 결제 수단 사용
             customData: customDataEncoded
         });
 
@@ -106,7 +106,19 @@ const Payment = () => {
 
         if (completeResponse.ok) {
             alert("결제가 성공적으로 완료되었습니다.");
-            navigate("/order/complete"); // 결제 완료 페이지로 이동
+            const paymentDate = new Date().toISOString(); // ✅ 현재 시간
+
+        navigate("/order/complete", {   // ✅ 결제 완료 페이지 이동
+            state: {
+                paymentId,
+                usedPoints,
+                usedCoupons,
+                totalAmount: cartItems.reduce((sum, item) => sum + item.price, 0),
+                finalAmount: finalPrice,
+                cartItems,
+                paymentDate
+            }
+        });
         } else {
             alert("결제 검증 실패");
         }
