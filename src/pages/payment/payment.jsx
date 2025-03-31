@@ -71,7 +71,7 @@ const Payment = () => {
             storeId: "store-648c3fc7-1da1-467a-87bb-3b235f5c9879",
             channelKey: "channel-key-f3019356-750d-42dd-b2ba-9c857896bd38",
             paymentId,
-            orderName: `총 ${cartItems.length}개 상품`,
+            orderName: `FitHub 상품 결제`,
             totalAmount: finalPrice, // ✅ 사용한 포인트를 반영한 최종 결제 금액
             currency: "KRW",
             customer: {
