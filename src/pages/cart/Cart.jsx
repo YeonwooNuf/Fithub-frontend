@@ -309,14 +309,14 @@ const Cart = () => {
                 return (
                     <div key={item.id} className="cart-item">
                         <div className="selection">
+                        <button className="delete-button" onClick={() => deleteCartItem(item.id)}>
+                            삭제
+                        </button>
                         <input
                             type="checkbox"
                             checked={selectedItems.includes(item.id)}
                             onChange={() => handleSelectItem(item.id)}
                         />
-                        <button className="delete-button" onClick={() => deleteCartItem(item.id)}>
-                            삭제
-                        </button>
                         </div>
 
                         <img src={item.productImage} alt={item.productName} className="cart-item-image" />
