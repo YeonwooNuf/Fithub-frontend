@@ -105,12 +105,14 @@
 /* ✅ 가격 스타일 */
 .price-container {
     display: flex;
+    flex-direction: column;
     align-items: center;
     justify-content: center; /* ✅ 가운데 정렬 */
     font-size: 16px;
     font-weight: bold;
     color: #333;
     gap: 10px; /* ✅ 기존 가격과 할인 가격 사이 간격 */
+    margin-right: 40px;
 }
 
 .original-price {
@@ -125,6 +127,9 @@
     font-size: 18px;
 }
 
+.coupon-section {
+    flex-direction: column;
+}
 
 /* ✅ 쿠폰 선택 */
 .coupon-selector {

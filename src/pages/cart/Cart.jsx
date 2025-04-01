@@ -308,6 +308,7 @@ const Cart = () => {
 
                 return (
                     <div key={item.id} className="cart-item">
+                        <div className="selection">
                         <input
                             type="checkbox"
                             checked={selectedItems.includes(item.id)}
@@ -316,6 +317,7 @@ const Cart = () => {
                         <button className="delete-button" onClick={() => deleteCartItem(item.id)}>
                             삭제
                         </button>
+                        </div>
 
                         <img src={item.productImage} alt={item.productName} className="cart-item-image" />
                         <div className="cart-item-details">
@@ -347,6 +349,7 @@ const Cart = () => {
                             </div>
 
 
+<div className="coupon-section">
                             {appliedCoupons[item.id] && (
                                 <p className="applied-coupon">
                                     적용된 쿠폰: {appliedCoupons[item.id].name} (-{appliedCoupons[item.id].discount}%)
@@ -366,6 +369,7 @@ const Cart = () => {
                                         </option>
                                     ))}
                                 </select>
+                            </div>
                             </div>
                         </div>
                     </div>
