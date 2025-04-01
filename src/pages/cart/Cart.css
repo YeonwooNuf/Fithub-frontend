@@ -284,7 +284,9 @@
     align-items: flex-start;
     gap: 6px;
     margin-left: 5px; /* ✅ "수량:"과 간격 추가 */
-    line-height: 22px; 
+    line-height: 22px;
+    margin-top: 20px;
+    margin-bottom: 25px;
 }
 
 /* ✅ 수량 변경 버튼 */
