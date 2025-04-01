@@ -63,6 +63,7 @@
 .selection {
     display: flex;
     flex-direction: column;
+    padding: 30px;
 }
 
 /* ✅ 상품 목록 */
@@ -72,6 +73,13 @@
     align-items: center;
     border-bottom: 1px solid #e0e0e0;
     padding: 15px 0;
+}
+
+.cart-item-info {
+    display: flex;
+    flex-direction: column;
+    margin: 10px;
+    margin-inline: 100px;
 }
 
 /* ✅ 상품 이미지 */
@@ -105,14 +113,14 @@
 /* ✅ 가격 스타일 */
 .price-container {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center;
     justify-content: center; /* ✅ 가운데 정렬 */
     font-size: 16px;
     font-weight: bold;
     color: #333;
     gap: 10px; /* ✅ 기존 가격과 할인 가격 사이 간격 */
-    margin-right: 40px;
+    margin-top: 20px;
 }
 
 .original-price {
@@ -129,7 +137,8 @@
 
 .coupon-section {
     flex-direction: column;
-}
+    margin: 50px;
+    }
 
 /* ✅ 쿠폰 선택 */
 .coupon-selector {
@@ -168,17 +177,18 @@
 
 /* ✅ 삭제 버튼 */
 .delete-button {
-    background-color: #ff4d4f;
+    background-color: #9b9b9b;
     color: white;
     border: none;
     padding: 5px 10px;
     border-radius: 5px;
     cursor: pointer;
     transition: background-color 0.2s;
+    margin-bottom: 5px;
 }
 
 .delete-button:hover {
-    background-color: #d9363e;
+    background-color: #717171;
 }
 
 
@@ -264,7 +274,8 @@
     display: inline-flex; /* ✅ 같은 줄 유지 */
     flex-direction: column; /* ✅ 수량을 아래로 배치 */
     align-items: center;
-    gap: 8px; /* ✅ 텍스트와 수량 변경 UI 간격 조정 */
+    gap: 3px; /* ✅ 텍스트와 수량 변경 UI 간격 조정 */
+    padding: 3px;
 }
 
 /* ✅ 수량 변경 버튼 컨테이너 */
@@ -273,6 +284,7 @@
     align-items: flex-start;
     gap: 6px;
     margin-left: 5px; /* ✅ "수량:"과 간격 추가 */
+    line-height: 22px; 
 }
 
 /* ✅ 수량 변경 버튼 */
@@ -292,9 +304,9 @@
 
 /* ✅ 수량 숫자 */
 .quantity-controls span {
-    min-width: 24px;
+    min-width: 16px;
     text-align: center;
-    font-size: 16px;
+    font-size: 15px;
     font-weight: bold;
     line-height: 26px; /* ✅ 버튼과 수직 정렬 맞추기 */
 }

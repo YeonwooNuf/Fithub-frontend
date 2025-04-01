@@ -321,6 +321,7 @@ const Cart = () => {
 
                         <img src={item.productImage} alt={item.productName} className="cart-item-image" />
                         <div className="cart-item-details">
+                            <div className="cart-item-info">
                             <h2>{item.productName}</h2>
                             <div className="product-info">
                                 <p>색상: {item.color} / 사이즈: {item.size}</p>
@@ -331,22 +332,8 @@ const Cart = () => {
                                     <button onClick={() => increaseQuantity(item.id, item.quantity)}>+</button>
                                 </div>
                             </div>
-
-                            {/* ✅ 가격 표시 로직 수정 */}
-                            <div className="price-container">
-                                {appliedCoupons[item.id] ? (
-                                    <>
-                                        <span className="original-price">
-                                            {(item.price * item.quantity).toLocaleString()} 원
-                                        </span>
-                                        <span className="discounted-price">
-                                            {finalPrice.toLocaleString()} 원
-                                        </span>
-                                    </>
-                                ) : (
-                                    <span>{(item.price * item.quantity).toLocaleString()} 원</span>
-                                )}
                             </div>
+
 
 
 <div className="coupon-section">
@@ -369,6 +356,22 @@ const Cart = () => {
                                         </option>
                                     ))}
                                 </select>
+                            </div>
+                            
+                            {/* ✅ 가격 표시 로직 수정 */}
+                            <div className="price-container">
+                                {appliedCoupons[item.id] ? (
+                                    <>
+                                        <span className="original-price">
+                                            {(item.price * item.quantity).toLocaleString()} 원
+                                        </span>
+                                        <span className="discounted-price">
+                                            {finalPrice.toLocaleString()} 원
+                                        </span>
+                                    </>
+                                ) : (
+                                    <span>{(item.price * item.quantity).toLocaleString()} 원</span>
+                                )}
                             </div>
                             </div>
                         </div>
