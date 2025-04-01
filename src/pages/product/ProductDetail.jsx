@@ -186,6 +186,10 @@ const ProductDetail = () => {
                 <h1>{product.name}</h1>
                 <p className="price">{product.price?.toLocaleString()} 원</p>
 
+                <div className="description">
+                    <p>{product.description}</p>
+                </div>
+
                 {parsedSizes.length > 0 && (
                     <div className="size-selector">
                         <h4>사이즈 선택</h4>
