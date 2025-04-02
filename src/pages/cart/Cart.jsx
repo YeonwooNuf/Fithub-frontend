@@ -9,8 +9,6 @@ const Cart = () => {
     const [cartItems, setCartItems] = useState([]);
     const [selectedItems, setSelectedItems] = useState([]);
     const [availableCoupons, setAvailableCoupons] = useState([]);
-    const [availablePoints, setAvailablePoints] = useState(0);
-    const [usedPoints, setUsedPoints] = useState(0);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [totalPrice, setTotalPrice] = useState(0);
@@ -42,7 +40,6 @@ const Cart = () => {
 
             setCartItems(response.data.cartItems);
             setAvailableCoupons(response.data.availableCoupons);
-            setAvailablePoints(response.data.availablePoints?.amount || 0);
             updateTotalPrice(response.data.cartItems);
         } catch (error) {
             console.error("❌ 장바구니 데이터를 불러오는 중 오류 발생:", error);
@@ -150,19 +147,6 @@ const Cart = () => {
 
             return updatedCoupons;
         });
-    };
-
-    /** ✅ 포인트 적용 */
-    const handleUsePoints = (event) => {
-        let inputPoints = parseInt(event.target.value, 10) || 0;
-        const maxPoints = Math.min(availablePoints, totalPrice * 0.1);
-
-        if (inputPoints > maxPoints) {
-            inputPoints = maxPoints;
-        }
-
-        setUsedPoints(inputPoints);
-        updateTotalPrice(cartItems, appliedCoupons, inputPoints);
     };
 
     /** ✅ 체크박스 선택 시 즉시 총 가격 업데이트 */
@@ -309,70 +293,70 @@ const Cart = () => {
                 return (
                     <div key={item.id} className="cart-item">
                         <div className="selection">
-                        <button className="delete-button" onClick={() => deleteCartItem(item.id)}>
-                            삭제
-                        </button>
-                        <input
-                            type="checkbox"
-                            checked={selectedItems.includes(item.id)}
-                            onChange={() => handleSelectItem(item.id)}
-                        />
+                            <button className="delete-button" onClick={() => deleteCartItem(item.id)}>
+                                삭제
+                            </button>
+                            <input
+                                type="checkbox"
+                                checked={selectedItems.includes(item.id)}
+                                onChange={() => handleSelectItem(item.id)}
+                            />
                         </div>
 
                         <img src={item.productImage} alt={item.productName} className="cart-item-image" />
                         <div className="cart-item-details">
                             <div className="cart-item-info">
-                            <h2>{item.productName}</h2>
-                            <div className="product-info">
-                                <p>색상: {item.color} / 사이즈: {item.size}</p>
-                                <div className="quantity-controls">
-                                    <button onClick={() => decreaseQuantity(item.id, item.quantity)} disabled={item.quantity <= 1}>−</button>
-                                    <p>수량 :</p>
-                                    <span>{item.quantity}</span>
-                                    <button onClick={() => increaseQuantity(item.id, item.quantity)}>+</button>
+                                <h2>{item.productName}</h2>
+                                <div className="product-info">
+                                    <p>색상: {item.color} / 사이즈: {item.size}</p>
+                                    <div className="quantity-controls">
+                                        <button onClick={() => decreaseQuantity(item.id, item.quantity)} disabled={item.quantity <= 1}>−</button>
+                                        <p>수량 :</p>
+                                        <span>{item.quantity}</span>
+                                        <button onClick={() => increaseQuantity(item.id, item.quantity)}>+</button>
+                                    </div>
                                 </div>
                             </div>
-                            </div>
 
 
 
-<div className="coupon-section">
-                            {appliedCoupons[item.id] && (
-                                <p className="applied-coupon">
-                                    적용된 쿠폰: {appliedCoupons[item.id].name} (-{appliedCoupons[item.id].discount}%)
-                                </p>
-                            )}
-
-                            <div className="coupon-selector">
-                                <label>쿠폰 선택:</label>
-                                <select
-                                    onChange={(e) => handleApplyCoupon(item.id, e.target.value)}
-                                    value={appliedCoupons[item.id]?.id || ""}
-                                >
-                                    <option value="">선택 없음</option>
-                                    {getApplicableCoupons(item).map((coupon) => (
-                                        <option key={`${item.id}-${coupon.id}`} value={coupon.id}>
-                                            {coupon.name} (-{coupon.discount}%)
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-                            
-                            {/* ✅ 가격 표시 로직 수정 */}
-                            <div className="price-container">
-                                {appliedCoupons[item.id] ? (
-                                    <>
-                                        <span className="original-price">
-                                            {(item.price * item.quantity).toLocaleString()} 원
-                                        </span>
-                                        <span className="discounted-price">
-                                            {finalPrice.toLocaleString()} 원
-                                        </span>
-                                    </>
-                                ) : (
-                                    <span>{(item.price * item.quantity).toLocaleString()} 원</span>
+                            <div className="coupon-section">
+                                {appliedCoupons[item.id] && (
+                                    <p className="applied-coupon">
+                                        적용된 쿠폰: {appliedCoupons[item.id].name} (-{appliedCoupons[item.id].discount}%)
+                                    </p>
                                 )}
-                            </div>
+
+                                <div className="coupon-selector">
+                                    <label>쿠폰 선택:</label>
+                                    <select
+                                        onChange={(e) => handleApplyCoupon(item.id, e.target.value)}
+                                        value={appliedCoupons[item.id]?.id || ""}
+                                    >
+                                        <option value="">선택 없음</option>
+                                        {getApplicableCoupons(item).map((coupon) => (
+                                            <option key={`${item.id}-${coupon.id}`} value={coupon.id}>
+                                                {coupon.name} (-{coupon.discount}%)
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+
+                                {/* ✅ 가격 표시 로직 수정 */}
+                                <div className="price-container">
+                                    {appliedCoupons[item.id] ? (
+                                        <>
+                                            <span className="original-price">
+                                                {(item.price * item.quantity).toLocaleString()} 원
+                                            </span>
+                                            <span className="discounted-price">
+                                                {finalPrice.toLocaleString()} 원
+                                            </span>
+                                        </>
+                                    ) : (
+                                        <span>{(item.price * item.quantity).toLocaleString()} 원</span>
+                                    )}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -382,15 +366,7 @@ const Cart = () => {
             <div className="cart-summary">
                 <h2>결제 요약</h2>
                 <p>총 상품 금액: {totalPrice?.toLocaleString()} 원</p>
-                <p>사용 가능한 포인트: {availablePoints.toLocaleString()} P</p>
-                <label>사용할 포인트:</label>
-                <input
-                    type="number"
-                    value={usedPoints}
-                    onChange={handleUsePoints}
-                    min="0"
-                    max={Math.min(availablePoints || 0, totalPrice * 0.1)}
-                />
+                <p>할인 적용 금액: {totalPrice?.toLocaleString()} 원</p>
                 <button className="checkout-button" onClick={handleCheckout}>
                     구매하기
                 </button>
