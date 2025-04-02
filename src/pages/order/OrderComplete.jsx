@@ -6,6 +6,13 @@ const OrderComplete = () => {
     const navigate = useNavigate();
     const { paymentId, usedPoints, usedCoupons, totalAmount, finalAmount, cartItems } = location.state || {};
 
+    // ✅ 클라이언트 결제 완료 시간 저장용 state
+    const [paymentDate, setPaymentDate] = useState("");
+
+    useEffect(() => {
+        // 컴포넌트 마운트 시 현재 시간 저장
+        setPaymentDate(new Date().toISOString());
+    }, []);
 
     // ✅ 주문 정보가 없는 경우 처리
     if (!paymentId) {
