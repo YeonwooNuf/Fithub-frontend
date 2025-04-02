@@ -35,14 +35,14 @@ const Checkout = () => {
     const [paymentMethod, setPaymentMethod] = useState("CARD"); // 기본 결제 수단은 카드
 
     const [originalTotalPrice, setOriginalTotalPrice] = useState(0); // 💸 할인 전 상품 정가 합계
-const [totalDiscountAmount, setTotalDiscountAmount] = useState(0); // 📉 총 할인 금액
+    const [totalDiscountAmount, setTotalDiscountAmount] = useState(0); // 📉 총 할인 금액
 
 
-useEffect(() => {
-    if (cartItems.length > 0) {
-        updateFinalPrice(cartItems, selectedCoupons, usedPoints);
-    }
-}, [cartItems, selectedCoupons, usedPoints]);
+    useEffect(() => {
+        if (cartItems.length > 0) {
+            updateFinalPrice(cartItems, selectedCoupons, usedPoints);
+        }
+    }, [cartItems, selectedCoupons, usedPoints]);
 
     // merchantData 에서 한글 제거
     const encodeToBase64 = (data) => {
@@ -203,27 +203,27 @@ useEffect(() => {
     const updateFinalPrice = (items, coupons, pointsUsed) => {
         let originalTotal = 0;
         let couponDiscountTotal = 0;
-    
+
         items.forEach(item => {
             const itemTotal = item.price * item.quantity;
             originalTotal += itemTotal;
-    
+
             const coupon = coupons[item.id];
             if (coupon) {
                 const discountPerItem = item.price * (coupon.discount / 100);
                 couponDiscountTotal += discountPerItem * item.quantity;
             }
         });
-    
+
         const totalDiscount = couponDiscountTotal + pointsUsed;
         const finalAmount = originalTotal - totalDiscount;
-    
+
         // ✅ 상태 업데이트
         setOriginalTotalPrice(originalTotal);                 // 원가 총합
         setTotalDiscountAmount(totalDiscount);               // 쿠폰+포인트 할인
         setFinalPrice(Math.max(finalAmount, 0));             // 결제할 실제 금액
     };
-    
+
 
     const handlePayment = async () => {
         const paymentId = randomId();
@@ -283,7 +283,7 @@ useEffect(() => {
                     paymentId,
                     usedPoints,
                     usedCoupons: Object.values(selectedCoupons), // ✅ 쿠폰 데이터 올바르게 전달
-                    totalAmount, // ✅ 원래 상품 가격 (쿠폰 & 포인트 적용 전)
+                    originalTotalPrice, // ✅ 원래 상품 가격 (쿠폰 & 포인트 적용 전)
                     finalAmount: finalPrice, // ✅ 포트원에서 받은 결제 금액 (할인 & 포인트 적용 후)
                     cartItems,
                 })
@@ -292,6 +292,8 @@ useEffect(() => {
             // ✅ 결제 검증 성공
             if (completeResponse.ok) {
                 const responseData = await completeResponse.json();
+                console.log("🧾 responseData 확인:", responseData);
+
                 alert("✅ 결제가 성공적으로 완료되었습니다!");
                 navigate("/order/complete", {
                     state: {
@@ -300,6 +302,7 @@ useEffect(() => {
                     }
                 });
             }
+
             // ✅ 결제 검증 실패 시 응답 메시지를 확인하여 상세 로그 출력
             else {
                 const errorData = await completeResponse.json();
@@ -332,9 +335,13 @@ useEffect(() => {
 
                     return (
                         <div key={item.id} className="cart-item">
-                            <img src={item.productImage} alt={item.productName} className="cart-item-image" />
-                            <h3>{item.productName}</h3>
-                            <p>색상: {item.color} | 사이즈: {item.size} | 수량: {item.quantity}</p>
+                            <div className="item-info">
+                                <img src={item.productImage} alt={item.productName} className="cart-item-image" />
+                                <div className="item-text">
+                                    <h3>{item.productName}</h3>
+                                    <p>색상: {item.color} | 사이즈: {item.size} | 수량: {item.quantity}</p>
+                                </div>
+                            </div>
 
                             <p className="price">
                                 {discount > 0 ? (
@@ -384,8 +391,8 @@ useEffect(() => {
             <div className="checkout-summary">
                 <h2>결제 요약</h2>
                 <p>총 정가: {originalTotalPrice.toLocaleString()} 원</p>
-    <p>총 할인 금액: -{totalDiscountAmount.toLocaleString()} 원</p>
-    <p>최종 결제 금액: <strong>{finalPrice.toLocaleString()} 원</strong></p>
+                <p>총 할인 금액: -{totalDiscountAmount.toLocaleString()} 원</p>
+                <p>최종 결제 금액: <strong>{finalPrice.toLocaleString()} 원</strong></p>
                 <p>사용 가능한 포인트: {availablePoints.toLocaleString()} P</p>
                 <label>사용할 포인트:</label>
                 <input
