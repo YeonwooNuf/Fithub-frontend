@@ -11,7 +11,8 @@ const Cart = () => {
     const [availableCoupons, setAvailableCoupons] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [totalPrice, setTotalPrice] = useState(0);
+    const [totalPrice, setTotalPrice] = useState(0);              // ✅ 최종 결제 금액 (할인 적용 후)
+const [totalOriginalPrice, setTotalOriginalPrice] = useState(0);  // ✅ 할인 전 금액 (정가 기준)
     const [appliedCoupons, setAppliedCoupons] = useState({})
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [isAddressModalOpen, setIsAddressModalOpen] = useState(false); // ✅ 모달 상태
@@ -168,19 +169,26 @@ const Cart = () => {
 
     /** ✅ 선택된 상품 기준으로 총 가격 계산 */
     const updateTotalPrice = (updatedSelectedItems = selectedItems, updatedCoupons = appliedCoupons) => {
-        let total = 0;
-
+        let originalTotal = 0;
+        let discountedTotal = 0;
+    
         cartItems.forEach((item) => {
-            if (updatedSelectedItems.includes(item.id)) { // ✅ 선택된 상품만 가격 계산
-                const appliedCoupon = updatedCoupons[item.id]; // ✅ 적용된 쿠폰 가져오기
+            if (updatedSelectedItems.includes(item.id)) {
+                const itemTotal = item.price * item.quantity;
+                originalTotal += itemTotal;
+    
+                const appliedCoupon = updatedCoupons[item.id];
                 const discount = appliedCoupon ? (item.price * appliedCoupon.discount) / 100 : 0;
-                total += (item.price - discount) * item.quantity;
+                const discountedItemPrice = (item.price - discount) * item.quantity;
+    
+                discountedTotal += discountedItemPrice;
             }
         });
-
-        setTotalPrice(Math.max(total, 0));
+    
+        setTotalOriginalPrice(originalTotal);             // ✅ 정가 총합 저장
+        setTotalPrice(Math.max(discountedTotal, 0));      // ✅ 최종 결제 금액
     };
-
+    
     /** ✅ 특정 상품에 적용 가능한 쿠폰 필터링 */
     const getApplicableCoupons = (cartItem) => {
         const appliedCouponId = appliedCoupons[cartItem.id]?.id;
@@ -259,6 +267,7 @@ const Cart = () => {
             state: {
                 cartItems: itemsToPurchase,
                 totalPrice,
+                totalOriginalPrice,
                 appliedCoupons
             }
         });
@@ -365,7 +374,7 @@ const Cart = () => {
 
             <div className="cart-summary">
                 <h2>결제 요약</h2>
-                <p>총 상품 금액: {totalPrice?.toLocaleString()} 원</p>
+                <p>총 상품 가격: {totalOriginalPrice?.toLocaleString()} 원</p>
                 <p>할인 적용 금액: {totalPrice?.toLocaleString()} 원</p>
                 <button className="checkout-button" onClick={handleCheckout}>
                     구매하기

@@ -34,6 +34,16 @@ const Checkout = () => {
     const [usedPoints, setUsedPoints] = useState(0); // ✅ 추가: 포인트 사용량 상태
     const [paymentMethod, setPaymentMethod] = useState("CARD"); // 기본 결제 수단은 카드
 
+    const [originalTotalPrice, setOriginalTotalPrice] = useState(0); // 💸 할인 전 상품 정가 합계
+const [totalDiscountAmount, setTotalDiscountAmount] = useState(0); // 📉 총 할인 금액
+
+
+useEffect(() => {
+    if (cartItems.length > 0) {
+        updateFinalPrice(cartItems, selectedCoupons, usedPoints);
+    }
+}, [cartItems, selectedCoupons, usedPoints]);
+
     // merchantData 에서 한글 제거
     const encodeToBase64 = (data) => {
         return btoa(unescape(encodeURIComponent(JSON.stringify(data))));
@@ -191,14 +201,29 @@ const Checkout = () => {
 
     /** ✅ 최종 가격 업데이트 */
     const updateFinalPrice = (items, coupons, pointsUsed) => {
-        let total = 0;
+        let originalTotal = 0;
+        let couponDiscountTotal = 0;
+    
         items.forEach(item => {
-            const discount = coupons[item.id] ? (item.price * coupons[item.id].discount) / 100 : 0;
-            total += (item.price - discount) * item.quantity;
+            const itemTotal = item.price * item.quantity;
+            originalTotal += itemTotal;
+    
+            const coupon = coupons[item.id];
+            if (coupon) {
+                const discountPerItem = item.price * (coupon.discount / 100);
+                couponDiscountTotal += discountPerItem * item.quantity;
+            }
         });
-        total -= pointsUsed; // ✅ 사용된 포인트 반영
-        setFinalPrice(Math.max(total, 0));
+    
+        const totalDiscount = couponDiscountTotal + pointsUsed;
+        const finalAmount = originalTotal - totalDiscount;
+    
+        // ✅ 상태 업데이트
+        setOriginalTotalPrice(originalTotal);                 // 원가 총합
+        setTotalDiscountAmount(totalDiscount);               // 쿠폰+포인트 할인
+        setFinalPrice(Math.max(finalAmount, 0));             // 결제할 실제 금액
     };
+    
 
     const handlePayment = async () => {
         const paymentId = randomId();
@@ -358,7 +383,9 @@ const Checkout = () => {
 
             <div className="checkout-summary">
                 <h2>결제 요약</h2>
-                <p>총 상품 금액: {finalPrice.toLocaleString()} 원</p>
+                <p>총 정가: {originalTotalPrice.toLocaleString()} 원</p>
+    <p>총 할인 금액: -{totalDiscountAmount.toLocaleString()} 원</p>
+    <p>최종 결제 금액: <strong>{finalPrice.toLocaleString()} 원</strong></p>
                 <p>사용 가능한 포인트: {availablePoints.toLocaleString()} P</p>
                 <label>사용할 포인트:</label>
                 <input
