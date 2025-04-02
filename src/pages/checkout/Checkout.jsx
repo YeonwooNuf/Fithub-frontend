@@ -258,9 +258,8 @@ const Checkout = () => {
                     paymentId,
                     usedPoints,
                     usedCoupons: Object.values(selectedCoupons), // ✅ 쿠폰 데이터 올바르게 전달
-                    totalAmount: totalPrice, // ✅ 원래 상품 가격 (쿠폰 & 포인트 적용 전)
+                    totalAmount, // ✅ 원래 상품 가격 (쿠폰 & 포인트 적용 전)
                     finalAmount: finalPrice, // ✅ 포트원에서 받은 결제 금액 (할인 & 포인트 적용 후)
-                    discount,
                     cartItems,
                 })
             });
