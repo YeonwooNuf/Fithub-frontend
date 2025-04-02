@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 const OrderComplete = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { paymentId, usedPoints, usedCoupons, totalAmount, finalAmount, cartItems, paymentDate } = location.state || {};
+    const { paymentId, usedPoints, usedCoupons, totalAmount, finalAmount, cartItems } = location.state || {};
+
 
     // ✅ 주문 정보가 없는 경우 처리
     if (!paymentId) {
@@ -61,7 +62,7 @@ const OrderComplete = () => {
                     <ul>
                         {usedCoupons.map((coupon, index) => (
                             <li key={index}>
-                                <p><strong>{usedCoupons.couponName}</strong> - 할인 {usedCoupons.discountAmount} 원</p>
+                                <p><strong>{coupon.name}</strong> - 할인 {coupon.discountAmount} 원</p>
                             </li>
                         ))}
                     </ul>
