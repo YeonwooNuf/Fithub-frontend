@@ -36,9 +36,9 @@ h1 {
     color: #ddd;
 }
 
-.search-box button {
+.search-button {
     padding: 10px 15px;
-    background-color: #3a3a3a;
+    background-color: #333;
     color: white;
     border: 1px solid #555;
     border-radius: 5px;
