@@ -122,7 +122,9 @@ const Address = () => {
                 <input type="text" placeholder="지번 주소" value={newAddressData.jibunAddress} readOnly />
                 <input type="text" placeholder="상세 주소" value={newAddressData.detailAddress} onChange={(e) => setNewAddressData({ ...newAddressData, detailAddress: e.target.value })} />
                 <input type="text" placeholder="참고 항목" value={newAddressData.reference} readOnly />
-                <button onClick={handleAddAddress}>추가</button>
+                <div className="add-button">
+                    <button onClick={handleAddAddress}>추가</button>
+                </div>
             </div>
 
             {/* ✅ 주소 목록 테이블 */}
