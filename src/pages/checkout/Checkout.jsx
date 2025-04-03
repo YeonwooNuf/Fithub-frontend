@@ -298,7 +298,8 @@ const Checkout = () => {
                 navigate("/order/complete", {
                     state: {
                         ...responseData, // 기존 응답 데이터
-                        cartItems // 🚀 명확하게 cartItems 추가
+                        cartItems, // 🚀 명확하게 cartItems 추가
+                        selectedAddress
                     }
                 });
             }
