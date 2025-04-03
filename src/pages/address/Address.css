@@ -2,10 +2,12 @@
     max-width: 900px;
     margin: 50px auto;
     padding: 20px;
-    background: #fff;
+    background: #222;
     border-radius: 10px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    color: white;
 }
+
 
 h2 {
     text-align: center;
@@ -25,13 +27,28 @@ h2 {
 }
 
 .address-table th {
-    background: #007bff;
+    background: #222;
     color: white;
 }
 
 .address-table tr:nth-child(even) {
-    background: #f9f9f9;
+    background: #444;
 }
+
+.add-address input[type="text"] {
+    color: #ffffff; /* 내부 글자색 (텍스트 색상) */
+    background-color: #2b2b2b; /* 내부 배경색 */
+    border: 1px solid #555; /* 테두리 */
+    border-radius: 6px;
+    padding: 10px;
+    margin-bottom: 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .add-address input[type="text"]::placeholder {
+    color: #999; /* 플레이스홀더 색상 */
+  }
 
 /* ✅ 기본 배송지 체크박스 */
 .address-table input[type="checkbox"] {
@@ -71,7 +88,7 @@ h2 {
 
 .add-address button {
     padding: 10px 15px;
-    background: #28a745;
+    background: #474747;
     color: white;
     border: none;
     border-radius: 5px;
