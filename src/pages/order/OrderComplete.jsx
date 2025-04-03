@@ -4,27 +4,33 @@ import { useLocation, useNavigate } from "react-router-dom";
 const OrderComplete = () => {
     const location = useLocation();
     const navigate = useNavigate();
-    const { paymentId, usedPoints, usedCoupons, totalAmount, finalAmount, cartItems } = location.state || {};
 
-    // ✅ 클라이언트 결제 완료 시간 저장용 state
+    // ✅ location.state에서 값 추출 + 기본값 설정
+    const {
+        paymentId = "",
+        usedPoints = 0,
+        usedCoupons = [],
+        originalTotalPrice = 0,
+        finalAmount = 0,
+        cartItems = [],
+        selectedAddress = null
+    } = location.state || {};
+
     const [paymentDate, setPaymentDate] = useState("");
 
     useEffect(() => {
-        // 컴포넌트 마운트 시 현재 시간 저장
         setPaymentDate(new Date().toISOString());
-    }, []);
 
-    // ✅ 주문 정보가 없는 경우 처리
-    if (!paymentId) {
-        return (
-            <div style={{ padding: "20px" }}>
-                <h2>❌ 주문 정보를 찾을 수 없습니다.</h2>
-                <button onClick={() => navigate("/")} style={styles.button}>
-                    홈으로 이동
-                </button>
-            </div>
-        );
-    }
+        // ✅ 디버깅용 콘솔 로그
+        console.log("🧾 OrderComplete에 전달된 location.state:", location.state);
+        console.log("🔹 paymentId:", paymentId);
+        console.log("🔹 usedPoints:", usedPoints);
+        console.log("🔹 usedCoupons:", usedCoupons);
+        console.log("🔹 originalTotalPrice:", originalTotalPrice);
+        console.log("🔹 finalAmount:", finalAmount);
+        console.log("🔹 cartItems:", cartItems);
+        console.log("📦 배송지 정보:", selectedAddress);
+    }, []);
 
     // const handleUseCoupon = async () => {
     //     try {
@@ -52,24 +58,34 @@ const OrderComplete = () => {
     //     }
     // }
 
+    if (!paymentId) {
+        return (
+            <div style={{ padding: "20px" }}>
+                <h2>❌ 주문 정보를 찾을 수 없습니다.</h2>
+                <button onClick={() => navigate("/")} style={styles.button}>
+                    홈으로 이동
+                </button>
+            </div>
+        );
+    }
+
     return (
         <div style={{ padding: "20px" }}>
             <h1>✅ 결제가 완료되었습니다!</h1>
             <p><strong>주문 번호:</strong> {paymentId}</p>
-            {/*<p><strong>결제 상태:</strong> {paymentStatus || "결제 완료"}</p>*/}
-            <p><strong>할인 전 금액:</strong> {totalAmount} 원</p>
-            <p><strong>총 결제 금액:</strong> {finalAmount} 원</p>
-            <p><strong>사용한 포인트:</strong> {usedPoints} P</p>
+            <p><strong>할인 전 금액:</strong> {originalTotalPrice.toLocaleString()} 원</p>
+            <p><strong>총 결제 금액:</strong> {finalAmount.toLocaleString()} 원</p>
+            <p><strong>사용한 포인트:</strong> {usedPoints.toLocaleString()} P</p>
             <p><strong>결제 일자:</strong> {new Date(paymentDate).toLocaleString()}</p>
 
             {/* ✅ 사용한 쿠폰 정보 표시 */}
-            {usedCoupons && usedCoupons.length > 0 && (
+            {usedCoupons.length > 0 && (
                 <div>
                     <h3>🎟 사용한 쿠폰</h3>
                     <ul>
                         {usedCoupons.map((coupon, index) => (
                             <li key={index}>
-                                <p><strong>{coupon.name}</strong> - 할인 {coupon.discountAmount} 원</p>
+                                <p><strong>{coupon.name}</strong> - {coupon.discount}% 할인 쿠폰</p>
                             </li>
                         ))}
                     </ul>
@@ -81,10 +97,21 @@ const OrderComplete = () => {
             <ul>
                 {cartItems.map((item, index) => (
                     <li key={index}>
-                        <p>{item.productName} - {item.price} 원</p>
+                        <p>{item.productName} - {item.price.toLocaleString()} 원</p>
                     </li>
                 ))}
             </ul>
+
+            {selectedAddress && (
+                <div style={{ marginTop: "20px" }}>
+                    <h3>📦 배송지 정보</h3>
+                    <p><strong>{selectedAddress.roadAddress}</strong></p>
+                    <p>{selectedAddress.detailAddress}</p>
+                    {selectedAddress.recipient && <p>수령인: {UserActivation.}</p>}
+                    {selectedAddress.phone && <p>전화번호: {selectedAddress.phone}</p>}
+                </div>
+            )}
+
 
             <div style={{ marginTop: "20px" }}>
                 <button onClick={() => navigate("/mypage/orders")} style={styles.button}>
