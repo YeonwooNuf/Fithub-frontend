@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-
+import axios from "axios";
 
 // ✅ 토큰 인증 헤더
 const getAuthHeaders = () => {
@@ -17,7 +17,7 @@ const OrderComplete = () => {
         paymentId = "",
         usedPoints = 0,
         usedCoupons = [],
-        originalTotalPrice = 0,
+        totalAmount = 0,
         finalAmount = 0,
         cartItems = [],
         selectedAddress = null
@@ -30,7 +30,7 @@ const OrderComplete = () => {
     const fetchUserInfo = async () => {
         try {
             const headers = getAuthHeaders();
-            const response = await axios.get("/api/users/me", { headers });
+            const response = await axios.get("/api/users/mypage", { headers });
             setUserInfo(response.data);
         } catch (error) {
             console.error("❌ 사용자 정보 불러오기 실패:", error);
@@ -46,37 +46,13 @@ const OrderComplete = () => {
         console.log("🔹 paymentId:", paymentId);
         console.log("🔹 usedPoints:", usedPoints);
         console.log("🔹 usedCoupons:", usedCoupons);
-        console.log("🔹 originalTotalPrice:", originalTotalPrice);
+        console.log("🔹 totalAmount:", totalAmount);
         console.log("🔹 finalAmount:", finalAmount);
         console.log("🔹 cartItems:", cartItems);
         console.log("📦 배송지 정보:", selectedAddress);
     }, []);
 
-    // const handleUseCoupon = async () => {
-    //     try {
-    //         const headers = getAuthHeaders();
-    //         if (!headers.Authorization) {
-    //             navigate("/login");
-    //             return;
-    //         }
-    //         const response = await axios.get("/api/coupon/use", {headers});
-    //     } catch (error) {
-    //         console.error("쿠폰이 사용처리되지 않았습니다.", error);
-    //     }
-    // }
 
-    // const handleUsePoints = async () => {
-    //     try {
-    //         const headers = getAuthHeaders();
-    //         if (!headers.Authorization) {
-    //             navigate("/login");
-    //             return;
-    //         }
-    //         const response = await axios.get("/api/points/use", {headers});
-    //     } catch (error) {
-    //         console.error("적립금이 사용처리되지 않았습니다.", error);
-    //     }
-    // }
 
     if (!paymentId) {
         return (
@@ -93,7 +69,7 @@ const OrderComplete = () => {
         <div style={{ padding: "20px" }}>
             <h1>✅ 결제가 완료되었습니다!</h1>
             <p><strong>주문 번호:</strong> {paymentId}</p>
-            <p><strong>할인 전 금액:</strong> {originalTotalPrice.toLocaleString()} 원</p>
+            <p><strong>할인 전 금액:</strong> {totalAmount.toLocaleString()} 원</p>
             <p><strong>총 결제 금액:</strong> {finalAmount.toLocaleString()} 원</p>
             <p><strong>사용한 포인트:</strong> {usedPoints.toLocaleString()} P</p>
             <p><strong>결제 일자:</strong> {new Date(paymentDate).toLocaleString()}</p>
@@ -123,8 +99,7 @@ const OrderComplete = () => {
                 )}
                 {userInfo && (
                     <>
-                        <p>수령인: {userInfo.name}</p>
-                        <p>전화번호: {userInfo.phone}</p>
+                        <p>주문자명 : {userInfo.nickname}</p>
                     </>
                 )}
             </div>
