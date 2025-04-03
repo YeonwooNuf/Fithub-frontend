@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
+
+// ✅ 토큰 인증 헤더
+const getAuthHeaders = () => {
+    const token = localStorage.getItem("token");
+    return token ? { Authorization: `Bearer ${token}` } : {};
+};
+
 const OrderComplete = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -17,9 +24,22 @@ const OrderComplete = () => {
     } = location.state || {};
 
     const [paymentDate, setPaymentDate] = useState("");
+    const [userInfo, setUserInfo] = useState(null); // ✅ 사용자 정보 상태
+
+    // 🔹 사용자 정보 불러오기
+    const fetchUserInfo = async () => {
+        try {
+            const headers = getAuthHeaders();
+            const response = await axios.get("/api/users/me", { headers });
+            setUserInfo(response.data);
+        } catch (error) {
+            console.error("❌ 사용자 정보 불러오기 실패:", error);
+        }
+    };
 
     useEffect(() => {
         setPaymentDate(new Date().toISOString());
+        fetchUserInfo();
 
         // ✅ 디버깅용 콘솔 로그
         console.log("🧾 OrderComplete에 전달된 location.state:", location.state);
@@ -92,6 +112,24 @@ const OrderComplete = () => {
                 </div>
             )}
 
+            {/* ✅ 배송지 및 사용자 정보 표시 */}
+            <div style={{ marginTop: "20px" }}>
+                <h3>📦 배송지 정보</h3>
+                {selectedAddress && (
+                    <>
+                        <p><strong>{selectedAddress.roadAddress}</strong></p>
+                        <p>{selectedAddress.detailAddress}</p>
+                    </>
+                )}
+                {userInfo && (
+                    <>
+                        <p>수령인: {userInfo.name}</p>
+                        <p>전화번호: {userInfo.phone}</p>
+                    </>
+                )}
+            </div>
+
+
             {/* ✅ 주문 상품 목록 표시 */}
             <h3>🛍 주문 상품</h3>
             <ul>
@@ -101,17 +139,6 @@ const OrderComplete = () => {
                     </li>
                 ))}
             </ul>
-
-            {selectedAddress && (
-                <div style={{ marginTop: "20px" }}>
-                    <h3>📦 배송지 정보</h3>
-                    <p><strong>{selectedAddress.roadAddress}</strong></p>
-                    <p>{selectedAddress.detailAddress}</p>
-                    {selectedAddress.recipient && <p>수령인: {UserActivation.}</p>}
-                    {selectedAddress.phone && <p>전화번호: {selectedAddress.phone}</p>}
-                </div>
-            )}
-
 
             <div style={{ marginTop: "20px" }}>
                 <button onClick={() => navigate("/mypage/orders")} style={styles.button}>
