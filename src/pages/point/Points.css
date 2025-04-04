@@ -28,7 +28,10 @@ h2 {
   margin-top: 10px;
 }
 
-.points-table th,
+.points-table th {
+  color: black;
+}
+
 .points-table td {
   border: 1px solid #ddd;
   padding: 8px;
