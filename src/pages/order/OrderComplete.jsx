@@ -8,6 +8,32 @@ const getAuthHeaders = () => {
     return token ? { Authorization: `Bearer ${token}` } : {};
 };
 
+const saveOrderToDB = async () => {
+    try {
+        const headers = getAuthHeaders();
+
+        const requestData = {
+            paymentId,
+            totalAmount,
+            finalAmount,
+            usedPoints,
+            addressId: selectedAddress?.id,
+            usedCouponIds: usedCoupons.map(c => c.id), // ✅ UserCoupon ID 리스트
+            items: cartItems.map(item => ({
+                productId: item.productId,
+                quantity: item.quantity,
+                price: item.price
+            }))
+        };
+
+        await axios.post("/api/orders", requestData, { headers });
+        console.log("✅ 주문이 DB에 저장되었습니다.");
+    } catch (err) {
+        console.error("❌ 주문 저장 실패:", err);
+    }
+};
+
+
 const OrderComplete = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -35,10 +61,43 @@ const OrderComplete = () => {
         }
     };
 
+    const [isSaved, setIsSaved] = useState(false);
+
     useEffect(() => {
+        if (isSaved || !paymentId) return;
+    
         setPaymentDate(new Date().toISOString());
         fetchUserInfo();
-    }, []);
+    
+        const saveOrderToDB = async () => {
+            try {
+                const headers = getAuthHeaders();
+    
+                const requestData = {
+                    paymentId,
+                    totalAmount,
+                    finalAmount,
+                    usedPoints,
+                    addressId: selectedAddress?.id,
+                    usedCouponIds: usedCoupons.map(c => c.id),
+                    items: cartItems.map(item => ({
+                        productId: item.productId,
+                        quantity: item.quantity,
+                        price: item.price
+                    }))
+                };
+    
+                await axios.post("/api/orders", requestData, { headers });
+                console.log("✅ 주문이 DB에 저장되었습니다.");
+                setIsSaved(true); // ✅ 한 번만 저장되도록 설정
+            } catch (err) {
+                console.error("❌ 주문 저장 실패:", err);
+            }
+        };
+    
+        saveOrderToDB();
+    }, [paymentId]);
+    
 
     // const handleUseCoupon = async () => {
     //     try {
