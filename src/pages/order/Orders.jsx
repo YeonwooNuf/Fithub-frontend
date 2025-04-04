@@ -36,53 +36,40 @@ function Orders() {
       ) : (
         orders.map((order) => (
           <div key={order.orderId} className="order-card">
-            <div className="order-header">
-              <p className="order-id">주문번호: {order.orderId}</p>
-              <p className="order-date">
-                주문일자: {new Date(order.orderDate).toLocaleString()}
-              </p>
-              
-              <p className="original-price">
-                정가: {order.totalAmount.toLocaleString()} 원
-              </p>
-              <p className="order-price">
-                결제금액: <strong>{order.finalAmount.toLocaleString()} 원</strong>
-              </p>
-
-              <p className="used-points">
-                사용한 포인트: {order.usedPoints} P
-              </p>
+            {/* 주문 정보 헤더 */}
+            <div className="order-meta">
+              <div className="order-info-row">
+                <span>주문번호: {order.paymentId}</span>
+                <span>주문일자: {new Date(order.orderDate).toLocaleString()}</span>
+              </div>
+              <div className="order-info-row">
+                <span>정가: {order.totalAmount.toLocaleString()} 원</span>
+                <span>결제금액: <strong>{order.finalAmount.toLocaleString()} 원</strong></span>
+                <span>사용한 포인트: {order.usedPoints} P</span>
+              </div>
             </div>
 
-
+            {/* 구매 상품 리스트 */}
+            <h4 className="purchase-title">🛍 구매 상품</h4>
             <ul className="order-items">
               {order.items.map((item, idx) => (
                 <li key={idx} className="order-item">
-                  <img
-                    src={item.productImage}
-                    alt={item.productName}
-                    className="item-thumbnail"
-                    onClick={() => navigate(`/product/${item.productId}`)}
-                  />
-                  <div className="item-info">
-                    <p className="product-name">{item.productName}</p>
-                    <p>{item.price.toLocaleString()}원 × {item.quantity}개</p>
+                  <img src={item.productImage} alt={item.productName} className="order-item-image" />
+                  <div className="order-item-info">
+                    <p>
+                      <strong>{item.productName}</strong> - {item.price.toLocaleString()}원 × {item.quantity}개
+                    </p>
                   </div>
                   {!item.reviewWritten ? (
-                    <button
-                      className="review-button"
-                      onClick={() => navigate(`/review/${item.productId}`)}
-                    >
-                      리뷰 작성
-                    </button>
+                    <button className="review-button" onClick={() => navigate(`/review/${item.productId}`)}>리뷰 작성</button>
                   ) : (
                     <span className="review-done">리뷰 작성 완료</span>
                   )}
                 </li>
-
               ))}
             </ul>
           </div>
+
         ))
       )}
     </div>
