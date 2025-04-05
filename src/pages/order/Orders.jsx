@@ -16,9 +16,7 @@ function Orders() {
             Authorization: `Bearer ${token}`,
           },
         });
-
-        console.log("📦 주문 응답:", response.data);
-        setOrders(response.data || []); // ✅ 수정됨
+        setOrders(response.data || []);
       } catch (error) {
         console.error("❌ 주문 내역을 불러오지 못했습니다:", error);
       }
@@ -39,14 +37,27 @@ function Orders() {
             {/* 주문 정보 헤더 */}
             <div className="order-meta">
               <div className="order-info-row">
-                <span>주문번호: {order.paymentId}</span>
-                <span>주문일자: {new Date(order.orderDate).toLocaleString()}</span>
+                <div>주문번호: {order.paymentId}</div>
+                <div>주문일자: {new Date(order.orderDate).toLocaleString()}</div>
               </div>
-              <div className="order-info-row">
-                <span>정가: {order.totalAmount.toLocaleString()} 원</span>
-                <span>결제금액: <strong>{order.finalAmount.toLocaleString()} 원</strong></span>
-                <span>사용한 포인트: {order.usedPoints} P</span>
+              <div className="order-summary-row">
+                <div className="original-price">
+                  정가: {order.totalAmount.toLocaleString()} 원
+                </div>
+                <div className="final-amount">
+                  결제금액: {order.finalAmount.toLocaleString()} 원
+                </div>
               </div>
+            </div>
+
+            {/* 상세보기 버튼 */}
+            <div className="order-detail-button-wrap">
+              <button
+                className="order-detail-button"
+                onClick={() => navigate(`/order/${order.orderId}`)}
+              >
+                상세보기
+              </button>
             </div>
 
             {/* 구매 상품 리스트 */}
@@ -54,14 +65,26 @@ function Orders() {
             <ul className="order-items">
               {order.items.map((item, idx) => (
                 <li key={idx} className="order-item">
-                  <img src={item.productImage} alt={item.productName} className="order-item-image" />
+                  <img
+                    src={item.productImage}
+                    alt={item.productName}
+                    className="order-item-image"
+                    onClick={() => navigate(`/product/${item.productId}`)}
+                    style={{ cursor: "pointer" }}
+                  />
                   <div className="order-item-info">
                     <p>
-                      <strong>{item.productName}</strong> - {item.price.toLocaleString()}원 × {item.quantity}개
+                      <strong>{item.productName}</strong> -{" "}
+                      {item.price.toLocaleString()}원 × {item.quantity}개
                     </p>
                   </div>
                   {!item.reviewWritten ? (
-                    <button className="review-button" onClick={() => navigate(`/review/${item.productId}`)}>리뷰 작성</button>
+                    <button
+                      className="review-button"
+                      onClick={() => navigate(`/review/${item.productId}`)}
+                    >
+                      리뷰 작성
+                    </button>
                   ) : (
                     <span className="review-done">리뷰 작성 완료</span>
                   )}
@@ -69,7 +92,6 @@ function Orders() {
               ))}
             </ul>
           </div>
-
         ))
       )}
     </div>
