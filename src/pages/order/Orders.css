@@ -1,6 +1,6 @@
 /* ✅ 전체 컨테이너 */
 .orders-container {
-  max-width: 1000px;
+  max-width: 900px;
   margin: 0 auto;
   padding: 2rem;
 }
@@ -14,55 +14,51 @@
   text-align: center;
 }
 
-/* ✅ 주문 카드 */
+/* ✅ 주문 카드 스타일 */
 .order-card {
   background: #fff;
   padding: 2rem;
-  margin-bottom: 2rem;
+  margin-bottom: 2.5rem;
   border-radius: 1rem;
   box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
 }
 
-/* ✅ 주문 정보 메타 영역 */
+/* ✅ 주문 정보 전체: Grid로 정렬 */
 .order-meta {
-  margin-bottom: 1.5rem;
-  font-size: 0.95rem;
-}
-
-/* ✅ 주문번호, 주문일자 등 상단 정렬 */
-.order-info-row {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  flex-wrap: wrap;
-  margin-bottom: 0.5rem;
-}
-
-.order-id,
-.order-date,
-.order-price {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  row-gap: 0.5rem;
+  column-gap: 2rem;
   font-size: 1rem;
   color: #333;
-  margin: 0.2rem 0;
+  margin-bottom: 1.5rem;
 }
 
+/* ✅ 강조 금액 */
+.final-amount {
+  font-weight: bold;
+  font-size: 1.05rem;
+  color: #111;
+}
+
+/* ✅ 정가: 빗금 처리 */
 .original-price {
-  font-size: 0.9rem;
-  color: #888;
+  color: #999;
+  font-size: 0.95rem;
   text-decoration: line-through;
 }
 
+/* ✅ 포인트 */
 .used-points {
   font-size: 0.95rem;
-  color: #333;
-  margin-bottom: 1rem;
+  color: #444;
 }
 
 /* ✅ 구매 상품 제목 */
 .purchase-title {
   margin: 20px 0 10px;
   font-weight: bold;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
 }
 
 /* ✅ 상품 리스트 */
@@ -76,12 +72,13 @@
 .order-item {
   display: flex;
   align-items: center;
-  gap: 1.2rem;
+  justify-content: space-between;
+  gap: 1.5rem;
   border-top: 1px solid #eee;
   padding-top: 1rem;
 }
 
-/* ✅ 썸네일 */
+/* ✅ 썸네일 이미지 */
 .order-item img,
 .item-thumbnail {
   width: 60px;
@@ -91,7 +88,7 @@
 }
 
 /* ✅ 상품 정보 */
-.item-info {
+.order-item-info {
   flex: 1;
 }
 
@@ -102,7 +99,7 @@
 
 /* ✅ 리뷰 버튼 */
 .review-button {
-  padding: 6px 12px;
+  padding: 6px 14px;
   background-color: #111;
   color: white;
   border: none;
@@ -120,6 +117,14 @@
   font-size: 0.85rem;
   color: #666;
   background-color: #e0e0e0;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 8px;
+}
+
+/* ✅ "주문 내역이 없습니다" 문구 */
+.no-orders {
+  text-align: center;
+  color: #666;
+  font-size: 1rem;
+  margin-top: 2rem;
 }
