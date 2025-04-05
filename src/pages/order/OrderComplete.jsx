@@ -33,7 +33,6 @@ const saveOrderToDB = async () => {
     }
 };
 
-
 const OrderComplete = () => {
     const location = useLocation();
     const navigate = useNavigate();
@@ -41,12 +40,15 @@ const OrderComplete = () => {
     const {
         paymentId = "",
         usedPoints = 0,
-        usedCoupons = [],
+        selectedCoupons = {},
         totalAmount = 0,
         finalAmount = 0,
         cartItems = [],
         selectedAddress = null
     } = location.state || {};
+
+    // ✅ selectedCoupons 객체를 배열로 변환
+    const usedCoupons = Object.values(selectedCoupons);
 
     const [paymentDate, setPaymentDate] = useState("");
     const [userInfo, setUserInfo] = useState(null);
@@ -65,14 +67,14 @@ const OrderComplete = () => {
 
     useEffect(() => {
         if (isSaved || !paymentId) return;
-    
+
         setPaymentDate(new Date().toISOString());
         fetchUserInfo();
-    
+
         const saveOrderToDB = async () => {
             try {
                 const headers = getAuthHeaders();
-    
+
                 const requestData = {
                     paymentId,
                     totalAmount,
@@ -86,7 +88,7 @@ const OrderComplete = () => {
                         price: item.price
                     }))
                 };
-    
+
                 await axios.post("/api/orders", requestData, { headers });
                 console.log("✅ 주문이 DB에 저장되었습니다.");
                 setIsSaved(true); // ✅ 한 번만 저장되도록 설정
@@ -94,10 +96,10 @@ const OrderComplete = () => {
                 console.error("❌ 주문 저장 실패:", err);
             }
         };
-    
+
         saveOrderToDB();
     }, [paymentId]);
-    
+
 
     // const handleUseCoupon = async () => {
     //     try {
@@ -183,7 +185,7 @@ const OrderComplete = () => {
                 </div>
 
                 <div className="button-group">
-                    <button onClick={() => navigate("/mypage/orders")} className="btn">📄 주문 내역으로 이동</button>
+                    <button onClick={() => navigate("/orders")} className="btn">📄 주문 내역으로 이동</button>
                     <button onClick={() => navigate("/")} className="btn">🏠 홈으로 이동</button>
                 </div>
             </div>
