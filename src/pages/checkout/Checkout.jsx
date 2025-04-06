@@ -309,7 +309,8 @@ const Checkout = () => {
                     state: {
                         ...responseData, // 기존 응답 데이터
                         cartItems, // 🚀 명확하게 cartItems 추가
-                        selectedAddress
+                        selectedAddress,
+                        selectedCoupons
                     }
                 });
             }
