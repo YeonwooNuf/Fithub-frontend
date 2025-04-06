@@ -42,10 +42,10 @@ const OrderComplete = () => {
 
     useEffect(() => {
         if (isSaved || !paymentId) return;
-    
+
         setPaymentDate(new Date().toISOString());
         fetchUserInfo();
-    
+
         const saveOrderToDB = async () => {
             try {
                 const headers = getAuthHeaders();
@@ -62,7 +62,7 @@ const OrderComplete = () => {
                         price: item.price
                     }))
                 };
-    
+
                 await axios.post("/api/orders", requestData, { headers });
                 console.log("✅ 주문이 DB에 저장되었습니다.");
                 setIsSaved(true);
@@ -70,10 +70,10 @@ const OrderComplete = () => {
                 console.error("❌ 주문 저장 실패:", err);
             }
         };
-    
+
         saveOrderToDB();
     }, [paymentId]);
-    
+
     // const handleUseCoupon = async () => {
     //     try {
     //         const headers = getAuthHeaders();
@@ -126,11 +126,14 @@ const OrderComplete = () => {
                     <div className="order-section">
                         <h3>🎟 사용한 쿠폰</h3>
                         <ul className="coupon-list">
-                            {usedCoupons.map((coupon, index) => (
-                                <li key={index} className="list-item">
-                                    <strong>{coupon.name}</strong> - {coupon.discount}% 할인 쿠폰
-                                </li>
+                            {usedCoupons.map((userCoupon) => (
+                                userCoupon?.coupon ? (
+                                    <li key={userCoupon.id}>
+                                        <strong>{userCoupon.coupon.name}</strong> - {userCoupon.coupon.discount}% 할인 쿠폰
+                                    </li>
+                                ) : null
                             ))}
+
                         </ul>
                     </div>
                 )}
