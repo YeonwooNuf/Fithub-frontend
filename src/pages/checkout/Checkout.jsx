@@ -272,6 +272,10 @@ const Checkout = () => {
                 return;
             }
 
+            const usedCouponIds = Object.values(selectedCoupons)
+                .map(coupon => coupon?.id)
+                .filter((id, index, self) => id && self.indexOf(id) === index); // null 값 및 중복 제거
+
             // ✅ JWT 인증 헤더 추가하여 요청 전송
             const completeResponse = await fetch("/api/payment/complete", {
                 method: "POST",
@@ -282,10 +286,16 @@ const Checkout = () => {
                 body: JSON.stringify({
                     paymentId,
                     usedPoints,
-                    usedCoupons: Object.values(selectedCoupons), // ✅ 쿠폰 데이터 올바르게 전달
-                    totalAmount: originalTotalPrice, // ✅ 원래 상품 가격 (쿠폰 & 포인트 적용 전)
-                    finalAmount: finalPrice, // ✅ 포트원에서 받은 결제 금액 (할인 & 포인트 적용 후)
-                    cartItems,
+                    usedCouponIds, // ✅ 필드명 정확하게!
+                    totalAmount: originalTotalPrice,
+                    finalAmount: finalPrice,
+                    addressId: selectedAddress?.id, // 이 부분도 DTO에 맞춰 필요 시 추가
+                    items: cartItems.map(item => ({
+                        productId: item.id,
+                        quantity: item.quantity,
+                        color: item.color,
+                        size: item.size
+                    }))
                 })
             });
 
