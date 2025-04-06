@@ -276,6 +276,8 @@ const Checkout = () => {
                 .map(coupon => coupon?.id)
                 .filter((id, index, self) => id && self.indexOf(id) === index); // null 값 및 중복 제거
 
+            console.log("✅ 최종 usedCouponIds 전송됨:", usedCouponIds); // ✅ 여기에 넣기!
+
             // ✅ JWT 인증 헤더 추가하여 요청 전송
             const completeResponse = await fetch("/api/payment/complete", {
                 method: "POST",
