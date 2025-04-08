@@ -36,7 +36,19 @@ const Checkout = () => {
 
     const [originalTotalPrice, setOriginalTotalPrice] = useState(0); // 💸 할인 전 상품 정가 합계
     const [totalDiscountAmount, setTotalDiscountAmount] = useState(0); // 📉 총 할인 금액
+    const [userId, setUserId] = useState(null);
 
+    const fetchUserId = async () => {
+        const headers = getAuthHeaders();
+        try {
+            const res = await axios.get("/api/users/mypage", { headers });
+            if (res.data?.userId) {
+                setUserId(res.data.userId);
+            }
+        } catch (error) {
+            console.error("❌ 사용자 정보 가져오기 실패:", error);
+        }
+    };
 
     useEffect(() => {
         if (cartItems.length > 0) {
@@ -58,6 +70,7 @@ const Checkout = () => {
         console.log("useEffect 🚀 useEffect 실행됨");
         fetchUserPoints();
         fetchAvailableCoupons();
+        fetchUserId();
     }, []);
 
     useEffect(() => {
@@ -123,26 +136,28 @@ const Checkout = () => {
 
     /** ✅ 특정 상품에 적용 가능한 쿠폰 필터링 (중복 적용 방지 추가) */
     const getApplicableCoupons = (cartItem) => {
-        const appliedCouponId = selectedCoupons[cartItem.id]?.id;
+        const appliedCouponId = selectedCoupons[cartItem.id]?.userCouponId;
 
-        // ✅ 현재 상품에 적용된 쿠폰 가져오기
+        // 현재 상품에 적용된 쿠폰 객체 가져오기 (기존 코드에는 coupon.id로 비교해서 틀렸을 수 있음)
         const appliedCoupon = appliedCouponId
-            ? availableCoupons.find(coupon => coupon.id === appliedCouponId)
+            ? availableCoupons.find(coupon => coupon.userCouponId === appliedCouponId)
             : null;
 
-        let applicableCoupons = availableCoupons.filter(
-            coupon =>
-                (coupon.target === "ALL_PRODUCTS" ||
-                    (coupon.target === "CATEGORY" && coupon.targetValue === cartItem.category) ||
-                    (coupon.target === "BRAND" && coupon.targetValue === cartItem.brandName)) &&
-                (!Object.values(selectedCoupons).some(applied => applied.id === coupon.id) || // ✅ 이미 다른 상품에 적용된 쿠폰은 제거
-                    (appliedCoupon && appliedCoupon.id === coupon.id))
+        let applicableCoupons = availableCoupons.filter(coupon =>
+            (coupon.target === "ALL_PRODUCTS" ||
+                (coupon.target === "CATEGORY" && coupon.targetValue === cartItem.category) ||
+                (coupon.target === "BRAND" && coupon.targetValue === cartItem.brandName)) &&
+            (
+                !isCouponUsed(coupon.userCouponId, cartItem.id) || // 이미 다른 상품에서 사용되지 않았거나
+                coupon.userCouponId === appliedCouponId             // 현재 이 상품에 적용된 쿠폰이면 허용
+            )
         );
 
-        // ✅ 적용된 쿠폰이 이미 목록에 없다면 추가
-        if (appliedCoupon && !applicableCoupons.some(coupon => coupon.id === appliedCoupon.id)) {
-            applicableCoupons = [appliedCoupon, ...applicableCoupons];
+        // ✅ 선택된 쿠폰이 필터에서 누락된 경우, 리스트에 수동 추가
+        if (appliedCoupon && !applicableCoupons.some(c => c.userCouponId === appliedCoupon.userCouponId)) {
+            applicableCoupons.unshift(appliedCoupon); // 드롭다운 가장 위에 삽입
         }
+        console.log("✅ 쿠폰 목록:", availableCoupons);
 
         return applicableCoupons;
     };
@@ -190,7 +205,12 @@ const Checkout = () => {
 
                 if (selectedCoupon) {
                     console.log("🆕 새로운 쿠폰 적용:", selectedCoupon);
-                    updatedCoupons[cartItemId] = selectedCoupon;
+                    updatedCoupons[cartItemId] = {
+                        id: selectedCoupon.id,                    // Coupon의 ID
+                        userCouponId: selectedCoupon.userCouponId, // ✅ 실제 사용할 ID
+                        name: selectedCoupon.name,
+                        discount: selectedCoupon.discount,
+                    };
                 }
             }
 
@@ -273,10 +293,11 @@ const Checkout = () => {
             }
 
             const usedCouponIds = Object.values(selectedCoupons)
-                .map(coupon => coupon?.id)
-                .filter((id, index, self) => id && self.indexOf(id) === index); // null 값 및 중복 제거
+                .map(coupon => coupon?.userCouponId)  // ✅ 여기!
+                .filter((id, index, self) => id && self.indexOf(id) === index);
 
-            console.log("✅ 최종 usedCouponIds 전송됨:", usedCouponIds); // ✅ 여기에 넣기!
+            console.log("🔍 결제 직전 selectedCoupons 상태 확인:", selectedCoupons);
+            console.log("✅ 전송할 usedCouponIds:", usedCouponIds);
 
             // ✅ JWT 인증 헤더 추가하여 요청 전송
             const completeResponse = await fetch("/api/payment/complete", {
@@ -293,7 +314,7 @@ const Checkout = () => {
                     finalAmount: finalPrice,
                     addressId: selectedAddress?.id, // 이 부분도 DTO에 맞춰 필요 시 추가
                     items: cartItems.map(item => ({
-                        productId: item.id,
+                        productId: item.productId,
                         quantity: item.quantity,
                         color: item.color,
                         size: item.size
@@ -371,14 +392,15 @@ const Checkout = () => {
                             <div className="coupon-selector">
                                 <label>쿠폰 선택:</label>
                                 <select
-                                    value={selectedCoupons[item.id]?.id || ""}
+                                    value={selectedCoupons[item.id]?.userCouponId || ""}
                                     onChange={(e) => handleApplyCoupon(item.id, e.target.value)}
+
                                 >
                                     <option value="">쿠폰 선택 없음</option>
                                     {getApplicableCoupons(item)
-                                        .filter(coupon => !isCouponUsed(coupon.id, item.id)) // ✅ 중복 사용된 쿠폰 필터링
+                                        .filter(coupon => !isCouponUsed(coupon.userCouponId, item.id))  // ✅ 수정됨!
                                         .map(coupon => (
-                                            <option key={coupon.id} value={coupon.id}>
+                                            <option key={`${item.id}-${coupon.userCouponId}`} value={coupon.userCouponId}>
                                                 {coupon.name} (-{coupon.discount}%)
                                             </option>
                                         ))}

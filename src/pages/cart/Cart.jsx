@@ -12,7 +12,7 @@ const Cart = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [totalPrice, setTotalPrice] = useState(0);              // ✅ 최종 결제 금액 (할인 적용 후)
-const [totalOriginalPrice, setTotalOriginalPrice] = useState(0);  // ✅ 할인 전 금액 (정가 기준)
+    const [totalOriginalPrice, setTotalOriginalPrice] = useState(0);  // ✅ 할인 전 금액 (정가 기준)
     const [appliedCoupons, setAppliedCoupons] = useState({})
     const [selectedAddress, setSelectedAddress] = useState(null);
     const [isAddressModalOpen, setIsAddressModalOpen] = useState(false); // ✅ 모달 상태
@@ -124,28 +124,52 @@ const [totalOriginalPrice, setTotalOriginalPrice] = useState(0);  // ✅ 할인 
         updateQuantityInDB(cartItemId, newQuantity);
     };
 
+    // ✅ 중복 사용된 쿠폰인지 확인
+    const isCouponUsed = (userCouponId, cartItemId) => {
+        return Object.entries(appliedCoupons).some(
+            ([itemId, coupon]) =>
+                itemId !== String(cartItemId) && coupon.userCouponId === userCouponId
+        );
+    };
+
     /** ✅ 쿠폰 적용/해제 및 변경 */
     const handleApplyCoupon = (cartItemId, selectedCouponId) => {
         console.log("🟢 쿠폰 변경 시작 | cartItemId:", cartItemId, "| 선택된 쿠폰 ID:", selectedCouponId);
 
+        const cartItem = cartItems.find(i => i.id === cartItemId);  // ✅ 이 줄 추가
+
         setAppliedCoupons(prevCoupons => {
-            let updatedCoupons = { ...prevCoupons };
+            const updatedCoupons = { ...prevCoupons };
 
             if (!selectedCouponId) {
-                // ✅ 선택된 쿠폰이 없을 경우, 기존 쿠폰 해제
                 delete updatedCoupons[cartItemId];
             } else {
-                // ✅ 선택한 쿠폰 적용
-                const selectedCoupon = availableCoupons.find(coupon => coupon.id === Number(selectedCouponId));
-                if (!selectedCoupon) return prevCoupons;
+                const selectedCoupon = availableCoupons.find(
+                    c => c.userCouponId === Number(selectedCouponId)
+                );
 
-                console.log("🆕 새로운 쿠폰 적용:", selectedCoupon);
-                updatedCoupons[cartItemId] = selectedCoupon;
+                if (!selectedCoupon) {
+                    console.warn("🚨 일치하는 쿠폰을 찾을 수 없습니다:", selectedCouponId);
+                    return prevCoupons;
+                }
+
+                updatedCoupons[cartItemId] = {
+                    id: selectedCoupon.couponId,
+                    userCouponId: selectedCoupon.userCouponId,
+                    name: selectedCoupon.name,
+                    discount: selectedCoupon.discount,
+                };
             }
 
-            // ✅ 선택된 상품 기준으로 총 가격 업데이트 (쿠폰 반영)
-            updateTotalPrice(selectedItems, updatedCoupons);
+            // ✅ 수정: cartItem이 있을 때만 로그 찍기
+            if (cartItem) {
+                console.log("👉 적용 가능한 쿠폰:", getApplicableCoupons(cartItem));
+            }
 
+            console.log("🧾 전체 쿠폰:", availableCoupons);
+            console.log("🛒 적용된 쿠폰들:", appliedCoupons);
+
+            updateTotalPrice(selectedItems, updatedCoupons);
             return updatedCoupons;
         });
     };
@@ -171,50 +195,40 @@ const [totalOriginalPrice, setTotalOriginalPrice] = useState(0);  // ✅ 할인 
     const updateTotalPrice = (updatedSelectedItems = selectedItems, updatedCoupons = appliedCoupons) => {
         let originalTotal = 0;
         let discountedTotal = 0;
-    
+
         cartItems.forEach((item) => {
             if (updatedSelectedItems.includes(item.id)) {
                 const itemTotal = item.price * item.quantity;
                 originalTotal += itemTotal;
-    
+
                 const appliedCoupon = updatedCoupons[item.id];
                 const discount = appliedCoupon ? (item.price * appliedCoupon.discount) / 100 : 0;
                 const discountedItemPrice = (item.price - discount) * item.quantity;
-    
+
                 discountedTotal += discountedItemPrice;
             }
         });
-    
+
         setTotalOriginalPrice(originalTotal);             // ✅ 정가 총합 저장
         setTotalPrice(Math.max(discountedTotal, 0));      // ✅ 최종 결제 금액
     };
-    
+
     /** ✅ 특정 상품에 적용 가능한 쿠폰 필터링 */
     const getApplicableCoupons = (cartItem) => {
-        const appliedCouponId = appliedCoupons[cartItem.id]?.id;
+        const appliedCouponId = appliedCoupons[cartItem.id]?.userCouponId;
 
-        // ✅ 현재 상품에 적용된 쿠폰 가져오기
-        const appliedCoupon = appliedCouponId
-            ? availableCoupons.find(coupon => coupon.id === appliedCouponId)
-            : null;
+        return availableCoupons.filter((coupon) => {
+            const isMatchedTarget =
+                coupon.target === "ALL_PRODUCTS" ||
+                (coupon.target === "CATEGORY" && coupon.targetValue === cartItem.category) ||
+                (coupon.target === "BRAND" && coupon.targetValue === cartItem.brandName);
 
-        let applicableCoupons = availableCoupons.filter(
-            coupon =>
-                (coupon.target === "ALL_PRODUCTS" ||
-                    (coupon.target === "CATEGORY" && coupon.targetValue === cartItem.category) ||
-                    (coupon.target === "BRAND" && coupon.targetValue === cartItem.brandName)) &&
-                (!Object.values(appliedCoupons).some(applied => applied.id === coupon.id) ||
-                    (appliedCoupon && appliedCoupon.id === coupon.id))
-        );
+            const isAlreadyUsed = isCouponUsed(coupon.userCouponId, cartItem.id);
+            const isAppliedToCurrent = coupon.userCouponId === appliedCouponId;
 
-        // ✅ 적용된 쿠폰이 이미 목록에 없다면 추가
-        if (appliedCoupon && !applicableCoupons.some(coupon => coupon.id === appliedCoupon.id)) {
-            applicableCoupons = [appliedCoupon, ...applicableCoupons];
-        }
-
-        return applicableCoupons;
+            return isMatchedTarget && (!isAlreadyUsed || isAppliedToCurrent);
+        });
     };
-
 
     /** ✅ 기본 배송지 가져오기 */
     const fetchDefaultAddress = async () => {
@@ -338,17 +352,33 @@ const [totalOriginalPrice, setTotalOriginalPrice] = useState(0);  // ✅ 할인 
 
                                 <div className="coupon-selector">
                                     <label>쿠폰 선택:</label>
+                                    {/* ✅ 쿠폰 셀렉트 박스 렌더 직전 로그 찍기 */}
+                                    {console.log("💡 쿠폰 리스트 (item id:", item.id, "):", getApplicableCoupons(item))}
                                     <select
                                         onChange={(e) => handleApplyCoupon(item.id, e.target.value)}
-                                        value={appliedCoupons[item.id]?.id || ""}
+                                        value={appliedCoupons[item.id]?.userCouponId || ""}
                                     >
                                         <option value="">선택 없음</option>
-                                        {getApplicableCoupons(item).map((coupon) => (
-                                            <option key={`${item.id}-${coupon.id}`} value={coupon.id}>
-                                                {coupon.name} (-{coupon.discount}%)
-                                            </option>
-                                        ))}
+                                        {getApplicableCoupons(item)
+                                            .filter(coupon => {
+                                                const appliedId = appliedCoupons[item.id]?.userCouponId;
+                                                return (
+                                                    (coupon.userCouponId !== undefined) && // 🔐 필수: userCouponId 없는 쿠폰은 제외
+                                                    (!isCouponUsed(coupon.userCouponId, item.id) ||
+                                                        coupon.userCouponId === appliedId)
+                                                );
+                                            })
+                                            .map((coupon) => (
+                                                <option
+                                                    key={`${item.id}-${coupon.userCouponId}`}
+                                                    value={coupon.userCouponId}
+                                                >
+                                                    {coupon.name} (-{coupon.discount}%)
+                                                </option>
+                                            ))}
+
                                     </select>
+
                                 </div>
 
                                 {/* ✅ 가격 표시 로직 수정 */}

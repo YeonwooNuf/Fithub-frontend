@@ -20,7 +20,8 @@ const OrderDetail = () => {
       try {
         const headers = getAuthHeaders();
         const res = await axios.get(`/api/orders/${orderId}`, { headers });
-        console.log(res.data);
+        console.log("📦 주문 상세 응답 데이터 확인:", res.data);
+
         setOrder(res.data);
       } catch (err) {
         console.error("❌ 주문 정보 불러오기 실패:", err);
@@ -58,18 +59,13 @@ const OrderDetail = () => {
           <p><strong>결제 일자:</strong> {new Date(order.orderDate).toLocaleString()}</p>
         </div>
 
-        {order.usedCoupons?.length > 0 && (
-          <div className="order-section">
-            <h3>🎟 사용한 쿠폰</h3>
-            <ul className="coupon-list">
-              {order.usedCoupons.map((coupon, index) => (
-                <li key={index} className="list-item">
-                  <strong>{coupon.name}</strong> - {coupon.discount}% 할인 쿠폰
-                </li>
-              ))}
-            </ul>
-          </div>
-        )}
+        {order.usedCoupons.map((uc, index) => (
+  <li key={index} className="list-item">
+    <strong>{uc.name}</strong> - {uc.discount}% 할인 쿠폰
+
+  </li>
+))}
+
 
         <div className="order-section">
           <h3>📦 배송지 정보</h3>
