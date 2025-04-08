@@ -23,10 +23,11 @@ const OrderComplete = () => {
     } = location.state || {};
 
     // ✅ selectedCoupons 객체를 배열로 변환
-    const usedCoupons = Object.values(selectedCoupons);
+    const [usedCoupons, setUsedCoupons] = useState(Object.values(selectedCoupons));
 
     const [paymentDate, setPaymentDate] = useState("");
     const [userInfo, setUserInfo] = useState(null);
+    const [isSaved, setIsSaved] = useState(false);
 
     const fetchUserInfo = async () => {
         try {
@@ -37,8 +38,6 @@ const OrderComplete = () => {
             console.error("❌ 사용자 정보 불러오기 실패:", error);
         }
     };
-
-    const [isSaved, setIsSaved] = useState(false);
 
     useEffect(() => {
         if (isSaved || !paymentId) return;
@@ -55,7 +54,7 @@ const OrderComplete = () => {
                     finalAmount,
                     usedPoints,
                     addressId: selectedAddress?.id,
-                    usedCouponIds: usedCoupons.map(c => c.id),
+                    usedCouponIds: usedCoupons.map(c => c.userCouponId || c.id),
                     items: cartItems.map(item => ({
                         productId: item.productId,
                         quantity: item.quantity,
@@ -63,9 +62,14 @@ const OrderComplete = () => {
                     }))
                 };
 
-                await axios.post("/api/orders", requestData, { headers });
-                console.log("✅ 주문이 DB에 저장되었습니다.");
+                const res = await axios.post("/api/orders", requestData, { headers });
+                console.log("✅ 주문이 DB에 저장되었습니다:", res.data);
+
                 setIsSaved(true);
+
+                if (res.data.usedCoupons) {
+                    setUsedCoupons(res.data.usedCoupons); // 상단에서 선언 필요
+                }
             } catch (err) {
                 console.error("❌ 주문 저장 실패:", err);
             }
@@ -126,14 +130,11 @@ const OrderComplete = () => {
                     <div className="order-section">
                         <h3>🎟 사용한 쿠폰</h3>
                         <ul className="coupon-list">
-                            {usedCoupons.map((userCoupon) => (
-                                userCoupon?.coupon ? (
-                                    <li key={userCoupon.id}>
-                                        <strong>{userCoupon.coupon.name}</strong> - {userCoupon.coupon.discount}% 할인 쿠폰
-                                    </li>
-                                ) : null
+                            {usedCoupons.map((coupon) => (
+                                <li key={coupon.id}>
+                                    <strong>{coupon.name}</strong> - {coupon.discount}% 할인 쿠폰
+                                </li>
                             ))}
-
                         </ul>
                     </div>
                 )}
