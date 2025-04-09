@@ -83,6 +83,13 @@ const OrderDetail = () => {
           <ul className="product-list">
             {order.items.map((item, index) => (
               <li key={index} className="list-item">
+                <img
+                    src={item.productImage}
+                    alt={item.productName}
+                    className="order-item-image"
+                    onClick={() => navigate(`/product/${item.productId}`)}
+                    style={{ cursor: "pointer" }}
+                  />
                 {item.productName} - {item.price.toLocaleString()} 원 × {item.quantity}개
               </li>
             ))}
