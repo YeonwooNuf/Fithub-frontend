@@ -176,9 +176,9 @@ const Checkout = () => {
     };
 
     /** ✅ 이미 다른 상품에서 사용된 쿠폰인지 확인 */
-    const isCouponUsed = (couponId, cartItemId) => {
+    const isCouponUsed = (userCouponId, cartItemId) => {
         return Object.entries(selectedCoupons).some(([itemId, coupon]) =>
-            itemId !== String(cartItemId) && coupon.id === couponId
+            itemId !== String(cartItemId) && coupon.userCouponId === userCouponId
         );
     };
 
@@ -201,7 +201,9 @@ const Checkout = () => {
 
                 // ✅ 선택한 쿠폰 적용
                 const cartItem = cartItems.find(item => item.id === cartItemId);
-                const selectedCoupon = getApplicableCoupons(cartItem).find(coupon => coupon.id === Number(selectedCouponId));
+                const selectedCoupon = getApplicableCoupons(cartItem).find(
+                    coupon => coupon.userCouponId === Number(selectedCouponId)
+                );
 
                 if (selectedCoupon) {
                     console.log("🆕 새로운 쿠폰 적용:", selectedCoupon);
@@ -412,16 +414,22 @@ const Checkout = () => {
                 })}
             </div>
 
-            <div className="card delivery-card">
-                <h2>배송지</h2>
+            <div className="delivery-card redesigned">
+                <div className="delivery-header">
+                    <svg className="location-icon" viewBox="0 0 24 24">
+                        <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5S10.62 6.5 12 6.5 14.5 7.62 14.5 9 13.38 11.5 12 11.5z" />
+                    </svg>
+                    <div className="delivery-title">배송지 정보</div>
+                </div>
+
                 {selectedAddress ? (
-                    <div className="selected-address">
-                        <p><strong>{selectedAddress.roadAddress}</strong></p>
-                        <p>{selectedAddress.detailAddress}</p>
-                        <button className="btn btn-light" onClick={() => setIsAddressModalOpen(true)}>배송지 변경</button>
+                    <div className="address-content">
+                        <p className="main-address">{selectedAddress.roadAddress}</p>
+                        <p className="detail-address">{selectedAddress.detailAddress}</p>
+                        <button className="change-address-button" onClick={() => setIsAddressModalOpen(true)}>배송지 변경</button>
                     </div>
                 ) : (
-                    <button className="btn btn-primary" onClick={() => setIsAddressModalOpen(true)}>배송지 선택</button>
+                    <button className="change-address-button" onClick={() => setIsAddressModalOpen(true)}>배송지 선택</button>
                 )}
             </div>
 
