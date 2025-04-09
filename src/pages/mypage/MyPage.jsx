@@ -99,6 +99,10 @@ function MyPage() {
           <span>1:1 문의 내역</span>
           <span className="arrow">&gt;</span>
         </li>
+        <li onClick={() => navigate("/userInfo")}> 
+          <span>회원 정보 수정</span>
+          <span className="arrow">&gt;</span>
+        </li>
       </ul>
     </div>
   );
