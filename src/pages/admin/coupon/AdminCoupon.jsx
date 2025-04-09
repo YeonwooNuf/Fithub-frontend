@@ -74,7 +74,7 @@ function AdminCoupon() {
   return (
     <div className="admin-coupon">
       <button className="back-btn" onClick={() => navigate("/admin")}>⬅ 관리자 대시보드</button>
-      <h1>쿠폰 관리</h1>
+      <h1 style={{color: "white"}}>쿠폰 관리</h1>
 
       <div className="search-box">
         <input
