@@ -32,7 +32,7 @@ function Navbar() {
     <nav className="navbar">
       <div className="logo">FitHub</div>
       <ul className="nav-links">
-        <li><a href="/">Shop</a></li>
+        <li><a href="/shop">Shop</a></li>
         <li><a href="/event">Event</a></li>
         <li><a href="#">Community</a></li>
         <li><a href="#">About</a></li>
