@@ -1,67 +1,89 @@
 /* Navbar */
 .navbar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center; /* 세로 가운데 정렬 */
-    background-color: #333;
-    color: white;
-    padding: 10px 20px;
-  }
-  
-  .navbar .logo {
-    font-size: 24px;
-    font-weight: bold;
-  }
-  
-  .navbar .nav-links {
-    display: flex; /* 가로 정렬 */
-    list-style: circle; /* 카테고리 앞에 점 */
-    padding: 0;
-    margin: 0;
-    gap: 80px; /* 간격 설정 */
-    font-size: 18px;
-  }
-  
-  .navbar .nav-links li a,
-  .navbar .nav-icons a {
-    color: white; /* 링크 기본 색상 */
-    text-decoration: none; /* 밑줄 제거 */
-  }
-  
-  .navbar .nav-links li a:hover,
-  .navbar .nav-icons a:hover {
-    color: #ddd; /* 링크 호버 상태 색상 */
-  }
-  
-  .navbar .nav-links li a:visited,
-  .navbar .nav-icons a:visited {
-    color: white; /* 방문한 링크도 기본 색상 유지 */
-  }
-  
-  
-  .navbar .nav-icons {
-    display: flex;
-    align-items: center; /* 세로 가운데 정렬 */
-    gap: 20px; /* 요소 간격 */
-    font-size: 16px; /* 텍스트 크기 */
-  }
-  
-  .navbar .nav-icons span {
-    line-height: 2; /* 텍스트 라인 높이 */
-  }
-  
-  
-  .navbar .nav-icons button {
-    background-color: white;
-    color: #333;
-    border: none;
-    padding: 5px 10px;
-    cursor: pointer;
-    border-radius: 5px;
-    font-size: 16px;
-  }
-  
-  .navbar .nav-icons button:hover {
-    background-color: #ddd;
-  }
-  
+  display: flex;
+  justify-content: space-between;
+  align-items: center; /* 세로 가운데 정렬 */
+  background-color: #333;
+  color: white;
+  padding: 10px 20px;
+}
+
+.navbar .logo a {
+  font-size: 24px;
+  font-weight: bold;
+  color: white;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform 0.2s ease;
+}
+
+.navbar .logo a:hover {
+  transform: scale(1.08);
+  color: #ddd;
+}
+
+.navbar .nav-links {
+  display: flex; /* 가로 정렬 */
+  list-style: circle; /* 카테고리 앞에 점 */
+  padding: 0;
+  margin: 0;
+  gap: 80px; /* 간격 설정 */
+  font-size: 18px;
+}
+
+/* ✅ Link 태그에도 스타일 적용 */
+.navbar .nav-links li a,
+.navbar .nav-links li > *,
+.navbar .nav-icons a,
+.navbar .nav-icons > * {
+  display: inline-block; /* transform 작동 위해 */
+  color: white;
+  text-decoration: none;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.navbar .nav-links li a:hover,
+.navbar .nav-links li > *:hover,
+.navbar .nav-icons a:hover,
+.navbar .nav-icons > *:hover {
+  color: #ddd;
+  transform: scale(1.08);
+}
+
+.navbar .nav-links li a:visited,
+.navbar .nav-icons a:visited {
+  color: white; /* 방문한 링크도 기본 색상 유지 */
+}
+
+.navbar .nav-icons {
+  display: flex;
+  align-items: center; /* 세로 가운데 정렬 */
+  gap: 20px; /* 요소 간격 */
+  font-size: 16px; /* 텍스트 크기 */
+}
+
+.navbar .nav-icons span {
+  line-height: 2; /* 텍스트 라인 높이 */
+}
+
+.navbar .nav-icons button {
+  background-color: white;
+  color: #333;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.navbar .nav-icons button:hover {
+  background-color: #ddd;
+  transform: scale(1.08);
+}
+
+.navbar .nav-icons span:hover {
+  transform: none !important;
+  color: white !important;
+  cursor: default;
+}

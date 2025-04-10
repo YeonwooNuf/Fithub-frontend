@@ -2,13 +2,14 @@ import React, { useContext, useEffect, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import "./Navbar.css";
+import { Link } from "react-router-dom";
 
 function Navbar() {
   const { isLoggedIn, userInfo, logout } = useContext(AuthContext);
   const navigate = useNavigate();
   const [role, setRole] = useState(localStorage.getItem("role") || "USER");
   const [nickname, setNickname] = useState(localStorage.getItem("nickname")
-)
+  )
 
   useEffect(() => {
     console.log("🟡 [Navbar] 현재 로그인 상태:", isLoggedIn);
@@ -30,30 +31,34 @@ function Navbar() {
 
   return (
     <nav className="navbar">
-      <div className="logo">FitHub</div>
+      <div className="logo">
+        <Link to="/" className="logo-link">
+          <span className="logo-text">FitHub</span>
+        </Link>
+      </div>
+
       <ul className="nav-links">
-        <li><a href="/shop">Shop</a></li>
-        <li><a href="/event">Event</a></li>
-        <li><a href="#">Community</a></li>
-        <li><a href="#">About</a></li>
-        {/* ✅ 관리자 전용 탭 */}
+        <li><Link to="/shop">Shop</Link></li>
+        <li><Link to="/event">Event</Link></li>
+        <li><Link to="#">Community</Link></li>
+        <li><Link to="#">About</Link></li>
+        {/* 관리자 전용 탭 */}
         {isLoggedIn && nickname === "관리자" && (
-          <li><a href="/admin">Admin Page</a></li>
+          <li><Link to="/admin">Admin Page</Link></li>
         )}
       </ul>
       <div className="nav-icons">
         {isLoggedIn ? (
           <>
-            <span>안녕하세요, {userInfo.nickname || "사용자"} 님</span>   {/* 로그인 한 경우 */}
-            <a href="/cart">Cart</a>
-            <a href="/mypage">MyPage</a>
+            <span>안녕하세요, {userInfo.nickname || "사용자"} 님</span>
+            <Link to="/cart">Cart</Link>
+            <Link to="/mypage">MyPage</Link>
             <button onClick={handleLogout}>Logout</button>
           </>
         ) : (
-          
           <>
-            <a href="/login">Login</a>    {/* 로그인 안한 경우 */}
-            <a href="/register">Register</a>
+            <Link to="/login">Login</Link>
+            <Link to="/register">Register</Link>
           </>
         )}
       </div>
