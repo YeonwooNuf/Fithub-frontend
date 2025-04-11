@@ -40,7 +40,7 @@ function Navbar() {
       <ul className="nav-links">
         <li><Link to="/shop">Shop</Link></li>
         <li><Link to="/event">Event</Link></li>
-        <li><Link to="#">Community</Link></li>
+        <li><Link to="/community">Community</Link></li>
         <li><Link to="#">About</Link></li>
         {/* 관리자 전용 탭 */}
         {isLoggedIn && nickname === "관리자" && (
