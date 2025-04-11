@@ -291,6 +291,10 @@
 
 /* ✅ 수량 변경 버튼 */
 .quantity-controls button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
     width: 26px;
     height: 26px;
     border: 1px solid #ddd;
@@ -298,6 +302,7 @@
     font-size: 14px;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
+    color: #000000;
 }
 
 .quantity-controls button:hover {
