@@ -33,6 +33,8 @@ import Checkout from "./pages/checkout/Checkout";
 import Payment from "./pages/payment/payment";
 import AdminEvent from "./pages/admin/event/AdminEvent";
 import Cart from "./pages/cart/Cart";
+import Community from "./pages/community/Community";
+import CommunityWrite from "./pages/community/CommunityWrite";
 
 function App() {
   return (
@@ -55,6 +57,9 @@ function App() {
             <Route path="/asking" element={<Asking />} />
             <Route path="/review/:id" element={<Review />} />
             <Route path="/event" element={<Event />} />
+            
+            <Route path="/community" element={<Community />} />
+            <Route path="/community/write" element={<CommunityWrite />} />
 
             <Route path="/product/:id" element={<ProductDetail />} />
             <Route path="/cart" element={<Cart />} />
