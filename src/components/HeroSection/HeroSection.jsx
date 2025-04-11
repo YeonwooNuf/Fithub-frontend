@@ -17,7 +17,7 @@ const HeroSection = () => {
         <section
             className={`hero ${!atTop ? "blur-active" : ""}`}
             style={{
-                backgroundImage: `url(${process.env.PUBLIC_URL}/background.png)`,
+                backgroundImage: `url(${process.env.PUBLIC_URL}/background3.png)`,
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat",
@@ -33,11 +33,11 @@ const HeroSection = () => {
                     </div>
                 ) : (
                     <div className="hero__content">
-                        <div className="hero__title">
+                        {/* <div className="hero__title">
                             <h1 >Your Own Style Repository </h1>
                             <h1>FitHub</h1>
                         </div>
-                        <p className="hero__subtitle">당신만의 스타일 저장소</p>
+                        <p className="hero__subtitle">당신만의 스타일 저장소</p> */}
                         <Link to="/shop">
                             <button className="hero__button">SHOP NOW</button>
                         </Link>
