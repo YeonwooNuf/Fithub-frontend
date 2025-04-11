@@ -33,7 +33,7 @@ function Navbar() {
     <nav className="navbar">
       <div className="logo">
         <Link to="/" className="logo-link">
-          <span className="logo-text">FitHub</span>
+          <img src="/logo.png" alt="FitHub Logo" className="logo-img" />
         </Link>
       </div>
 
