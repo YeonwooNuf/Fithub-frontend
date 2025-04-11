@@ -3,12 +3,14 @@ import axios from "axios";
 import "./NewArrival.css";
 
 const fixedPositions = [
-  { top: "10%", left: "5%", size: 350 },     // 1
-  { top: "17%", left: "38%", size: 350 },     // 2
-  { top: "10%", left: "70%", size: 350 },    // 3
-  { top: "52%", left: "18%", size: 350 },    // 4
-  { top: "52%", left: "56%", size: 350 },    // 5
+  { top: "10%", left: "6%" },
+  { top: "17%", left: "39%" },
+  { top: "10%", left: "70%" },
+  { top: "52%", left: "19%" },
+  { top: "52%", left: "58%" },
 ];
+
+const BUBBLE_SIZE = 350;
 
 const NewArrival = () => {
   const [products, setProducts] = useState([]);
@@ -17,7 +19,7 @@ const NewArrival = () => {
     axios
       .get("/api/products/latest")
       .then((res) => {
-        const data = res.data.slice(0, 5); // ✅ 5개만
+        const data = res.data.slice(0, 5);
         setProducts(data);
       })
       .catch((err) => console.error("❌ 신상품 불러오기 실패", err));
@@ -25,9 +27,9 @@ const NewArrival = () => {
 
   return (
     <div className="bubble-container">
-      <h2 className="bubble-title">이 달의 추천 상품</h2>
+      <h2 className="bubble-title">최근 발매 상품</h2>
       {products.map((product, idx) => {
-        const { top, left, size } = fixedPositions[idx];
+        const { top, left } = fixedPositions[idx];
         return (
           <div
             className="product-wrapper"
@@ -35,18 +37,19 @@ const NewArrival = () => {
             style={{
               top,
               left,
-              width: `${size}px`,
-              height: `${size}px`,
+              width: `${BUBBLE_SIZE}px`,
             }}
           >
-            <div className="product-bubble">
-              <img src={product.images[0]} alt={product.name} />
-            </div>
-            <div className="product-info-popout">
-              <p className="product-name">{product.name}</p>
-              <p className="product-price">
-                {product.price.toLocaleString()} 원
-              </p>
+            <div className="bubble-inner">
+              <div className="product-bubble">
+                <img src={product.images[0]} alt={product.name} />
+              </div>
+              <div className="product-info-popout">
+                <p className="product-name">{product.name}</p>
+                <p className="product-price">
+                  {product.price.toLocaleString()} 원
+                </p>
+              </div>
             </div>
           </div>
         );
