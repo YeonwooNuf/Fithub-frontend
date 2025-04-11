@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import "./NewArrival.css";
+import { Link } from "react-router-dom";
 
 const fixedPositions = [
   { top: "10%", left: "6%" },
@@ -41,15 +42,21 @@ const NewArrival = () => {
             }}
           >
             <div className="bubble-inner">
-              <div className="product-bubble">
-                <img src={product.images[0]} alt={product.name} />
-              </div>
-              <div className="product-info-popout">
-                <p className="product-name">{product.name}</p>
-                <p className="product-price">
-                  {product.price.toLocaleString()} 원
-                </p>
-              </div>
+              <Link
+                to={`/product/${product.id}`}
+                className="bubble-item"
+                key={product.id}
+              >
+                <div className="product-bubble">
+                  <img src={product.images[0]} alt={product.name} />
+                </div>
+                <div className="product-info-popout">
+                  <p className="product-name">{product.name}</p>
+                  <p className="product-price">
+                    {product.price.toLocaleString()} 원
+                  </p>
+                </div>
+              </Link>
             </div>
           </div>
         );
