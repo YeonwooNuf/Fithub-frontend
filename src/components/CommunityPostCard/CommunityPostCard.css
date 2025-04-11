@@ -1,0 +1,76 @@
+.post-container {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    margin-bottom: 30px;
+    background: white;
+    width: 300px;
+    padding: 12px;
+  }
+  
+  .post-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+  }
+  
+  .profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+  
+  .nickname {
+    font-weight: bold;
+  }
+  
+  .post-image img {
+    width: 100%;
+    border-radius: 10px;
+  }
+  
+  .product-info {
+    display: flex;
+    align-items: center;
+    margin-top: 8px;
+  }
+  
+  .product-thumb {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 6px;
+    margin-right: 8px;
+  }
+  
+  .product-text .product-name {
+    font-size: 14px;
+    font-weight: 600;
+  }
+  
+  .product-text .product-price {
+    color: #555;
+    font-size: 13px;
+  }
+  
+  .post-content {
+    margin-top: 12px;
+    line-height: 1.4;
+  }
+  
+  .hashtags {
+    margin-top: 6px;
+  }
+  
+  .hashtags .tag {
+    color: #3b5998;
+    margin-right: 6px;
+    font-size: 13px;
+  }
+  
+  .post-footer {
+    margin-top: 12px;
+    font-size: 14px;
+    color: #333;
+  }
+  
