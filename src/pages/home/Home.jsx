@@ -3,6 +3,7 @@ import ExhibitionMasonry from "../../components/ExhibitionMasonry/ExhibitionMaso
 import ScrollRevealImage from "../../components/ScrollRevealImage/ScrollRevealImage";
 import WeeklyPopularArtworks from "../../components/WeeklyPopularClothes/WeeklyPopularClothes";
 import "./Home.css";
+import NewArrival from "../../components/NewArrival/NewArrival";
 
 const Home = () => {
   return (
@@ -10,6 +11,7 @@ const Home = () => {
       <HeroSection />
       <ScrollRevealImage />
       <ExhibitionMasonry />
+      <NewArrival />
       <WeeklyPopularArtworks />
     </div>
   );
