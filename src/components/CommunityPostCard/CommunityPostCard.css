@@ -1,76 +1,130 @@
 .post-container {
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    margin-bottom: 30px;
-    background: white;
-    width: 300px;
-    padding: 12px;
-  }
-  
-  .post-header {
-    display: flex;
-    align-items: center;
-    margin-bottom: 10px;
-  }
-  
-  .profile-img {
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    margin-right: 10px;
-  }
-  
-  .nickname {
-    font-weight: bold;
-  }
-  
-  .post-image img {
-    width: 100%;
-    border-radius: 10px;
-  }
-  
-  .product-info {
-    display: flex;
-    align-items: center;
-    margin-top: 8px;
-  }
-  
-  .product-thumb {
-    width: 60px;
-    height: 60px;
-    object-fit: cover;
-    border-radius: 6px;
-    margin-right: 8px;
-  }
-  
-  .product-text .product-name {
-    font-size: 14px;
-    font-weight: 600;
-  }
-  
-  .product-text .product-price {
-    color: #555;
-    font-size: 13px;
-  }
-  
-  .post-content {
-    margin-top: 12px;
-    line-height: 1.4;
-  }
-  
-  .hashtags {
-    margin-top: 6px;
-  }
-  
-  .hashtags .tag {
-    color: #3b5998;
-    margin-right: 6px;
-    font-size: 13px;
-  }
-  
-  .post-footer {
-    margin-top: 12px;
-    font-size: 14px;
-    color: #333;
-  }
-  
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  background: white;
+  width: 500px;
+  padding: 12px;
+}
+
+.post-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.profile-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  margin-right: 10px;
+}
+
+.nickname {
+  font-weight: bold;
+}
+
+.post-image img {
+  width: 100%;
+  border-radius: 10px;
+}
+
+.post-image-slider {
+  margin-top: 10px;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.slider-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 10px;
+}
+
+/* ✅ 연결된 상품 리스트 (가로 스크롤) */
+.linked-products {
+  display: flex;
+  gap: 12px;
+  margin-top: 10px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+.post-product-card {
+  width: 200px;
+  height: 80px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  min-width: 140px;
+  padding: 8px;
+  border-radius: 8px;
+  background: #fff;
+  border: 1px solid #ddd;
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.product-thumb {
+  width: 40%;
+  height: 80px;
+  object-fit: cover;
+  border-radius: 8px;
+  margin-right: 8px;
+}
+
+.product-brand {
+  font-size: 14px;
+  color: #000000;
+  font-weight: bold;
+}
+
+.product-name {
+  font-size: 13px;
+  color: #111;
+  margin: 4px 0;
+  font-weight: 500;
+  margin-bottom: 5px;
+}
+
+.product-price {
+  font-size: 14px;
+  font-weight: bold;
+  color: #000000;
+}
+
+.post-content {
+  margin-top: 12px;
+  line-height: 1.4;
+}
+
+.hashtags {
+  margin-top: 6px;
+}
+
+.hashtags .tag {
+  color: #1b45a0;
+  margin-right: 6px;
+  font-size: 13px;
+  font-weight: bold;
+}
+
+.post-footer {
+  margin-top: 12px;
+  font-size: 14px;
+  color: #333;
+}
+
+.delete-btn {
+  margin-left: auto;
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.delete-btn:hover {
+  color: red;
+}
