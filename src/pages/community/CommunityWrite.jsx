@@ -5,11 +5,11 @@ import "./CommunityWrite.css";
 const CommunityWrite = () => {
   const [content, setContent] = useState("");
   const [images, setImages] = useState([]);
-  const [productId, setProductId] = useState(null);
   const [products, setProducts] = useState([]);
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    // 상품 리스트 불러오기
     axios.get("/api/products")
       .then(res => setProducts(res.data.products))
       .catch(err => console.error("상품 목록 조회 실패", err));
@@ -17,16 +17,35 @@ const CommunityWrite = () => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files);
-    setImages(files);
+    setImages(prev => [...prev, ...files]);  // 기존 이미지에 추가
+  };
+
+  const handleRemoveImage = (index) => {
+    setImages(prev => prev.filter((_, i) => i !== index));
+  };
+
+  const toggleProduct = (productId) => {
+    setSelectedProducts(prev =>
+      prev.includes(productId)
+        ? prev.filter(id => id !== productId)
+        : [...prev, productId]
+    );
   };
 
   const handleSubmit = async () => {
+
     if (!content.trim()) return alert("내용을 작성해주세요.");
 
     const formData = new FormData();
     formData.append("content", content);
-    if (productId) formData.append("productId", productId);
+    selectedProducts.forEach((id) => {
+      formData.append("productIds", id); // ✅ 서버에서 List<Long>로 받기 위해 productIds로
+    });
     images.forEach((img) => formData.append("images", img));
+
+    for (let pair of formData.entries()) {
+      console.log(pair[0] + ', ' + pair[1]);
+    }
 
     try {
       const token = localStorage.getItem("token");
@@ -44,6 +63,10 @@ const CommunityWrite = () => {
     }
   };
 
+  const filteredProducts = products.filter(p =>
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="write-page">
       <h2>📷 패션 스냅 공유</h2>
@@ -60,18 +83,40 @@ const CommunityWrite = () => {
 
       <div className="preview">
         {images.map((file, idx) => (
-          <img key={idx} src={URL.createObjectURL(file)} alt="preview" />
+          <div key={idx} className="preview-item">
+            <img src={URL.createObjectURL(file)} alt="preview" />
+            <button
+              type="button"
+              className="remove-btn"
+              onClick={() => handleRemoveImage(idx)}
+            >
+              ✖
+            </button>
+          </div>
         ))}
       </div>
 
-      <select onChange={(e) => setProductId(e.target.value)} defaultValue="">
-        <option value="" disabled>🔗 연결할 상품 선택 (선택)</option>
-        {products.map((p) => (
-          <option key={p.id} value={p.id}>{p.name}</option>
-        ))}
-      </select>
+      <input
+        type="text"
+        placeholder="🔍 상품명으로 검색"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
 
-      <button onClick={handleSubmit}>게시하기</button>
+      <div className="product-list">
+        {filteredProducts.map((p) => (
+          <div
+            key={p.id}
+            className={`product-item ${selectedProducts.includes(p.id) ? "selected" : ""}`}
+            onClick={() => toggleProduct(p.id)}
+          >
+            <img src={p.images[0]} alt={p.name} />
+            <div>{p.name}</div>
+          </div>
+        ))}
+      </div>
+
+      <button className="post-button" onClick={handleSubmit}>게시하기</button>
     </div>
   );
 };
