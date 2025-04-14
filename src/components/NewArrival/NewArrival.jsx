@@ -4,14 +4,14 @@ import "./NewArrival.css";
 import { Link } from "react-router-dom";
 
 const fixedPositions = [
-  { top: "10%", left: "6%" },
-  { top: "17%", left: "39%" },
-  { top: "10%", left: "70%" },
-  { top: "52%", left: "19%" },
-  { top: "52%", left: "58%" },
+  { top: "11%", left: "7%" },
+  { top: "18%", left: "40%" },
+  { top: "11%", left: "71%" },
+  { top: "53%", left: "20%" },
+  { top: "53%", left: "59%" },
 ];
 
-const BUBBLE_SIZE = 350;
+const BUBBLE_SIZE = 320;
 
 const NewArrival = () => {
   const [products, setProducts] = useState([]);
@@ -28,7 +28,7 @@ const NewArrival = () => {
 
   return (
     <div className="bubble-container">
-      <h2 className="bubble-title">최근 발매 상품</h2>
+      <h2 className="bubble-title">New Arrival</h2>
       {products.map((product, idx) => {
         const { top, left } = fixedPositions[idx];
         return (
@@ -50,9 +50,9 @@ const NewArrival = () => {
                 <div className="product-bubble">
                   <img src={product.images[0]} alt={product.name} />
                 </div>
-                <div className="product-info-popout">
-                  <p className="product-name">{product.name}</p>
-                  <p className="product-price">
+                <div className="arrival-product-info-popout">
+                  <p className="arrival-product-name">{product.name}</p>
+                  <p className="arrival-product-price">
                     {product.price.toLocaleString()} 원
                   </p>
                 </div>
