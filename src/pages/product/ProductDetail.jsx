@@ -178,13 +178,13 @@ const ProductDetail = () => {
                 {/* ✅ 브랜드 정보 추가 */}
                 {product.brandLogoUrl && product.brandName && (
                     <div className="brand-info">
-                        <img src={product.brandLogoUrl} alt={product.brandName} className="brand-logo" />
-                        <span className="brand-name">{product.brandName}</span>
+                        <img src={product.brandLogoUrl} alt={product.brandName} className="detail-brand-logo" />
+                        <span className="detail-brand-name">{product.brandName}</span>
                         {product.brandSubName && <span className="brand-sub-name">({product.brandSubName})</span>}
                     </div>
                 )}
-                <h1>{product.name}</h1>
-                <p className="price">{product.price?.toLocaleString()} 원</p>
+                <h1 className="detail-product-name">{product.name}</h1>
+                <p className="detail-product-price">{product.price?.toLocaleString()} 원</p>
 
                 <div className="description">
                     <p>{product.description}</p>

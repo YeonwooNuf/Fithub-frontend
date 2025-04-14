@@ -19,6 +19,7 @@
   flex-direction: column; /* 세로 정렬 */
   align-items: center; /* 중앙 정렬 */
   position: relative; /* 썸네일 배치를 위해 상대 위치 설정 */
+  margin-top: 60px;
 }
 
 /* ✅ 상품 이미지 슬라이더 */
@@ -74,9 +75,10 @@
   flex-direction: column;
   justify-content: space-between;
   padding-left: 20px;
+  align-items: center;
 }
 
-h1 {
+.detail-product-name {
   font-size: 26px;
   margin-bottom: 15px;
   color: black;
@@ -89,17 +91,21 @@ h1 {
   margin-bottom: 10px;
 }
 
-.brand-logo {
+.detail-brand-logo {
   width: 50px;
   height: auto;
   object-fit: contain;
   margin-right: 10px;
+  border: 2px, solid;
+  border-radius: 50%;
+  align-items: center;
 }
 
-.brand-name {
+.detail-brand-name {
   font-size: 18px;
   font-weight: bold;
   color: #333;
+  align-items: center;
 }
 
 /* ✅ 상품 설명 줄바꿈 & 스크롤 적용 */
@@ -115,6 +121,7 @@ h1 {
 .size-selector,
 .color-selector {
   margin: 15px 0;
+  max-width: 150px;
 }
 
 .size-selector h4,
@@ -150,11 +157,13 @@ h1 {
 
 .add-to-cart,
 .payment {
-  background: #28a745;
-  color: white;
+  background: #939393;
+  color: rgb(255, 255, 255);
   padding: 12px 16px;
-  border: none;
+  border: 1px, solid;
+  border-color: #000000;
   font-size: 16px;
+  font-weight: bold;
   border-radius: 5px;
   cursor: pointer;
   width: 100%;
@@ -163,5 +172,11 @@ h1 {
 
 .add-to-cart:hover,
 .payment:hover {
-  background: #218838;
+  background: #4d4d4d;
+}
+
+.detail-product-price {
+  font-size: 20px;
+  font-weight: bold;
+  text-align: center;
 }
