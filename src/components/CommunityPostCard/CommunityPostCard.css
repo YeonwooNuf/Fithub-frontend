@@ -3,7 +3,7 @@
   border-radius: 10px;
   margin-bottom: 30px;
   background: white;
-  width: 500px;
+  width: 600px;
   padding: 12px;
 }
 
@@ -46,8 +46,8 @@
 
 /* 슬라이더 내 이미지 wrapper */
 .slider-wrapper {
-  width: 500px;
-  height: 500px;
+  width: 600px;
+  height: 600px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -163,4 +163,9 @@
   margin-top: 12px;
   font-size: 14px;
   color: #333;
+}
+
+.like-icon {
+  cursor: pointer;
+  margin: 5px;
 }
