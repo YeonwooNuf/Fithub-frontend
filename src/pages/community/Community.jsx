@@ -34,12 +34,8 @@ const Community = () => {
   return (
     <div className="community-page">
       <div className="community-header">
-        <h2 className="title">👗 패션 스냅 커뮤니티</h2>
-        <button className="write-button" onClick={() => navigate("/community/write")}>
-          ✍️ 작성하기
-        </button>
+        <h2 className="community-title">패션 스냅 커뮤니티</h2>
       </div>
-
       <div className="post-list">
         {posts.map((post) => (
           <CommunityPostCard
@@ -50,6 +46,9 @@ const Community = () => {
           />
         ))}
       </div>
+      <button className="floating-write-button" onClick={() => navigate("/community/write")}>
+        <span className="plus-icon">＋</span>
+      </button>
     </div>
   );
 };

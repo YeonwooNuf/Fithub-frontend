@@ -9,6 +9,11 @@
   margin-bottom: 20px;
 }
 
+.community-title {
+  align-items: center;
+  font-family: 'Bebas Neue', sans-serif;
+}
+
 .post-list {
   display: flex;
   flex-direction: column;
@@ -31,4 +36,35 @@
 
 .write-button:hover {
   background-color: #3b5bdb;
+}
+
+/* 오른쪽 하단 고정 작성 버튼 */
+.floating-write-button {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  width: 60px;
+  height: 60px;
+  background-color: black;
+  color: white;
+  border-radius: 50%;
+  font-size: 32px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  z-index: 999;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transition: background-color 0.3s;
+}
+
+.floating-write-button:hover {
+  background-color: #333;
+}
+
+.plus-icon {
+  display: inline-block;
+  line-height: 1;
 }
