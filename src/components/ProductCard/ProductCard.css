@@ -12,6 +12,8 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
+    width: 230px;
+    height: 400px;
 }
 
 /* ✅ 호버 효과 */
@@ -65,8 +67,14 @@
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
+.product-image {
+    width: 300px;
+    height: 200px;
+    object-fit: contain;
+}
+
 /* ✅ 상품 정보 스타일 */
-.product-info {
+.card-product-info {
     flex-grow: 1;
     display: flex;
     flex-direction: column;
@@ -76,7 +84,7 @@
 }
 
 /* ✅ 상품명 스타일 - 한 줄이든 두 줄이든 중앙 정렬 유지 */
-.product-info h3 {
+.card-product-info h3 {
     margin: 0.4rem;
     font-size: 1.2rem;
     overflow: hidden;
@@ -96,7 +104,7 @@
 }
 
 /* ✅ 브랜드 및 기타 정보 */
-.product-info p {
+.card-product-info p {
     margin: 0.3rem 0;
     color: #666;
     flex-shrink: 0;

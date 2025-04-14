@@ -30,7 +30,7 @@ function ProductCard({ product, onLikeToggle }) {
       <img src={product.imageUrl} alt={product.title} className="product-image" />
 
       {/* ✅ 상품 정보 */}
-      <div className="product-info">
+      <div className="card-product-info">
         <h3>{product.title}</h3>
         <p>{product.description}</p>
         <p className="price">{product.price.toLocaleString()} 원</p>
