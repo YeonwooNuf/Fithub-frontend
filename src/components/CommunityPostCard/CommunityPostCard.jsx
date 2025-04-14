@@ -4,6 +4,7 @@ import axios from "axios";
 import "./CommunityPostCard.css";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { Heart, MessageCircle } from "lucide-react";
 
 const CommunityPostCard = ({ post, currentUserId, onDelete }) => {
   const [liked, setLiked] = useState(false);
@@ -143,14 +144,18 @@ const CommunityPostCard = ({ post, currentUserId, onDelete }) => {
 
       <div className="post-footer">
         <div className="reaction-buttons">
-          <span className="like-icon" onClick={handleLikeToggle}>
-            {liked ? "❤️" : "🤍"}
+          <span
+            className="like-icon"
+            onClick={handleLikeToggle}
+            style={{ fontSize: "24px" }}
+          >
+            <Heart color={liked ? "red" : "black"} fill={liked ? "red" : "none"}/>
           </span>
-          <span className="comment-icon">
-            💬
+          <span className="comment-icon" style={{ fontSize: "24px", marginLeft: "8px" }}>
+            <MessageCircle color="black" fill="none" />
           </span>
         </div>
-        <div className="like-count-text">좋아요 {likeCount}개</div>
+        <div className="like-count-text" style ={{ marginLeft: "6px"}}>좋아요 {likeCount}개</div>
       </div>
     </div>
   );
