@@ -7,8 +7,6 @@ import "slick-carousel/slick/slick-theme.css";
 
 const CommunityPostCard = ({ post, currentUserId, onDelete }) => {
 
-  const [currentSlide, setCurrentSlide] = useState(0);
-
   const NextArrow = ({ onClick, currentSlide, slideCount }) => {
     if (currentSlide >= slideCount - 1) return null; // 👉 마지막 슬라이드면 안보이게
     return (
@@ -86,8 +84,8 @@ const CommunityPostCard = ({ post, currentUserId, onDelete }) => {
         <div className="post-image-slider">
           <Slider {...sliderSettings}>
             {post.imageUrls.map((url) => (
-              <div key={url}>
-                <img src={url} alt="snap" className="slider-image" />
+              <div key={url} className="slider-wrapper">
+                <img src={url} alt="snap" className="community-slider-image" />
               </div>
             ))}
           </Slider>
