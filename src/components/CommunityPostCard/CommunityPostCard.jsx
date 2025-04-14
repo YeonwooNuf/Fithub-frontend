@@ -6,13 +6,32 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 const CommunityPostCard = ({ post, currentUserId, onDelete }) => {
+  
+  const NextArrow = ({ onClick }) => (
+    <div className="custom-arrow next" onClick={onClick}>
+      <svg width="24" height="24" stroke="white" strokeWidth="2" fill="none">
+        <path d="M9 18l6-6-6-6" />
+      </svg>
+    </div>
+  );
+  
+  const PrevArrow = ({ onClick }) => (
+    <div className="custom-arrow prev" onClick={onClick}>
+      <svg width="24" height="24" stroke="white" strokeWidth="2" fill="none">
+        <path d="M15 18l-6-6 6-6" />
+      </svg>
+    </div>
+  );
+
   const sliderSettings = {
     dots: true,
     infinite: false,
     speed: 400,
     slidesToShow: 1,
     slidesToScroll: 1,
-    arrows: false,
+    arrows: true,
+    nextArrow: <NextArrow />,
+    prevArrow: <PrevArrow />,
   };
 
   console.log("🧪 이미지 URL 리스트:", post.imageUrls);

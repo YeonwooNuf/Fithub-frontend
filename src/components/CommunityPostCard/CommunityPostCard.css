@@ -128,3 +128,36 @@
 .delete-btn:hover {
   color: red;
 }
+
+/* 슬라이더 영역 전체에 hover 가능하게 */
+.post-image-slider {
+  position: relative;
+}
+
+.custom-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  background-color: rgba(0, 0, 0, 0.4); /* 반투명 배경 */
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  opacity: 0; /* 처음엔 숨김 */
+  transition: opacity 0.3s;
+}
+
+/* 왼쪽/오른쪽 정렬 */
+.custom-arrow.prev {
+  left: 8px;
+}
+
+.custom-arrow.next {
+  right: 8px;
+}
+
+/* 마우스 올렸을 때만 표시 */
+.post-image-slider:hover .custom-arrow {
+  opacity: 1;
+}
+
