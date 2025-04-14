@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Slider from "react-slick";
 import axios from "axios";
 import "./CommunityPostCard.css";
@@ -6,22 +6,31 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 const CommunityPostCard = ({ post, currentUserId, onDelete }) => {
-  
-  const NextArrow = ({ onClick }) => (
-    <div className="custom-arrow next" onClick={onClick}>
-      <svg width="24" height="24" stroke="white" strokeWidth="2" fill="none">
-        <path d="M9 18l6-6-6-6" />
-      </svg>
-    </div>
-  );
-  
-  const PrevArrow = ({ onClick }) => (
-    <div className="custom-arrow prev" onClick={onClick}>
-      <svg width="24" height="24" stroke="white" strokeWidth="2" fill="none">
-        <path d="M15 18l-6-6 6-6" />
-      </svg>
-    </div>
-  );
+
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const NextArrow = ({ onClick, currentSlide, slideCount }) => {
+    if (currentSlide >= slideCount - 1) return null; // 👉 마지막 슬라이드면 안보이게
+    return (
+      <div className="custom-arrow next" onClick={onClick}>
+        <svg width="24" height="24" stroke="white" strokeWidth="2" fill="none">
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+      </div>
+    );
+  };
+
+  const PrevArrow = ({ onClick, currentSlide }) => {
+    if (currentSlide === 0) return null; // 👉 첫 슬라이드면 안보이게
+    return (
+      <div className="custom-arrow prev" onClick={onClick}>
+        <svg width="24" height="24" stroke="white" strokeWidth="2" fill="none">
+          <path d="M15 18l-6-6 6-6" />
+        </svg>
+      </div>
+    );
+  };
+
 
   const sliderSettings = {
     dots: true,
@@ -76,11 +85,11 @@ const CommunityPostCard = ({ post, currentUserId, onDelete }) => {
       {post.imageUrls.length > 0 && (
         <div className="post-image-slider">
           <Slider {...sliderSettings}>
-          {post.imageUrls.map((url) => (
-  <div key={url}>
-    <img src={url} alt="snap" className="slider-image" />
-  </div>
-))}
+            {post.imageUrls.map((url) => (
+              <div key={url}>
+                <img src={url} alt="snap" className="slider-image" />
+              </div>
+            ))}
           </Slider>
         </div>
       )}
