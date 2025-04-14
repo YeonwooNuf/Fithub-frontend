@@ -127,13 +127,13 @@
   margin-right: 8px;
 }
 
-.product-brand {
+.post-product-brand {
   font-size: 14px;
   color: #000000;
   font-weight: bold;
 }
 
-.product-name {
+.post-product-name {
   font-size: 13px;
   color: #111;
   margin: 4px 0;
@@ -141,7 +141,7 @@
   margin-bottom: 5px;
 }
 
-.product-price {
+.post-product-price {
   font-size: 14px;
   font-weight: bold;
   color: #000000;

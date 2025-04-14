@@ -103,9 +103,9 @@ const CommunityPostCard = ({ post, currentUserId, onDelete }) => {
                 className="product-thumb"
               />
               <div className="product-text">
-                <div className="product-brand">{product.brandName}</div>
-                <div className="product-name">{product.name}</div>
-                <div className="product-price">
+                <div className="post-product-brand">{product.brandName}</div>
+                <div className="post-product-name">{product.name}</div>
+                <div className="post-product-price">
                   {product.price.toLocaleString()}원
                 </div>
               </div>
