@@ -141,7 +141,7 @@ function AdminBrand() {
           {brands.map((brand) => (
             <tr key={brand.id}>
               <td>
-                <img src={brand.logoUrl} alt={brand.name} className="brand-logo" />
+                <img src={brand.logoUrl} alt={brand.name} className="admin-brand-logo" />
               </td>
               <td>{brand.name}</td>
               <td>{brand.subName}</td>
