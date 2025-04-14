@@ -330,7 +330,7 @@ const Cart = () => {
                         <div className="cart-item-details">
                             <div className="cart-item-info">
                                 <h2>{item.productName}</h2>
-                                <div className="product-info">
+                                <div className="cart-product-info">
                                     <p>색상: {item.color} / 사이즈: {item.size}</p>
                                     <div className="quantity-controls">
                                         <button onClick={() => decreaseQuantity(item.id, item.quantity)} disabled={item.quantity <= 1}>−</button>

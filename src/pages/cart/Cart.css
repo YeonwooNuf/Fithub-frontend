@@ -269,7 +269,7 @@
 }
 
 /* ✅ 상품 정보 (색상 / 사이즈 / 수량) */
-.product-info {
+.cart-product-info {
     font-size: 16px;
     display: inline-flex; /* ✅ 같은 줄 유지 */
     flex-direction: column; /* ✅ 수량을 아래로 배치 */
