@@ -74,7 +74,7 @@ function Orders() {
                   />
                   <div className="order-item-info">
                     <p>
-                      <strong>{item.productName}</strong> -{" "}
+                      <strong className="order-produdct-name">{item.productName}</strong> -{" "}
                       {item.price.toLocaleString()}원 × {item.quantity}개
                     </p>
                   </div>
