@@ -7,6 +7,7 @@ import Footer from "./components/Footer/Footer";
 import Home from "./pages/home/Home";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
+import OAuthRedirect from "./pages/login/OAuthRedirect";
 import Shop from "./pages/shop/Shop";
 
 import MyPage from "./pages/mypage/MyPage";
@@ -47,6 +48,7 @@ function App() {
             <Route path="/shop" element={<Shop />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/oauth" element={<OAuthRedirect />} />
 
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/points" element={<Points />} />
