@@ -47,3 +47,20 @@
     background-color: #0056b3;
   }
   
+  .login-container .kakao-login-btn {
+    margin-top: 2rem;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .login-container .kakao-login-btn img {
+    cursor: pointer;
+    width: 100%;
+    height: 100%;
+    transition: transform 0.2s ease;
+  }
+  
+  .login-container .kakao-login-btn img:hover {
+    transform: scale(1.02);
+  }
+  
