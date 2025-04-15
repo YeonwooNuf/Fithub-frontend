@@ -19,13 +19,12 @@
   flex-direction: column; /* 세로 정렬 */
   align-items: center; /* 중앙 정렬 */
   position: relative; /* 썸네일 배치를 위해 상대 위치 설정 */
-  margin-top: 60px;
 }
 
 /* ✅ 상품 이미지 슬라이더 */
 .product-slider {
   width: 100%;
-  max-width: 400px;
+  max-width: 500px;
   text-align: center;
   padding-bottom: 20px; /* 썸네일과 이미지 간 여백 추가 */
 }

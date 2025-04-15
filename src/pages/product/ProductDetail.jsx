@@ -165,10 +165,23 @@ const ProductDetail = () => {
                     pauseOnHover={true}
                     swipe={true}
                     className="product-slider"
+                    beforeChange={(current, next) => {
+                        const lastIndex = product.images.length - 1;
+                        if (next === lastIndex) {
+                            // 마지막 이미지 도달 후 잠시 후 다시 처음으로 이동
+                            setTimeout(() => {
+                                sliderRef.current?.slickGoTo(0);
+                            }, 2500); // autoplaySpeed보다 약간 더 크게
+                        }
+                    }}
                 >
                     {product.images?.map((image, index) => (
                         <div key={index} className="slider-image-container">
-                            <img src={image} alt={`${product.name} ${index + 1}`} className="slider-image" />
+                            <img
+                                src={image}
+                                alt={`${product.name} ${index + 1}`}
+                                className="slider-image"
+                            />
                         </div>
                     ))}
                 </Slider>
