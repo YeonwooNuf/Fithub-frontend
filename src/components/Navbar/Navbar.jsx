@@ -1,33 +1,17 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext } from "react";
 import { AuthContext } from "../../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import "./Navbar.css";
-import { Link } from "react-router-dom";
 
 function Navbar() {
   const { isLoggedIn, userInfo, logout } = useContext(AuthContext);
   const navigate = useNavigate();
-  const [role, setRole] = useState(localStorage.getItem("role") || "USER");
-  const [nickname, setNickname] = useState(localStorage.getItem("nickname")
-  )
-
-  useEffect(() => {
-    console.log("🟡 [Navbar] 현재 로그인 상태:", isLoggedIn);
-    console.log("🟡 [Navbar] 현재 userInfo 상태:", userInfo);
-    console.log("🟡 [Navbar] localStorage에서 가져온 사용자 권한:", localStorage.getItem("role"));
-
-    if (userInfo.role) {
-      setRole(userInfo.role);
-    }
-    if (userInfo.nickname) {
-      setNickname(userInfo.nickname)
-    }
-  }, [userInfo]);
 
   const handleLogout = () => {
     logout();
+    localStorage.clear(); // ✅ 전체 초기화 (token, userInfo 등)
     navigate("/");
-  }
+  };
 
   return (
     <nav className="navbar">
@@ -42,11 +26,13 @@ function Navbar() {
         <li><Link to="/event">Event</Link></li>
         <li><Link to="/community">Community</Link></li>
         <li><Link to="#">About</Link></li>
-        {/* 관리자 전용 탭 */}
-        {isLoggedIn && nickname === "관리자" && (
+
+        {/* ✅ 관리자 메뉴 */}
+        {isLoggedIn && userInfo.role === "ADMIN" && (
           <li><Link to="/admin">Admin Page</Link></li>
         )}
       </ul>
+
       <div className="nav-icons">
         {isLoggedIn ? (
           <>
