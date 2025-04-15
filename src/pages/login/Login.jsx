@@ -37,15 +37,19 @@ function Login() {
 
   // ✅ 카카오 로그인 처리
   const handleKakaoLogin = () => {
-    const KAKAO_REST_API_KEY = process.env.REACT_APP_KAKAO_REST_API_KEY; // 🔁 수정 필수
+    const KAKAO_REST_API_KEY = process.env.REACT_APP_KAKAO_REST_API_KEY;
     const REDIRECT_URI = "http://localhost:8080/api/oauth/kakao/callback";
-    console.log(KAKAO_REST_API_KEY);
-    console.log("🔐 KAKAO KEY:", process.env.REACT_APP_KAKAO_REST_API_KEY);
+  
     const kakaoAuthUrl =
-      `https://kauth.kakao.com/oauth/authorize?response_type=code&client_id=${KAKAO_REST_API_KEY}&redirect_uri=${REDIRECT_URI}`;
+      `https://kauth.kakao.com/oauth/authorize` +
+      `?response_type=code` +
+      `&client_id=${KAKAO_REST_API_KEY}` +
+      `&redirect_uri=${REDIRECT_URI}` +
+      `&prompt=login`; // ✅ 무조건 로그인 창 띄우기
+  
     window.location.href = kakaoAuthUrl;
   };
-
+  
   return (
     <div className="login-container">
       <h2>로그인</h2>
