@@ -11,7 +11,7 @@ export function AuthProvider({ children }) {
     profileImageUrl: "",
     points: 0,
     coupons: 0,
-    role: "", // ✅ localStorage 사용 제거
+    role: "",
   });
 
   const getToken = () => {
@@ -19,67 +19,27 @@ export function AuthProvider({ children }) {
     return token && token !== "null" && token !== "undefined" ? token : null;
   };
 
+  // ✅ 최초 실행: localStorage에서 복구
   useEffect(() => {
     const token = getToken();
-    const storedUserInfo = localStorage.getItem("userInfo");
+    if (!token) return;
 
-    if (!token) {
-      setIsLoggedIn(false);
-      setUserInfo({});
-      return;
-    }
-
-    if (storedUserInfo) {
-      setUserInfo(JSON.parse(storedUserInfo));
+    const stored = localStorage.getItem("userInfo");
+    if (stored) {
+      setUserInfo(JSON.parse(stored));
       setIsLoggedIn(true);
-    }
-
-    if (!storedUserInfo || !JSON.parse(storedUserInfo).username) {
-      fetch("/api/users/mypage", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-      })
-        .then((res) => res.json())
-        .then((data) => {
-          console.log("🟢 [AuthContext] 받은 데이터: ", data);
-          if (data.success) {
-            const userData = {
-              userId: data.userId,
-              username: data.username,
-              nickname: data.nickname,
-              profileImageUrl: data.profileImageUrl,
-              points: data.totalPoints,
-              coupons: data.unusedCoupons,
-              role: data.role,
-            };
-            localStorage.setItem("userInfo", JSON.stringify(userData));
-            setUserInfo(userData);
-            setIsLoggedIn(true);
-          } else {
-            logout();
-          }
-        })
-        .catch(() => {
-          logout();
-        });
+    } else {
+      fetchUserData(token);
     }
   }, []);
 
-  const login = async (token) => {
-    localStorage.setItem("token", token);
-
+  // ✅ 공통 사용자 정보 fetch 함수
+  const fetchUserData = async (token) => {
     try {
-      const response = await fetch("/api/users/mypage", {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+      const res = await fetch("/api/users/mypage", {
+        headers: { Authorization: `Bearer ${token}` },
       });
-
-      const data = await response.json();
-      console.log("🟢 [AuthContext] 로그인 후 즉시 가져온 유저 정보:", data);
+      const data = await res.json();
 
       if (data.success) {
         const userData = {
@@ -95,15 +55,21 @@ export function AuthProvider({ children }) {
         setUserInfo(userData);
         setIsLoggedIn(true);
       } else {
-        console.error("❌ [AuthContext] 로그인 후 유저 데이터 불러오기 실패:", data.message);
+        logout();
       }
-    } catch (err) {
-      console.error("❌ [AuthContext] 로그인 후 유저 데이터 가져오는 중 오류 발생:", err);
+    } catch {
+      logout();
     }
   };
 
+  // ✅ 로그인 시 호출
+  const login = async (token) => {
+    localStorage.setItem("token", token);
+    await fetchUserData(token);
+  };
+
+  // ✅ 로그아웃 시 초기화
   const logout = () => {
-    console.warn("🔴 [AuthContext] 로그아웃 처리");
     setIsLoggedIn(false);
     setUserInfo({
       userId: "",
@@ -114,9 +80,8 @@ export function AuthProvider({ children }) {
       coupons: 0,
       role: "",
     });
-
     localStorage.removeItem("token");
-    localStorage.removeItem("userInfo"); // ✅ 사용자 정보도 제거
+    localStorage.removeItem("userInfo");
     sessionStorage.removeItem("reloaded");
   };
 
