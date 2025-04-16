@@ -1,85 +1,85 @@
-/* 전체 wrapper */
-.mypage-wrapper {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 40px 16px;
-    min-height: 100vh;
-    background-color: #f5f5f5;
+/* 회원정보 수정 페이지 스타일 */
+.user-profile-edit-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #1e1e1e;
+    color: #f2f2f2;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    font-family: 'Pretendard', sans-serif;
   }
   
-  /* 카드 형태 */
-  .mypage-card {
-    background: #ffffff;
-    padding: 32px;
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
-    width: 100%;
-    max-width: 500px;
+  .user-profile-edit-title {
+    text-align: center;
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #ffffff;
+  }
+  
+  .user-profile-edit-form {
     display: flex;
     flex-direction: column;
+    gap: 20px;
   }
   
-  /* 제목 */
-  .mypage-card h2 {
-    font-size: 24px;
-    color: #333;
-    margin-bottom: 24px;
-    text-align: center;
-  }
-  
-  /* 라벨 */
-  .mypage-card label {
-    margin-bottom: 6px;
-    color: #444;
+  .user-profile-edit-label {
     font-size: 14px;
-    font-weight: 600;
+    font-weight: 500;
+    color: #cccccc;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
   }
   
-  /* 입력창 및 셀렉트 */
-  .mypage-card input,
-  .mypage-card select {
-    padding: 12px;
-    margin-bottom: 16px;
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    background-color: #fafafa;
+  .user-profile-edit-input {
+    padding: 10px 12px;
+    border-radius: 6px;
+    border: 1px solid #444;
+    background-color: #2a2a2a;
+    color: #ffffff;
     font-size: 14px;
-    transition: border 0.2s ease;
   }
   
-  .mypage-card input:focus,
-  .mypage-card select:focus {
-    outline: none;
-    border-color: #888;
-    background-color: #fff;
+  .user-profile-edit-image-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
   }
   
-  /* 버튼 */
-  .mypage-card button {
-    background-color: #333;
-    color: white;
+  .user-profile-edit-image-preview {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid #aaa;
+  }
+  
+  .user-profile-edit-image-input {
+    font-size: 12px;
+    color: #ccc;
+  }
+  
+  .user-profile-edit-submit-btn {
     padding: 12px;
+    background-color: #00c6a2;
+    color: #fff;
     border: none;
-    border-radius: 10px;
+    border-radius: 6px;
     font-size: 15px;
+    font-weight: 600;
     cursor: pointer;
-    transition: background 0.3s ease;
+    transition: background-color 0.2s;
   }
   
-  .mypage-card button:hover {
-    background-color: #000;
+  .user-profile-edit-submit-btn:hover {
+    background-color: #00aa8a;
   }
-
-  @media (max-width: 500px) {
-    .mypage-card {
-      padding: 24px 20px;
-      border-radius: 12px;
-    }
   
-    .mypage-card h2 {
-      font-size: 20px;
+  @media (max-width: 600px) {
+    .user-profile-edit-container {
+      padding: 20px;
+      margin: 20px;
     }
   }
-  
-  
