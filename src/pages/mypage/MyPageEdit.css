@@ -63,7 +63,7 @@
   
   .user-profile-edit-submit-btn {
     padding: 12px;
-    background-color: #00c6a2;
+    background-color: #6e9da8;
     color: #fff;
     border: none;
     border-radius: 6px;
@@ -74,7 +74,7 @@
   }
   
   .user-profile-edit-submit-btn:hover {
-    background-color: #00aa8a;
+    background-color: #0082aa;
   }
   
   @media (max-width: 600px) {
