@@ -1,0 +1,85 @@
+/* 전체 wrapper */
+.mypage-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 16px;
+    min-height: 100vh;
+    background-color: #f5f5f5;
+  }
+  
+  /* 카드 형태 */
+  .mypage-card {
+    background: #ffffff;
+    padding: 32px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.06);
+    width: 100%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* 제목 */
+  .mypage-card h2 {
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 24px;
+    text-align: center;
+  }
+  
+  /* 라벨 */
+  .mypage-card label {
+    margin-bottom: 6px;
+    color: #444;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  
+  /* 입력창 및 셀렉트 */
+  .mypage-card input,
+  .mypage-card select {
+    padding: 12px;
+    margin-bottom: 16px;
+    border-radius: 10px;
+    border: 1px solid #ccc;
+    background-color: #fafafa;
+    font-size: 14px;
+    transition: border 0.2s ease;
+  }
+  
+  .mypage-card input:focus,
+  .mypage-card select:focus {
+    outline: none;
+    border-color: #888;
+    background-color: #fff;
+  }
+  
+  /* 버튼 */
+  .mypage-card button {
+    background-color: #333;
+    color: white;
+    padding: 12px;
+    border: none;
+    border-radius: 10px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  }
+  
+  .mypage-card button:hover {
+    background-color: #000;
+  }
+
+  @media (max-width: 500px) {
+    .mypage-card {
+      padding: 24px 20px;
+      border-radius: 12px;
+    }
+  
+    .mypage-card h2 {
+      font-size: 20px;
+    }
+  }
+  
+  

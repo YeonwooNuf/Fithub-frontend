@@ -36,6 +36,7 @@ import AdminEvent from "./pages/admin/event/AdminEvent";
 import Cart from "./pages/cart/Cart";
 import Community from "./pages/community/Community";
 import CommunityWrite from "./pages/community/CommunityWrite";
+import MyPageEdit from "./pages/mypage/MyPageEdit";
 
 function App() {
   return (
@@ -49,6 +50,7 @@ function App() {
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/oauth" element={<OAuthRedirect />} />
+            <Route path="/edit" element={<MyPageEdit />} />
 
             <Route path="/mypage" element={<MyPage />} />
             <Route path="/points" element={<Points />} />
