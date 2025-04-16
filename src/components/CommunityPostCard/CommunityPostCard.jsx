@@ -35,6 +35,7 @@ const CommunityPostCard = ({ post, currentUserId, onDelete }) => {
         const res = await axios.get(`/api/community/comments/${post.id}`, {
           headers: { Authorization: `Bearer ${token}` } // ✅ 인증 추가
         });
+        console.log("💬 댓글 목록:", res.data);
         setComments(res.data);
       } catch (err) {
         console.error("댓글 조회 실패", err);
@@ -121,6 +122,31 @@ const CommunityPostCard = ({ post, currentUserId, onDelete }) => {
     }
   };
 
+  const renderContentWithTags = (text) => {
+    const regex = /#[^\s#]+/g; // #으로 시작해서 공백 또는 #이 아닌 문자들
+    const parts = [];
+    let lastIndex = 0;
+
+    text.replace(regex, (match, offset) => {
+      // 일반 텍스트 부분 추가
+      if (offset > lastIndex) {
+        parts.push(text.slice(lastIndex, offset));
+      }
+
+      // 해시태그 부분
+      parts.push(<span className="tag" key={offset}>{match}</span>);
+
+      lastIndex = offset + match.length;
+    });
+
+    // 마지막 일반 텍스트
+    if (lastIndex < text.length) {
+      parts.push(text.slice(lastIndex));
+    }
+
+    return parts;
+  };
+
   const NextArrow = ({ onClick, currentSlide, slideCount }) => {
     if (currentSlide >= slideCount - 1) return null;
     return (
@@ -175,8 +201,8 @@ const CommunityPostCard = ({ post, currentUserId, onDelete }) => {
   return (
     <div className="post-container">
       <div className="post-header">
-        <img src={post.profileImageUrl} alt="프로필" className="profile-img" />
-        <div className="nickname">{post.nickname}</div>
+        <img src={post.profileImageUrl} alt="프로필" className="post-profile-img" />
+        <div className="post-nickname">{post.nickname}</div>
         {currentUserId === post.userId && (
           <button className="delete-btn" onClick={handleDelete}>
             🗑 삭제
@@ -212,13 +238,7 @@ const CommunityPostCard = ({ post, currentUserId, onDelete }) => {
       )}
 
       <div className="post-content">
-        {post.content.split(" ").map((word, i) =>
-          word.startsWith("#") ? (
-            <span key={i} className="tag">{word} </span>
-          ) : (
-            <span key={i}>{word} </span>
-          )
-        )}
+        {renderContentWithTags(post.content)}
       </div>
 
       <div className="post-footer">
@@ -236,27 +256,38 @@ const CommunityPostCard = ({ post, currentUserId, onDelete }) => {
         </div>
         <div className="like-count-text" style={{ marginLeft: "6px" }}>좋아요 {likeCount}개</div>
 
-        {latestComment ? (
+        {!showComments && latestComment ? (
           <div className="latest-comment">
             <img src={latestComment.profileImageUrl} alt="댓글 프로필" className="comment-profile" />
             <span className="comment-nickname">{latestComment.nickname}</span>
             <span className="comment-content">{latestComment.content}</span>
           </div>
-        ) : (
+        ) : null}
+
+        {!showComments && !latestComment && (
           <div className="no-comment">첫 댓글을 작성해주세요.</div>
+        )}
+
+        {!showComments && comments.length > 0 && (
+          <div className="view-comments" onClick={toggleComments}>
+            댓글 {comments.length}개 보기
+          </div>
         )}
 
         {showComments && (
           <div className="comment-section">
             {comments.map(c => (
               <div key={c.id} className="comment-item">
-                <img src={c.profileImageUrl} alt="댓글 프로필" className="comment-profile" />
-                <div className="comment-body">
-                  <span className="comment-nickname">{c.nickname}</span>
-                  <span className="comment-content">{c.content}</span>
+                {/* 왼쪽: 프사 + 닉네임 + 내용 */}
+                <div className="comment-left">
+                  <img src={c.profileImageUrl} alt="댓글 프로필" className="comment-profile" />
+                  <div className="comment-body">
+                    <span className="comment-nickname">{c.nickname}</span>
+                    <span className="comment-content">{c.content}</span>
+                  </div>
                 </div>
 
-                {/* ✅ 버튼 영역 */}
+                {/* 오른쪽: 삭제/답글 */}
                 <div className="comment-actions">
                   {c.userId === currentUserId && (
                     <button className="comment-delete" onClick={() => handleDeleteComment(c.id)}>삭제</button>
