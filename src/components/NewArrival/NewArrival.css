@@ -15,10 +15,13 @@
   font-size: 60px;
   color: #c0e4fb;
   font-family: 'Abril Fatface', cursive;
-  font-weight: bold;
+  /* font-family: 'Josefin Slab', serif; */
+  /* font-family: 'Orbitron', sans-serif; */
+  /* font-family: 'Rubik Mono One', sans-serif; */
+  /* font-family: 'Bebas Neue', sans-serif; */
+  font-weight: 130;
   font-style: italic;
   margin-top: 10px;
-  margin-bottom: 40px;
 
   text-shadow:
     2px 2px 4px rgba(0, 0, 0, 0.7),
@@ -34,6 +37,7 @@
   align-items: center;
   flex-direction: column;
   transition: transform 0.3s ease;
+  margin-top: 30px;
 }
 
 .bubble-inner {
