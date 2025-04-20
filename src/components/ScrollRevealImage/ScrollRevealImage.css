@@ -1,0 +1,78 @@
+.scroll-wrapper {
+  height: 200vh;
+  /* 충분한 스크롤 높이 확보 */
+  position: relative;
+  background-color: #c0e8fe;
+  padding-bottom: 10vh;
+}
+
+.sticky-image {
+  position: sticky;
+  top: 180px;
+  width: 300px;
+  height: 400px;
+}
+
+.base-image1,
+.overlay-image1 {
+  position: absolute;
+  width: 100%;
+  margin-left: 0;
+  top: 0;
+  left: 0;
+  object-fit: cover;
+  transition: clip-path 1s ease-out;
+}
+
+.base-image1 {
+  z-index: 1;
+}
+
+.overlay-image1 {
+  z-index: 20;
+}
+
+/* 붓이미지 */
+
+.base-image2,
+.overlay-image2 {
+  position: absolute;
+  width: 50%;
+  margin-left: 160px;
+  top: 100px;
+  left: 0;
+  object-fit: cover;
+  transition: clip-path 1s ease-out;
+}
+
+.base-image2 {
+  z-index: 5;
+}
+
+.overlay-image2 {
+  z-index: 6;
+}
+
+.description-wrapper1 {
+  position: relative;
+}
+
+.description1 {
+  position: relative;
+  margin-left: 297px;
+  margin-top: 60px;
+  font-size: 2.2rem;
+  color: #5e6e71;
+}
+
+.description-wrapper2 {
+  position: relative;
+}
+
+.description2 {
+  position: relative;
+  margin-left: 570px;
+  margin-top: 500px;
+  font-size: 2.2rem;
+  color: #b3a79f;
+}
