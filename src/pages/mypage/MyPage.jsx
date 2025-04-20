@@ -83,15 +83,15 @@ function MyPage() {
       </div>
 
       <ul className="mypage-list">
-        <li onClick={() => navigate("/address")}> 
+        <li onClick={() => navigate("/address")}>
           <span>주소 설정</span>
           <span className="arrow">&gt;</span>
         </li>
-        <li onClick={() => navigate("/orders")}> 
+        <li onClick={() => navigate("/orders")}>
           <span>주문 내역</span>
           <span className="arrow">&gt;</span>
         </li>
-        <li onClick={() => navigate("/reviews")}> 
+        <li onClick={() => navigate("/reviews")}>
           <span>나의 후기</span>
           <span className="arrow">&gt;</span>
         </li>
@@ -99,7 +99,7 @@ function MyPage() {
           <span>1:1 문의 내역</span>
           <span className="arrow">&gt;</span>
         </li>
-        <li onClick={() => navigate("/edit")}> 
+        <li onClick={() => navigate("/edit")}>
           <span>회원 정보 수정</span>
           <span className="arrow">&gt;</span>
         </li>

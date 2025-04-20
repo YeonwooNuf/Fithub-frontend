@@ -29,17 +29,19 @@
   }
   
   .image-box {
+    display: inline-block;
+    text-align: center;
     position: relative;
     overflow: hidden;
-    border-radius: 0px;
+    border-radius: 80px;
     box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-    transition: transform 0.4s ease;
   }
   
   .image-box img {
     width: 100%;
     display: block;
     object-fit: cover;
+    border-radius: 1;
   }
   
   .image-box:hover {
@@ -65,5 +67,6 @@
     margin: 0;
     font-weight: 600;
     font-size: 16px;
+    line-height: 1.4;
   }
   
