@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import { useNavigate, Link } from "react-router-dom";
 import "./Navbar.css";
@@ -7,11 +7,20 @@ function Navbar() {
   const { isLoggedIn, userInfo, logout } = useContext(AuthContext);
   const navigate = useNavigate();
 
+  const [showDropdown, setShowDropdown] = useState(false);
+
   const handleLogout = () => {
     logout();
     localStorage.clear(); // ✅ 전체 초기화 (token, userInfo 등)
     navigate("/");
   };
+
+  const categories = [
+    { name: "상의", path: "/shop/category/top" },
+    { name: "하의", path: "/shop/category/bottom" },
+    { name: "아우터", path: "/shop/category/outer" },
+    { name: "악세서리", path: "/shop/category/accessory" },
+  ];
 
   return (
     <nav className="navbar">
@@ -22,7 +31,23 @@ function Navbar() {
       </div>
 
       <ul className="nav-links">
-        <li><Link to="/shop">Shop</Link></li>
+      {/* ✅ Shop + 드롭다운 */}
+        <li
+          className="dropdown"
+          onMouseEnter={() => setShowDropdown(true)}
+          onMouseLeave={() => setShowDropdown(false)}
+        >
+          <Link to="/shop">Shop</Link>
+          {showDropdown && (
+            <ul className="dropdown-menu">
+              {categories.map((cat) => (
+                <li key={cat.name}>
+                  <Link to={cat.path}>{cat.name}</Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
         <li><Link to="/event">Event</Link></li>
         <li><Link to="/community">Community</Link></li>
         <li><Link to="#">About</Link></li>
