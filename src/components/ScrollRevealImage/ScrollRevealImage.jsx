@@ -55,7 +55,7 @@ const ScrollRevealImage = () => {
 
       <div className="description-wrapper2">
         <h1 className="description2">
-          AI와 함께 나만의 전시회를 만들고 <br /> 풍부해진 감상을 즐기세요
+          AI와 함께 나만의 스타일을 만들고 <br /> 풍부해진 감상을 즐기세요
         </h1>
       </div>
     </div>
