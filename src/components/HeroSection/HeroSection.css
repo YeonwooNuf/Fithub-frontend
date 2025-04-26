@@ -19,17 +19,21 @@
   transition: all 0.4s ease;
   z-index: 1;
   opacity: 0;
-  /* 초기엔 없음 */
 }
 
 .hero.blur-active .hero__overlay {
   opacity: 0.9;
-  /* 스크롤 시 블러 등장 */
 }
 
 .hero__content-wrapper {
   position: relative;
   z-index: 2;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 7vw;
+  padding-top: 28vh;
 }
 
 .hero__logo-container img {
@@ -41,8 +45,6 @@
 .hero__content {
   max-width: 700px;
   animation: fadeIn 0.6s ease;
-  margin-right: 1400px;
-  margin-top: 250px;
 }
 
 .hero__title {
@@ -58,10 +60,10 @@
   color: #4f4e4e;
   margin-bottom: 30px;
   margin-top: 80px;
-  /* text-shadow: 1px 1px 4px hsl(0, 100%, 1%); */
 }
 
 .hero__button {
+  margin-top: 40px;
   padding: 14px 36px;
   border: 2px solid #000000;
   color: #ffffff;
@@ -79,52 +81,28 @@
   color: #000000;
 }
 
-/* .hero__button {
-  position: relative;
-  overflow: hidden;
-  padding: 14px 36px;
-  background-color: #000;
-  color: #fff;
-  border: 2px solid #000;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  letter-spacing: 1px;
-  transition: color 0.3s ease;
-  border-radius: 15px;
-  z-index: 1;
-}
-
-.hero__button::before {
-  content: '';
-  position: absolute;
-  top: 100%;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: #fff;
-  z-index: -1;
-  transition: top 0.4s ease;
-  border-radius: 15px;
-}
-
-.hero__button:hover {
-  color: #000;
-}
-
-.hero__button:hover::before {
-  top: 0;
-} */
-
-
 @keyframes fadeIn {
   from {
     opacity: 0;
     transform: translateY(20px);
   }
-
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@media (max-width: 768px) {
+  .hero__title {
+    font-size: 32px;
+  }
+  .hero__button {
+    padding: 12px 28px;
+    font-size: 14px;
+  }
+  .hero__content-wrapper {
+    align-items: center;
+    padding-left: 0;
+    padding-top: 18vh;
   }
 }

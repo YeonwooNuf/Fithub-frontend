@@ -12,10 +12,10 @@ const Home = () => {
   return (
     <div>
       <HeroSection />
-      <CategoryShowcase />
-      <OngoingEvent />
+      {/* <CategoryShowcase /> */}
+      {/* <OngoingEvent /> */}
       <ScrollRevealImage />
-      <PromotionBanner />
+      {/* <PromotionBanner /> */}
       {/* <ExhibitionMasonry /> */}
       <NewArrival />
       <WeeklyPopularArtworks />
