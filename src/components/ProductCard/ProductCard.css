@@ -13,7 +13,8 @@
     flex-direction: column;
     justify-content: flex-start;
     width: 230px;
-    height: 400px;
+    height: 420px;
+    margin-right: 55px;
 }
 
 /* ✅ 호버 효과 */
