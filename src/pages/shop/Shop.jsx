@@ -1,14 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ useNavigate 추가
+import { useNavigate } from "react-router-dom";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import axios from "axios";
-import "../../App.css";
+import "./Shop.css";
 
 function Shop() {
-  const [products, setProducts] = useState([]); 
-  const [loading, setLoading] = useState(true); 
-  const [error, setError] = useState(null);    
-  const navigate = useNavigate(); // ✅ useNavigate 사용
+  const [products, setProducts] = useState([]);
+  const [filteredProducts, setFilteredProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [categories, setCategories] = useState([]);
+  const [brands, setBrands] = useState([]);
+
+  // 🔍 필터 상태
+  const [selectedCategory, setSelectedCategory] = useState("전체");
+  const [selectedBrand, setSelectedBrand] = useState("전체");
+  const [searchKeyword, setSearchKeyword] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -18,13 +27,16 @@ function Shop() {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
 
-        console.log("✅ API 응답:", response.data);
+        const productList = response.data.products || [];
+        setProducts(productList);
+        setFilteredProducts(productList);
 
-        if (Array.isArray(response.data.products)) {
-          setProducts(response.data.products);
-        } else {
-          setProducts([]); 
-        }
+        // ✅ 카테고리/브랜드 목록 추출 (중복 제거)
+        const allCategories = [...new Set(productList.map(p => p.category))];
+        const allBrands = [...new Set(productList.map(p => p.brandName))];
+        setCategories(["전체", ...allCategories]);
+        setBrands(["전체", ...allBrands]);
+
       } catch (error) {
         console.error("❌ 상품 정보를 불러오는 중 오류 발생:", error);
         setError("상품 정보를 불러오는 데 실패했습니다.");
@@ -35,6 +47,19 @@ function Shop() {
 
     fetchProducts();
   }, []);
+
+  // 🔍 필터링 조건 적용
+  useEffect(() => {
+    const result = products.filter((product) => {
+      const matchesCategory = selectedCategory === "전체" || product.category === selectedCategory;
+      const matchesBrand = selectedBrand === "전체" || product.brandName === selectedBrand;
+      const matchesKeyword =
+        product.name.toLowerCase().includes(searchKeyword.toLowerCase());
+      return matchesCategory && matchesBrand && matchesKeyword;
+    });
+
+    setFilteredProducts(result);
+  }, [products, selectedCategory, selectedBrand, searchKeyword]);
 
   const handleLikeToggle = async (product) => {
     try {
@@ -49,8 +74,6 @@ function Shop() {
         { productId: product.id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
-
-      console.log("👍 좋아요 응답:", response.data);
 
       const { likedByCurrentUser, likeCount } = response.data;
 
@@ -67,41 +90,65 @@ function Shop() {
     }
   };
 
-  // ✅ 상품 클릭 시 상세 페이지로 이동하는 함수
   const handleProductClick = (productId) => {
-    navigate(`/product/${productId}`); // 상세 페이지 URL로 이동
+    navigate(`/product/${productId}`);
   };
 
   if (loading) return <p>로딩 중...</p>;
   if (error) return <p>{error}</p>;
 
   return (
-    <div className="product-list">
-      {products.length > 0 ? (
-        products.map((product) => (
-          <ProductCard
-            key={product.id}
-            product={{
-              id: product.id,
-              imageUrl:
-                product.images && product.images.length > 0
-                  ? `${product.images[0]}`
-                  : "/default-image.jpg",
-              title: product.name || "상품명 없음", 
-              description: product.brandName || "브랜드 없음",
-              price: product.price
-                ? product.price.toLocaleString()
-                : "0",
-              likedByCurrentUser: product.likedByCurrentUser || false,
-              likeCount: product.likeCount || 0,
-            }}
-            onClick={() => handleProductClick(product.id)} // ✅ 클릭 이벤트 추가
-            onLikeToggle={() => handleLikeToggle(product)}
-          />
-        ))
-      ) : (
-        <p>표시할 상품이 없습니다.</p> 
-      )}
+    <div className="shop-container">
+      {/* 🔍 필터 바 */}
+      <div className="filter-bar">
+        <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
+          {categories.map((cat, idx) => (
+            <option key={idx} value={cat}>{cat}</option>
+          ))}
+        </select>
+
+        <select value={selectedBrand} onChange={(e) => setSelectedBrand(e.target.value)}>
+          {brands.map((brand, idx) => (
+            <option key={idx} value={brand}>{brand}</option>
+          ))}
+        </select>
+
+        <input
+          type="text"
+          placeholder="상품명 검색"
+          value={searchKeyword}
+          onChange={(e) => setSearchKeyword(e.target.value)}
+        />
+      </div>
+
+      {/* 🧷 상품 목록 */}
+      <div className="product-list">
+        {filteredProducts.length > 0 ? (
+          filteredProducts.map((product) => (
+            <ProductCard
+              key={product.id}
+              product={{
+                id: product.id,
+                imageUrl:
+                  product.images && product.images.length > 0
+                    ? `${product.images[0]}`
+                    : "/default-image.jpg",
+                title: product.name || "상품명 없음",
+                description: product.brandName || "브랜드 없음",
+                price: product.price
+                  ? product.price.toLocaleString()
+                  : "0",
+                likedByCurrentUser: product.likedByCurrentUser || false,
+                likeCount: product.likeCount || 0,
+              }}
+              onClick={() => handleProductClick(product.id)}
+              onLikeToggle={() => handleLikeToggle(product)}
+            />
+          ))
+        ) : (
+          <p>조건에 맞는 상품이 없습니다.</p>
+        )}
+      </div>
     </div>
   );
 }
