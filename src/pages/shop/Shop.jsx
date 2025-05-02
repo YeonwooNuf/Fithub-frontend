@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import ProductCard from "../../components/ProductCard/ProductCard";
 import axios from "axios";
@@ -6,18 +6,14 @@ import "./Shop.css";
 
 function Shop() {
   const [products, setProducts] = useState([]);
-  const [filteredProducts, setFilteredProducts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [categories, setCategories] = useState([]);
-  const [brands, setBrands] = useState([]);
-
-  // 🔍 필터 상태
-  const [selectedCategory, setSelectedCategory] = useState("전체");
-  const [selectedBrand, setSelectedBrand] = useState("전체");
+  const [searchInput, setSearchInput] = useState("");
   const [searchKeyword, setSearchKeyword] = useState("");
-
+  const [priceRange, setPriceRange] = useState([0, 1000000]);
   const navigate = useNavigate();
+
+  const [showPriceModal, setShowPriceModal] = useState(false);
+  const [tempMinPrice, setTempMinPrice] = useState(0);
+  const [tempMaxPrice, setTempMaxPrice] = useState(1000000);
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -27,128 +23,138 @@ function Shop() {
           headers: token ? { Authorization: `Bearer ${token}` } : {},
         });
 
-        const productList = response.data.products || [];
-        setProducts(productList);
-        setFilteredProducts(productList);
-
-        // ✅ 카테고리/브랜드 목록 추출 (중복 제거)
-        const allCategories = [...new Set(productList.map(p => p.category))];
-        const allBrands = [...new Set(productList.map(p => p.brandName))];
-        setCategories(["전체", ...allCategories]);
-        setBrands(["전체", ...allBrands]);
-
+        setProducts(response.data.products || []);
       } catch (error) {
-        console.error("❌ 상품 정보를 불러오는 중 오류 발생:", error);
-        setError("상품 정보를 불러오는 데 실패했습니다.");
-      } finally {
-        setLoading(false);
+        console.error("❌ 상품 정보 로딩 실패:", error);
       }
     };
 
     fetchProducts();
   }, []);
 
-  // 🔍 필터링 조건 적용
-  useEffect(() => {
-    const result = products.filter((product) => {
-      const matchesCategory = selectedCategory === "전체" || product.category === selectedCategory;
-      const matchesBrand = selectedBrand === "전체" || product.brandName === selectedBrand;
-      const matchesKeyword =
-        product.name.toLowerCase().includes(searchKeyword.toLowerCase());
-      return matchesCategory && matchesBrand && matchesKeyword;
-    });
-
-    setFilteredProducts(result);
-  }, [products, selectedCategory, selectedBrand, searchKeyword]);
-
   const handleLikeToggle = async (product) => {
-    try {
-      const token = localStorage.getItem("token");
-      if (!token) {
-        alert("좋아요 기능은 로그인 후 이용할 수 있습니다.");
-        return;
-      }
+    console.log("🛠️ handleLikeToggle 진입:", product.id);
+    const token = localStorage.getItem("token");
+    if (!token) return alert("로그인이 필요합니다.");
 
-      const response = await axios.post(
+    try {
+      const res = await axios.post(
         "/api/likes/toggle",
         { productId: product.id },
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      const { likedByCurrentUser, likeCount } = response.data;
+      const { likedByCurrentUser, likeCount } = res.data;
 
-      setProducts((prevProducts) =>
-        prevProducts.map((p) =>
+      setProducts((prev) =>
+        prev.map((p) =>
           p.id === product.id
             ? { ...p, likedByCurrentUser, likeCount }
             : p
         )
       );
-    } catch (error) {
-      console.error("❌ 좋아요 처리 중 오류 발생:", error);
-      alert("좋아요 처리 중 오류가 발생했습니다.");
+    } catch (err) {
+      console.error("❌ 좋아요 처리 오류:", err);
     }
   };
 
-  const handleProductClick = (productId) => {
-    navigate(`/product/${productId}`);
+  const filterProduct = (product) => {
+    const matchKeyword = product.name.toLowerCase().includes(searchKeyword.toLowerCase());
+    const matchPrice = product.price >= priceRange[0] && product.price <= priceRange[1];
+    return matchKeyword && matchPrice;
   };
 
-  if (loading) return <p>로딩 중...</p>;
-  if (error) return <p>{error}</p>;
+  // ✅ 렌더링 시점에 브랜드별로 그룹핑
+  const grouped = useMemo(() => {
+    const result = {};
+    products.forEach((product) => {
+      const brand = product.brandName || "기타";
+      if (!result[brand]) {
+        result[brand] = {
+          logo: product.brandLogoUrl || "/default-logo.png",
+          subName: product.brandSubName || "",
+          products: [],
+        };
+      }
+      result[brand].products.push(product);
+    });
+    return result;
+  }, [products]);
 
   return (
     <div className="shop-container">
-      {/* 🔍 필터 바 */}
-      <div className="filter-bar">
-        <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
-          {categories.map((cat, idx) => (
-            <option key={idx} value={cat}>{cat}</option>
-          ))}
-        </select>
-
-        <select value={selectedBrand} onChange={(e) => setSelectedBrand(e.target.value)}>
-          {brands.map((brand, idx) => (
-            <option key={idx} value={brand}>{brand}</option>
-          ))}
-        </select>
-
+      {/* 🔍 검색 및 필터 바 */}
+      <div className="top-filter-bar">
         <input
           type="text"
           placeholder="상품명 검색"
-          value={searchKeyword}
-          onChange={(e) => setSearchKeyword(e.target.value)}
+          value={searchInput}
+          onChange={(e) => setSearchInput(e.target.value)}
         />
+        <button onClick={() => setSearchKeyword(searchInput)}>검색</button>
+        <button onClick={() => setShowPriceModal(true)}>가격 필터</button>
       </div>
 
-      {/* 🧷 상품 목록 */}
-      <div className="product-list">
-        {filteredProducts.length > 0 ? (
-          filteredProducts.map((product) => (
-            <ProductCard
-              key={product.id}
-              product={{
-                id: product.id,
-                imageUrl:
-                  product.images && product.images.length > 0
-                    ? `${product.images[0]}`
-                    : "/default-image.jpg",
-                title: product.name || "상품명 없음",
-                description: product.brandName || "브랜드 없음",
-                price: product.price
-                  ? product.price.toLocaleString()
-                  : "0",
-                likedByCurrentUser: product.likedByCurrentUser || false,
-                likeCount: product.likeCount || 0,
-              }}
-              onClick={() => handleProductClick(product.id)}
-              onLikeToggle={() => handleLikeToggle(product)}
-            />
-          ))
-        ) : (
-          <p>조건에 맞는 상품이 없습니다.</p>
-        )}
-      </div>
+      {/* 💸 가격 필터 모달 */}
+      {showPriceModal && (
+        <div className="modal-backdrop">
+          <div className="price-modal">
+            <h3>가격 필터 설정</h3>
+            <div className="modal-content">
+              <input
+                type="number"
+                placeholder="최소 가격"
+                value={tempMinPrice}
+                onChange={(e) => setTempMinPrice(+e.target.value)}
+              />
+              <input
+                type="number"
+                placeholder="최대 가격"
+                value={tempMaxPrice}
+                onChange={(e) => setTempMaxPrice(+e.target.value)}
+              />
+            </div>
+            <div className="modal-buttons">
+              <button onClick={() => setShowPriceModal(false)}>취소</button>
+              <button
+                onClick={() => {
+                  setPriceRange([tempMinPrice, tempMaxPrice]);
+                  setShowPriceModal(false);
+                }}
+              >
+                적용
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ✅ 브랜드별 상품 출력 */}
+      {Object.entries(grouped).map(([brand, info]) => {
+        const filtered = info.products.filter(filterProduct);
+        if (filtered.length === 0) return null;
+
+        return (
+          <div key={brand} className="brand-section">
+            <div className="brand-header">
+              <img src={info.logo} alt={`${brand} logo`} className="brand-logo" />
+              <div>
+                <h2>{brand}</h2>
+                <p>{info.subName}</p>
+              </div>
+            </div>
+            <div className="product-list">
+              {filtered.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onLikeToggle={() => handleLikeToggle(product)}
+                />
+              ))}
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 }
