@@ -4,33 +4,107 @@
     margin: 0 auto;
   }
   
-  .filter-bar {
+  .top-filter-bar {
     display: flex;
     flex-wrap: wrap;
     gap: 1rem;
     margin-bottom: 2rem;
-    align-items: center;
   }
   
-  .filter-bar select,
-  .filter-bar input {
+  .top-filter-bar input {
     padding: 0.5rem 1rem;
     font-size: 1rem;
     border: 1px solid #ccc;
-    border-radius: 8px;
+    border-radius: 6px;
     min-width: 150px;
-    transition: border-color 0.2s ease;
   }
   
-  .filter-bar select:focus,
-  .filter-bar input:focus {
-    outline: none;
-    border-color: #333;
+  .top-filter-bar button {
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: none;
+    background-color: #222;
+    color: white;
+    cursor: pointer;
+  }
+  
+  .brand-section {
+    margin-bottom: 3rem;
+  }
+  
+  .brand-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .brand-logo {
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 50%;
+    background-color: #fff;
+    border: 1px solid #ccc;
   }
   
   .product-list {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     gap: 1.5rem;
+  }
+  
+  .modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 999;
+  }
+  
+  .price-modal {
+    background: white;
+    padding: 2rem;
+    border-radius: 10px;
+    width: 90vw;           /* 작은 화면 대응 */
+    max-width: 500px;      /* ✅ 최대 너비 고정 */
+    box-sizing: border-box;
+  }
+  
+  .price-modal h3 {
+    margin-bottom: 1rem;
+  }
+
+  .modal-content input {
+    width: 100%;           /* ✅ 부모 너비에 맞춤 */
+    box-sizing: border-box;
+    margin-bottom: 1rem;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+  }
+  
+  .modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+  }
+  
+  .modal-buttons button {
+    flex: 1;
+    padding: 0.5rem 0;
+    font-weight: bold;
+    cursor: pointer;
+    background-color: #222;
+    color: white;
+    border: none;
+    border-radius: 6px;
   }
   
