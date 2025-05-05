@@ -21,7 +21,7 @@
     content: "";
     position: absolute;
     inset: 0;
-    background-color: #faf1dc;
+    background-color: #ffffff;
     transform: translateX(-100%);
     animation: slideIn 1s forwards ease;
     z-index: 0;
